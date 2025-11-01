@@ -1,0 +1,40 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# LaTeX files
+*.tex text eol=lf
+*.bib text eol=lf
+*.cls text eol=lf
+*.sty text eol=lf
+
+# Python files
+*.py text eol=lf
+*.ipynb text eol=lf linguist-language=Jupyter-Notebook
+pyproject.toml text eol=lf
+*.lock text eol=lf
+
+# Markdown and documentation
+*.md text eol=lf
+README* text eol=lf
+
+# Images - treat as binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg binary
+
+# PDFs - treat as binary
+*.pdf binary -diff
+
+# Archives
+*.zip binary
+*.tar binary
+*.gz binary
+
+# Jupyter notebooks - better diffs
+*.ipynb diff=jupyternotebook merge=jupyternotebook
+
+# LaTeX diffs - use latexdiff if available
+*.tex diff=tex
