@@ -41,7 +41,7 @@ def set_style():
 
 # --- 3. Helper Functions ---
 
-def save_fig(filename, tight=True):
+def save_and_include(filename, width=r"0.8\textwidth", tight=True):
     """Saves figure and prints the LaTeX includegraphics command."""
     output_dir = "generated_plots"
     if not os.path.exists(output_dir):
@@ -57,7 +57,7 @@ def save_fig(filename, tight=True):
     
     # This print statement is captured by PythonTeX to inject LaTeX
     print(r'\begin{center}')
-    print(r'\includegraphics[width=0.9\textwidth]{' + output_dir + '/' + filename + '}')
+    print(r'\includegraphics[width=' + width + ']{' + output_dir + '/' + filename + '}')
     print(r'\end{center}')
 
 def plot_decision_regions(ax, clf, X, y, resolution=0.02):

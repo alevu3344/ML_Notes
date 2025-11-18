@@ -368,10 +368,11 @@ utils.plot_decision_regions(ax, clf, X, y)
 utils.plot_gaussian_ellipse(ax, clf.means_[0], clf.covariance_[0], utils.COLORS['primary'])
 utils.plot_gaussian_ellipse(ax, clf.means_[1], clf.covariance_[1], utils.COLORS['red'])
 
-ax.set_title("QDA Example")
-utils.save_fig("qda_example.pdf")
+# ax.set_title("QDA Example")
+utils.save_and_include("qda_example.pdf")
 \end{pycode}
-\caption{A QDA plot generated using the external utils module.}
+
+\caption{Quadratic Discriminant Analysis (QDA) Example. The decision boundary is quadratic (curved) because the two classes have different covariance matrices, as illustrated by the different shapes and orientations of the confidence ellipses.}
 \end{figure}
 
 \subsubsection{Comparison with Linear Discriminant Analysis (LDA)}
@@ -517,8 +518,9 @@ for ax, (clf, name) in zip(axes, classifiers):
 axes[0].set_ylabel(r'$x_2$')
 axes[0].legend(loc='lower right')
 
-utils.save_fig("generative_comparison.pdf")
+utils.save_and_include("generative_comparison.pdf", width=r"1.0\textwidth")
 \end{pycode}
+
 \caption{Comparison of Generative Classifiers. QDA adapts to individual class covariances (quadratic boundaries), LDA assumes a shared covariance (linear boundaries), and NMC assumes spherical covariance (perpendicular bisectors).}
 \label{fig:generative_comparison}
 \end{figure}
@@ -628,8 +630,9 @@ for ax in axes:
 axes[2].set_xlabel('Feature Value ($x$)')
 axes[2].legend(loc='upper left')
 
-utils.save_fig("density_estimation.pdf")
+utils.save_and_include("density_estimation.pdf")
 \end{pycode}
+
 \caption{Non-Parametric Density Estimation. Top: Large bin width obscures structure. Middle: Small bin width fits noise. Bottom: KDE with an appropriate bandwidth recovers the bimodal density.}
 \label{fig:density_estimation}
 \end{figure}
@@ -697,8 +700,9 @@ for ax, (k, title) in zip(axes, models):
 
 axes[0].set_ylabel(r'Scaled $x_2$')
 
-utils.save_fig("knn_boundaries.pdf")
+utils.save_and_include("knn_boundaries.pdf", width=r"1.0\textwidth")
 \end{pycode}
+
 \caption{The effect of $k$ on decision boundaries. \textbf{Left:} With $k=1$, the model captures noise (overfitting). \textbf{Right:} With $k=15$, the boundary is smoother but may miss local details.}
 \label{fig:knn_boundaries}
 \end{figure}
@@ -758,13 +762,14 @@ ax.annotate(
 ax.set_yscale('log')
 ax.set_xlabel(r'Number of Dimensions ($d$)')
 ax.set_ylabel(r'Volume Ratio (Log Scale)')
-ax.set_title(r'The Curse of Dimensionality: Volume Ratio')
+# ax.set_title(r'The Curse of Dimensionality: Volume Ratio')
 ax.set_xticks(dims[::2])
 ax.grid(True, which="both", linestyle='--', alpha=0.4)
 ax.legend()
 
-utils.save_fig("curse_dimensionality.pdf")
+utils.save_and_include("curse_dimensionality.pdf")
 \end{pycode}
+
 \caption{The Curse of Dimensionality. As dimensionality increases, the volume of the inscribed hypersphere vanishes relative to the enclosing hypercube, indicating that data becomes sparse and concentrates in the "corners" of the space.}
 \label{fig:curse_dimensionality}
 \end{figure}
@@ -995,12 +1000,13 @@ ax.axhline(0, color='gray', lw=0.5, linestyle=':')
 ax.axvline(0, color='gray', lw=0.5, linestyle=':')
 ax.set_xlabel(r'Feature $x_1$')
 ax.set_ylabel(r'Feature $x_2$')
-ax.set_title('Geometric Intuition of the Perceptron Update Rule')
+# ax.set_title('Geometric Intuition of the Perceptron Update Rule')
 ax.legend(loc='upper left')
 ax.grid(True, linestyle=':', alpha=0.6)
 
-utils.save_fig("perceptron_update.pdf")
+utils.save_and_include("perceptron_update.pdf")
 \end{pycode}
+
 \caption{The Perceptron Update Rule. A misclassified positive sample $\mathbf{x}_i$ (green) is added to the old weight vector $\mathbf{w}_{old}$ (blue) to create a new weight vector $\mathbf{w}_{new}$ (red). This rotates the decision boundary to correctly classify $\mathbf{x}_i$.}
 \label{fig:perceptron_update}
 \end{figure}
@@ -1106,8 +1112,9 @@ ax2.legend(loc='upper left')
 ax2.set_xlim(ax1.get_xlim())
 ax2.set_ylim(ax1.get_ylim())
 
-utils.save_fig("fld_projection.pdf")
+utils.save_and_include("fld_projection.pdf")
 \end{pycode}
+
 \caption{Comparison of projections. \textbf{Top:} A naive projection onto the $x_1$ axis results in significant class overlap. \textbf{Bottom:} FLD finds the optimal projection direction $\mathbf{w}$ that maximizes class separation (ratio of between-class to within-class variance).}
 \label{fig:fld_projection}
 \end{figure}
@@ -1219,8 +1226,9 @@ for ax, (title, X, y) in zip(axes, datasets):
 axes[0].set_ylabel(r'$x_2$')
 axes[1].legend(loc='upper left')
 
-utils.save_fig("ls_vs_logistic.pdf")
+utils.save_and_include("ls_vs_logistic.pdf", width=r"1.0\textwidth")
 \end{pycode}
+
 \caption{Sensitivity to outliers. \textbf{Left:} Both models perform well on clean data. \textbf{Right:} An outlier (Blue X) heavily skews the Least Squares boundary (blue dashed) because the squared error penalty grows quadratically with distance. Logistic Regression (red solid) is robust because the sigmoid loss saturates.}
 \label{fig:ls_vs_logistic}
 \end{figure}
@@ -1279,14 +1287,15 @@ ax.annotate(r'Class 0 ($p < 0.5$)', xy=(-5, 0.1), xytext=(-7, 0.3),
 # --- 5. Labels and Styling ---
 ax.set_xlabel(r'Linear Output ($z = \mathbf{w}^T\mathbf{x} + w_0$)')
 ax.set_ylabel(r'Posterior Probability ($\hat{p}(y=1|\mathbf{x})$)')
-ax.set_title(r'The Logistic (Sigmoid) Function')
+# ax.set_title(r'The Logistic (Sigmoid) Function')
 ax.set_xlim(-10, 10)
 ax.set_ylim(-0.05, 1.05)
 ax.legend(loc='upper left')
 ax.grid(True, linestyle=':', alpha=0.6)
 
-utils.save_fig("sigmoid_function.pdf")
+utils.save_and_include("sigmoid_function.pdf")
 \end{pycode}
+
 \caption{The Sigmoid Function. It maps any real-valued number $z$ into the probabilistic range $[0, 1]$. The decision boundary lies at $z=0$, corresponding to $p=0.5$.}
 \label{fig:sigmoid_function}
 \end{figure}
@@ -1368,14 +1377,15 @@ ax.text(0.8, 0.5, 'High Variance\n(Overfitting)',
 
 ax.set_xlabel('Model Complexity')
 ax.set_ylabel('Expected Error')
-ax.set_title('The Bias-Variance Tradeoff')
+# ax.set_title('The Bias-Variance Tradeoff')
 ax.legend()
 ax.grid(True, linestyle='--', alpha=0.6)
 ax.set_ylim(0, 1.5)
 ax.set_xlim(0, 1)
 
-utils.save_fig("bias_variance_tradeoff.pdf")
+utils.save_and_include("bias_variance_tradeoff.pdf")
 \end{pycode}
+
 	\caption{The Bias-Variance Tradeoff. As model complexity increases, bias (blue) decreases as the model fits the data better. However, variance (red) increases as the model becomes too flexible and fits the noise. The total expected error (green) is a sum of these terms (plus irreducible error) and is minimal at an "optimal" complexity that balances the two.}
 	\label{fig:bias_variance_tradeoff}
 \end{figure}
@@ -1448,8 +1458,9 @@ ax2.set_ylabel('$x_2$')
 ax2.set_zlabel('$z = x_1^2 + x_2^2$')
 ax2.legend()
 
-utils.save_fig("feature_map_plot.pdf")
+utils.save_and_include("feature_map_plot.pdf", width=r"1.0\textwidth")
 \end{pycode}
+
 	\caption{An illustration of non-linearity through feature mapping.
 		\textbf{(Left)} A 2D dataset of concentric circles, which is not linearly separable.
 		\textbf{(Right)} By applying a feature map $\phi(\mathbf{x}) = (x_1, x_2, x_1^2 + x_2^2)$, the data is transformed into a 3D space. The classes are now perfectly separable by a simple plane (e.g., $z = 0.5$), which corresponds to a non-linear circular boundary in the original 2D space.}
@@ -1557,8 +1568,9 @@ plot_tree(clf,
 
 ax.set_title('Learned Decision Tree Structure')
 
-utils.save_fig("decision_tree_plot.pdf")
+utils.save_and_include("decision_tree_plot.pdf", width=r"1.0\textwidth")
 \end{pycode}
+
 	\caption{A Decision Tree classifier.
 		\textbf{(Left)} The learned decision tree structure. Each node splits the data based on a feature and threshold, aiming to increase class purity.
 		\textbf{(Right)} The corresponding decision boundary in the 2D feature space. The tree's hierarchical, axis-aligned splits create a "staircase" boundary that partitions the space into rectangular regions, each assigned to a single class.}
