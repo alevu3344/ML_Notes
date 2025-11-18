@@ -372,8 +372,10 @@ utils.plot_gaussian_ellipse(ax, clf.means_[1], clf.covariance_[1], utils.COLORS[
 utils.save_and_include("qda_example.pdf")
 \end{pycode}
 
+
 \caption{Quadratic Discriminant Analysis (QDA) Example. The decision boundary is quadratic (curved) because the two classes have different covariance matrices, as illustrated by the different shapes and orientations of the confidence ellipses.}
 \end{figure}
+
 
 \subsubsection{Comparison with Linear Discriminant Analysis (LDA)}
 The primary difference between QDA and its simpler counterpart, \textbf{Linear Discriminant Analysis (LDA)}, lies in the covariance matrix. LDA makes a stricter assumption: all classes share a \textit{single, pooled} covariance matrix, $\boldsymbol{\Sigma}$.
