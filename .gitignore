@@ -59,3 +59,8 @@ Thumbs.db
 *~
 
 *.pdf
+
+# PythonTeX and Generated Content
+pythontex-files-*/
+*.pytxcode
+generated_plots/
