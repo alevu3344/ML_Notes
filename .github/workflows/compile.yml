@@ -27,7 +27,7 @@ jobs:
       - name: Install Python and Dependencies
         run: |
           apt-get update
-          apt-get install -y python3 python3-pip python3-venv curl git python-is-python3
+          apt-get install -y python3-venv curl git
           
           # Install uv
           curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -35,8 +35,11 @@ jobs:
           # Export dependencies from uv.lock
           $HOME/.local/bin/uv export --format requirements-txt --output-file requirements.txt
           
-          # Install dependencies (uses binary wheels on Debian)
-          pip3 install -r requirements.txt --break-system-packages
+          # Create virtual environment to avoid system package conflicts
+          python3 -m venv .venv
+          
+          # Install dependencies into the virtual environment
+          .venv/bin/pip install -r requirements.txt
 
       - name: Compile LaTeX document
         run: |
