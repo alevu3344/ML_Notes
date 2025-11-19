@@ -17,25 +17,31 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container: texlive/texlive:latest
     permissions:
       contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install Python and Dependencies
+        run: |
+          apt-get update
+          apt-get install -y python3 python3-pip python3-venv curl git python-is-python3
+          
+          # Install uv
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          
+          # Export dependencies from uv.lock
+          $HOME/.local/bin/uv export --format requirements-txt --output-file requirements.txt
+          
+          # Install dependencies (uses binary wheels on Debian)
+          pip3 install -r requirements.txt --break-system-packages
+
       - name: Compile LaTeX document
-        uses: xu-cheng/latex-action@v3
-        with:
-          root_file: main.tex
-          # Install python dependencies inside the container before compiling
-          pre_compile: |
-            apk add --no-cache python3 py3-pip curl build-base python3-dev gfortran openblas-dev ninja
-            # Install uv
-            curl -LsSf https://astral.sh/uv/install.sh | sh
-            # Export dependencies from uv.lock to requirements.txt
-            $HOME/.local/bin/uv export --format requirements-txt --output-file requirements.txt
-            # Install dependencies into system python
-            pip3 install -r requirements.txt --break-system-packages
+        run: |
+          # latexmk will read .latexmkrc automatically
+          latexmk -pdf main.tex
 
       - name: Upload PDF as artifact
         uses: actions/upload-artifact@v4
