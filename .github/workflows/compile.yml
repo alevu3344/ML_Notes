@@ -33,7 +33,7 @@ jobs:
             # Install uv
             curl -LsSf https://astral.sh/uv/install.sh | sh
             # Export dependencies from uv.lock to requirements.txt
-            $HOME/.cargo/bin/uv export --format requirements-txt --output-file requirements.txt
+            $HOME/.local/bin/uv export --format requirements-txt --output-file requirements.txt
             # Install dependencies into system python
             pip3 install -r requirements.txt --break-system-packages
 
