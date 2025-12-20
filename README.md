@@ -5,20 +5,25 @@ Comprehensive lecture notes for the **Machine and Deep Learning** course (DSAIT4
 
 # Topics Covered
 
-
+## Machine Learning
 - Generative vs. Discriminative Classifiers (QDA, LDA, NMC)
-
 - Non-Parametric Methods (KDE, k-NN)
-
 - Linear Classifiers (Perceptron, Logistic Regression)
-
 - Bias-Variance Tradeoff
-
 - Non-Linear Classifiers (SVMs, Decision Trees, Ensembles)
-
 - Model Evaluation & Complexity
-
 - Regularization
+
+## Deep Learning
+- Feedforward Neural Networks (MLPs, Activation Functions, Universal Approximation)
+- Loss Functions (MLE, Cross-Entropy, Softmax)
+- Backpropagation (Computational Graphs, Chain Rule)
+- Optimization Algorithms (SGD, Momentum, RMSprop, Adam, Batch Normalization)
+- Convolutional Neural Networks (Convolution, Pooling, Residual Connections)
+- Recurrent Neural Networks (RNNs, BPTT, GRU, LSTM)
+- Self-Attention & Transformers (Q/K/V, Multi-Head Attention, Positional Encoding)
+- Unsupervised Learning & Generative Models (Autoencoders, VAEs, GANs, Diffusion)
+- Foundation Models & Transfer Learning (ViT, Self-Supervised Learning, PEFT, LoRA)
 
 ## Prerequisites
 
