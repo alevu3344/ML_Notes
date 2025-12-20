@@ -1,26 +1,29 @@
 \documentclass[11pt]{report}
 
-% --- Core Packages (order matters) ---
+% === Core Packages (order matters) ===
 \usepackage[english]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 
-% --- Fonts ---
+% === Fonts ===
 \usepackage[sfdefault]{roboto}        % Roboto as main font
 \usepackage{sfmath}                    % Sans-serif math fonts for consistency
 % Note: Using bold Roboto for headers instead of Roboto Slab (not in standard TeX Live)
 
-% --- Graphics and Colors ---
+% === Graphics and Colors ===
 \usepackage{graphicx}
 \usepackage{xcolor}
 \usepackage{tikz}
 \usepackage{tikzpagenodes}
+\usetikzlibrary{decorations.pathreplacing, shapes.geometric, positioning}
+\usepackage{tcolorbox}
+\usepackage{tabularray}
 
-% --- Page Layout ---
+% === Page Layout ===
 \usepackage{geometry}
 \geometry{a4paper, margin=2.5cm}
 
-% --- Typography ---
+% === Typography ===
 \usepackage{microtype}
 \setlength\parindent{0pt}
 \setlength{\parskip}{1em}
@@ -29,44 +32,44 @@
 
 
 
-% --- Section Formatting ---
+% === Section Formatting ===
 \usepackage{titlesec}
 \usepackage{sectsty}
 
 
-% --- Figures and Tables ---
+% === Figures and Tables ===
 \usepackage{float}
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{booktabs}
 \usepackage{multirow}
 
-% --- Math ---
+% === Math ===
 \usepackage{amsmath}
 \usepackage{amssymb}
 
-% --- Code Listings ---
+% === Code Listings ===
 \usepackage{listings}
 
-% --- Bibliography ---
+% === Bibliography ===
 \usepackage[square,sort,comma,numbers]{natbib}
 
-% --- Todo Notes ---
+% === Todo Notes ===
 \usepackage[colorinlistoftodos]{todonotes}
 
-% --- Title Customization ---
+% === Title Customization ===
 \usepackage{titling}
 \usepackage{blindtext}
 
-% --- Hyperlinks (load near end) ---
+% === Hyperlinks (load near end) ===
 \usepackage{hyperref}
 
-% --- TU Delft Colors ---
+% === TU Delft Colors ===
 \definecolor{tudelftdarkblue}{RGB}{12,35,64}
 \definecolor{tudelftcyan}{RGB}{0,166,214}
 \definecolor{tudelftblue}{RGB}{0,118,194}
 
-% --- Code Listing Colors ---
+% === Code Listing Colors ===
 \definecolor{darkgreen}{rgb}{0.0, 0.4, 0.0}
 \definecolor{codegreen}{rgb}{0,0.5,0.1}
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}
@@ -74,7 +77,7 @@
 \definecolor{backcolour}{rgb}{0.92,0.94,0.96}
 \definecolor{keywordcolor}{rgb}{0.8, 0.2, 0.4}
 
-% --- Chapter and Section Styling ---
+% === Chapter and Section Styling ===
 \titleformat{\chapter}[display]
   {\normalfont\huge\fontfamily{RobotoSlab-TLF}\bfseries\color{tudelftdarkblue}}
   {\chaptertitlename\ \thechapter}{20pt}{\Huge}
@@ -91,7 +94,7 @@
   {\normalfont\normalsize\fontfamily{RobotoSlab-TLF}\bfseries\color{tudelftblue}}
   {\thesubsubsection}{1em}{}
 
-% --- Hyperlink Setup ---
+% === Hyperlink Setup ===
 \hypersetup{
   colorlinks=true,
   linkcolor=tudelftblue,
@@ -102,14 +105,14 @@
   pdftitle={Machine and Deep Learning - Lecture Notes}
 }
 
-% --- Caption Styling ---
+% === Caption Styling ===
 \captionsetup{
   font=small,
   labelfont={bf,color=tudelftdarkblue},
   textfont=it
 }
 
-% --- Code Listing Style ---
+% === Code Listing Style ===
 \lstdefinestyle{mystyle}{
   backgroundcolor=\color{backcolour},
   commentstyle=\color{codegreen}\itshape,
@@ -151,7 +154,7 @@ import plot_utils as utils
 utils.set_style()
 \end{pycode}
 
-% --- Custom Title Page ---
+% === Custom Title Page ===
 \begin{titlepage}
 	\fontfamily{RobotoSlab-TLF}\selectfont
 	\centering
@@ -179,7 +182,7 @@ utils.set_style()
 \tableofcontents
 \newpage
 
-%--- CHAPTER 1: Machine Learning ---
+%=== CHAPTER 1: Machine Learning ===
 \chapter{Machine Learning}
 \label{chap:ml}
 
@@ -467,7 +470,7 @@ The decision boundary between two classes $i$ and $j$ is the set of points equid
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis, LinearDiscriminantAnalysis
 from sklearn.neighbors import NearestCentroid
 
-# --- 1. Data Generation (Preserving your specific covariance structures) ---
+# === 1. Data Generation (Preserving your specific covariance structures) ===
 np.random.seed(42)
 n_samples = 150
 
@@ -489,14 +492,14 @@ y2 = 2 * np.ones(n_samples)
 X = np.vstack((X0, X1, X2))
 y = np.hstack((y0, y1, y2))
 
-# --- 2. Model Definitions ---
+# === 2. Model Definitions ===
 classifiers = [
     (QuadraticDiscriminantAnalysis(store_covariance=True), "QDA (Unique $\Sigma_i$)"),
     (LinearDiscriminantAnalysis(), "LDA (Shared $\Sigma$)"),
     (NearestCentroid(), "NMC ($\Sigma = \sigma^2I$)")
 ]
 
-# --- 3. Plotting ---
+# === 3. Plotting ===
 # We use sharey/sharex to make the comparison cleaner and save space
 fig, axes = plt.subplots(1, 3, figsize=(12, 4.5), sharey=True, sharex=True)
 
@@ -582,7 +585,7 @@ Choosing the optimal bandwidth is a crucial step and is often done via cross-val
 \begin{pycode}
 from sklearn.neighbors import KernelDensity
 
-# --- 1. Data Generation (Bimodal Distribution) ---
+# === 1. Data Generation (Bimodal Distribution) ===
 np.random.seed(42)
 N = 200
 X = np.concatenate((
@@ -592,7 +595,7 @@ X = np.concatenate((
 
 X_plot = np.linspace(-4, 8, 1000)[:, np.newaxis]
 
-# --- 2. Plotting ---
+# === 2. Plotting ===
 # Create 3 stacked subplots
 fig, axes = plt.subplots(3, 1, figsize=(8, 8), sharex=True)
 
@@ -621,7 +624,7 @@ axes[2].fill_between(X_plot.ravel(), np.exp(log_dens),
                      color=utils.COLORS['red'], alpha=0.2)
 axes[2].set_title(f'Kernel Density Estimation ($h={h_kde}$): Smooth \& Flexible')
 
-# --- 3. Common Styling ---
+# === 3. Common Styling ===
 for ax in axes:
     # Add "Rug Plot" (small ticks at bottom representing data points)
     ax.plot(X.ravel(), np.full_like(X, -0.01), '|', 
@@ -664,7 +667,7 @@ The optimal value for $k$ is typically found using cross-validation.
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import StandardScaler
 
-# --- 1. Data Generation ---
+# === 1. Data Generation ===
 # We use the same data structure as previous plots for consistency
 np.random.seed(42)
 n_samples = 150
@@ -677,12 +680,12 @@ X = np.vstack([
 ])
 y = np.hstack([np.zeros(n_samples), np.ones(n_samples), 2*np.ones(n_samples)])
 
-# --- 2. Preprocessing ---
+# === 2. Preprocessing ===
 # k-NN is distance-based, so scaling is essential
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
 
-# --- 3. Modeling & Plotting ---
+# === 3. Modeling & Plotting ===
 # We compare Overfitting (k=1) vs Underfitting/Smoothing (k=15)
 models = [
     (1, r"k-NN ($k=1$) - High Variance"),
@@ -726,7 +729,7 @@ To maintain the same data density as the dimensionality increases, the required 
 \begin{itemize}
 	\item \textbf{Data Sparsity:} In high-dimensional space, data points are inevitably far apart from each other. For distance-based methods like k-NN, the concept of a "close" neighbor becomes less meaningful, as even the nearest neighbor might be very far away. This makes local methods unreliable.
 
-	\item \textbf{Estimation Difficulty:} For density estimation methods (like histograms or Parzen windows), the number of samples needed to accurately estimate the distribution grows exponentially. For example, if we use a histogram with 10 bins per feature, we need $10^d$ bins to cover the entire feature space. For 50 dimensions, this is $10^{50}$ bins---an impossibly large number to populate with data.
+	\item \textbf{Estimation Difficulty:} For density estimation methods (like histograms or Parzen windows), the number of samples needed to accurately estimate the distribution grows exponentially. For example, if we use a histogram with 10 bins per feature, we need $10^d$ bins to cover the entire feature space. For 50 dimensions, this is $10^{50}$ bins, which is an impossibly large number to populate with data.
 
 	\item \textbf{Counter-intuitive Geometry:} The geometry of high-dimensional spaces is non-intuitive. For instance, in a high-dimensional hypersphere, almost all of the volume is concentrated in a thin outer shell. This means that most data points will appear to be at the edge of the distribution, far from the center, which complicates models that rely on a central tendency (like Gaussian models).
 \end{itemize}
@@ -735,7 +738,7 @@ To maintain the same data density as the dimensionality increases, the required 
 \begin{pycode}
 from scipy.special import gamma
 
-# --- 1. Data Calculation ---
+# === 1. Data Calculation ===
 dims = np.arange(1, 21)
 
 # Volume of Hypersphere (r=1) vs Hypercube (L=2)
@@ -744,7 +747,7 @@ vol_sphere = (np.pi**(dims / 2.0)) / gamma(dims / 2.0 + 1)
 vol_cube = 2.0**dims
 ratios = vol_sphere / vol_cube
 
-# --- 2. Plotting ---
+# === 2. Plotting ===
 fig, ax = plt.subplots(figsize=(10, 5))
 
 ax.plot(dims, ratios, 'o-', color=utils.COLORS['primary'], 
@@ -760,7 +763,7 @@ ax.annotate(
     ha='center', fontsize=10, color=utils.COLORS['dark']
 )
 
-# --- 3. Styling ---
+# === 3. Styling ===
 ax.set_yscale('log')
 ax.set_xlabel(r'Number of Dimensions ($d$)')
 ax.set_ylabel(r'Volume Ratio (Log Scale)')
@@ -935,7 +938,7 @@ The update rule in Equation \ref{eq:perceptron_update} has a clear geometric int
 
 \begin{figure}[H]
 \begin{pycode}
-# --- 1. Data and Perceptron Update ---
+# === 1. Data and Perceptron Update ===
 w_old = np.array([2, 0.5])  # Initial weight vector
 x_i = np.array([-1.5, 2.5]) # Misclassified positive sample
 dot_product = np.dot(w_old, x_i)
@@ -943,10 +946,10 @@ dot_product = np.dot(w_old, x_i)
 # Perform the Perceptron update
 w_new = w_old + x_i
 
-# --- 2. Plotting Setup ---
+# === 2. Plotting Setup ===
 fig, ax = plt.subplots(figsize=(8, 8))
 
-# --- 3. Plot Vectors ---
+# === 3. Plot Vectors ===
 # Old weight vector
 ax.arrow(0, 0, w_old[0], w_old[1], 
          head_width=0.2, head_length=0.3, fc=utils.COLORS['primary'], ec=utils.COLORS['primary'], 
@@ -966,7 +969,7 @@ ax.arrow(0, 0, w_new[0], w_new[1],
 ax.plot(x_i[0], x_i[1], 'o', markersize=8, color=utils.COLORS['green'], 
         markeredgecolor=utils.COLORS['dark'], zorder=5)
 
-# --- 4. Plot Decision Boundaries (Perpendicular to weight vectors) ---
+# === 4. Plot Decision Boundaries (Perpendicular to weight vectors) ===
 x_vals = np.linspace(-4, 4, 100)
 
 # Old decision boundary (w_old * x = 0)
@@ -981,7 +984,7 @@ if w_new[1] != 0:
     ax.plot(x_vals, y_vals_new, '--', color=utils.COLORS['red'], 
             label=r'New boundary $(\mathbf{w}_{new} \cdot \mathbf{x} = 0)$')
 
-# --- 5. Annotations ---
+# === 5. Annotations ===
 ax.text(x_i[0], x_i[1] + 0.5, r'$\mathbf{x}_i$', color=utils.COLORS['green'], ha='center', fontsize=12)
 ax.text(w_old[0] + 0.2, w_old[1], r'$\mathbf{w}_{old}$', color=utils.COLORS['primary'], ha='left', fontsize=12)
 ax.text(w_new[0] + 0.2, w_new[1], r'$\mathbf{w}_{new}$', color=utils.COLORS['red'], ha='left', fontsize=12)
@@ -995,7 +998,7 @@ ax.annotate(r'Misclassified for $\mathbf{w}_{old}$' + '\n' + r'($\mathbf{w}_{old
 ax.text(3.5, 3.5, 'Positive Side', color=utils.COLORS['primary'], ha='right', va='top', fontsize=10)
 ax.text(-3.5, -3.5, 'Negative Side', color=utils.COLORS['primary'], ha='left', va='bottom', fontsize=10)
 
-# --- 6. Final Styling ---
+# === 6. Final Styling ===
 ax.set_xlim(-4, 4)
 ax.set_ylim(-4, 4)
 ax.axhline(0, color='gray', lw=0.5, linestyle=':')
@@ -1045,7 +1048,7 @@ By taking the derivative of $J_F(\mathbf{w})$ with respect to $\mathbf{w}$ and s
 \begin{pycode}
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
-# --- 1. Data Generation ---
+# === 1. Data Generation ===
 np.random.seed(42)
 n_samples = 100
 
@@ -1057,15 +1060,15 @@ X1 = np.random.multivariate_normal([5, 6], [[1, -0.6], [-0.6, 1]], n_samples)
 X = np.vstack((X0, X1))
 y = np.hstack((np.zeros(n_samples), np.ones(n_samples)))
 
-# --- 2. Fit FLD (LDA) ---
+# === 2. Fit FLD (LDA) ===
 lda = LinearDiscriminantAnalysis().fit(X, y)
 w = lda.scalings_[:, 0] # The optimal projection vector
 
-# --- 3. Plotting ---
+# === 3. Plotting ===
 fig, axes = plt.subplots(2, 1, figsize=(8, 10), gridspec_kw={'height_ratios': [1, 1]})
 colors = [utils.COLORS['primary'], utils.COLORS['red']]
 
-# --- Panel 1: Naive Projection (onto x1 axis) ---
+# === Panel 1: Naive Projection (onto x1 axis) ===
 ax1 = axes[0]
 proj_bad = X[:, 0] 
 
@@ -1082,7 +1085,7 @@ ax1.set_xlabel(r'$x_1$ (Projection Axis)')
 ax1.set_ylabel(r'$x_2$')
 ax1.legend()
 
-# --- Panel 2: FLD Projection (Optimal) ---
+# === Panel 2: FLD Projection (Optimal) ===
 ax2 = axes[1]
 proj_good = X @ w
 
@@ -1156,7 +1159,7 @@ While simple and efficient, the least squares approach has a significant drawbac
 \begin{pycode}
 from sklearn.linear_model import LinearRegression, LogisticRegression
 
-# --- 1. Data Generation ---
+# === 1. Data Generation ===
 np.random.seed(1)
 n = 50
 
@@ -1172,7 +1175,7 @@ y_outlier = np.array([0])
 X_noisy = np.vstack((X_clean, X_outlier))
 y_noisy = np.hstack((y_clean, y_outlier))
 
-# --- 2. Plotting Setup ---
+# === 2. Plotting Setup ===
 fig, axes = plt.subplots(1, 2, figsize=(12, 5), sharey=True)
 
 datasets = [
@@ -1186,7 +1189,7 @@ y_min, y_max = -2, 10
 xx, yy = np.meshgrid(np.linspace(x_min, x_max, 200), np.linspace(y_min, y_max, 200))
 grid = np.c_[xx.ravel(), yy.ravel()]
 
-# --- 3. Loop over Datasets ---
+# === 3. Loop over Datasets ===
 for ax, (title, X, y) in zip(axes, datasets):
     # Fit Models
     ls = LinearRegression().fit(X, y)
@@ -1203,7 +1206,7 @@ for ax, (title, X, y) in zip(axes, datasets):
         ax.scatter(X_outlier[:, 0], X_outlier[:, 1], marker='X', s=150,
                    c=utils.COLORS['primary'], edgecolors='k', label='Outlier', zorder=10)
 
-    # --- Draw Boundaries ---
+    # === Draw Boundaries ===
     
     # Least Squares (Blue Dashed): Decision is predicted value = 0.5
     Z_ls = ls.predict(grid).reshape(xx.shape)
@@ -1252,17 +1255,17 @@ This S-shaped function takes the output of our linear model (which can be any re
 
 \begin{figure}[H]
 \begin{pycode}
-# --- 1. Data Generation ---
+# === 1. Data Generation ===
 z = np.linspace(-10, 10, 400)
 p = 1.0 / (1.0 + np.exp(-z))
 
-# --- 2. Plotting ---
+# === 2. Plotting ===
 fig, ax = plt.subplots(figsize=(10, 6))
 
 # The Sigmoid Curve
 ax.plot(z, p, color=utils.COLORS['primary'], linewidth=3, label='Sigmoid Function')
 
-# --- 3. Thresholds and Asymptotes ---
+# === 3. Thresholds and Asymptotes ===
 # Decision Threshold (p=0.5)
 ax.axhline(0.5, color=utils.COLORS['dark'], linestyle='--', linewidth=1, 
            label=r'Decision Threshold ($p=0.5$)')
@@ -1275,7 +1278,7 @@ ax.axvline(0, color=utils.COLORS['dark'], linestyle='--', linewidth=1,
 ax.axhline(1.0, color='gray', linestyle=':', alpha=0.5)
 ax.axhline(0.0, color='gray', linestyle=':', alpha=0.5)
 
-# --- 4. Annotations ---
+# === 4. Annotations ===
 # Class 1 Annotation
 ax.annotate(r'Class 1 ($p > 0.5$)', xy=(5, 0.9), xytext=(7, 0.7),
             arrowprops=dict(facecolor=utils.COLORS['dark'], shrink=0.05, width=1, headwidth=8),
@@ -1286,7 +1289,7 @@ ax.annotate(r'Class 0 ($p < 0.5$)', xy=(-5, 0.1), xytext=(-7, 0.3),
             arrowprops=dict(facecolor=utils.COLORS['dark'], shrink=0.05, width=1, headwidth=8),
             fontsize=12, color=utils.COLORS['red'], ha='center')
 
-# --- 5. Labels and Styling ---
+# === 5. Labels and Styling ===
 ax.set_xlabel(r'Linear Output ($z = \mathbf{w}^T\mathbf{x} + w_0$)')
 ax.set_ylabel(r'Posterior Probability ($\hat{p}(y=1|\mathbf{x})$)')
 # ax.set_title(r'The Logistic (Sigmoid) Function')
@@ -1985,6 +1988,2738 @@ The regularised loss function is:
 \end{equation}
 The L1 penalty has a unique and powerful property: it promotes \textbf{sparsity}. As the regularization strength $\alpha$ is increased, many of the model's weights are driven to be exactly zero. This means L1 regularization can be used for \textbf{automatic feature selection}, as it effectively removes irrelevant features from the model, leading to simpler and more interpretable results.
 
+% === CHAPTER 2: Deep Learning ===
+\chapter{Deep Learning}
+\label{chap:dl}
 
+\section{Feedforward Neural Networks}
+\label{sec:dl_feedforward}
+
+In the previous chapter, we explored classical machine learning algorithms where success hinged on the quality of the features provided to the model. A linear classifier on raw pixel values will fail, but given well-engineered features (e.g., histograms of gradients), it can excel. This process of \textbf{feature engineering} is laborious, domain-specific, and represents the core bottleneck in classical machine learning.
+
+\textbf{Deep Learning} offers a radical alternative: instead of handcrafting features, we learn them directly from raw data. Deep feedforward networks, also known as \textbf{Multi-Layer Perceptrons (MLPs)}, achieve this by composing multiple layers of simple, parameterized transformations. Each layer learns a progressively more abstract representation of the input, culminating in a final layer that performs the task (e.g., classification). The network's parameters are adjusted end-to-end to minimize a loss function, simultaneously learning the feature extractor and the classifier.
+
+More formally, the goal of a feedforward network is to approximate some target function $f^*$. For a classifier, this might be $y = f^*(\mathbf{x})$, which maps an input $\mathbf{x}$ to a category $y$. A feedforward network defines a parameterized mapping $\mathbf{y} = f(\mathbf{x}; \boldsymbol{\theta})$ and learns the parameters $\boldsymbol{\theta}$ that result in the best function approximation. These models are called \textit{feedforward} because information flows in one direction, which is from input $\mathbf{x}$, through intermediate computations, to output $\mathbf{y}$, without any feedback loops.
+
+\subsection{Network Architecture and Notation}
+A feedforward network is constructed by composing together many simpler functions, forming a \textbf{computational graph}. Consider a network represented as a chain of three functions:
+\begin{equation}
+	f(\mathbf{x}) = f^{(3)}(f^{(2)}(f^{(1)}(\mathbf{x})))
+\end{equation}
+The terminology for this architecture is as follows:
+\begin{itemize}
+	\item $f^{(1)}$ is the \textbf{first layer}, the one closest to the input.
+	\item $f^{(2)}$ is a \textbf{hidden layer}. Its outputs are not directly observed in the training data; they are internal representations learned by the network.
+	\item $f^{(3)}$ is the \textbf{output layer}, producing the final prediction.
+	\item The number of layers in the chain is the \textbf{depth} of the network. This network has a depth of 3. The term ``deep learning'' refers to training networks with many such layers.
+	\item The number of units (neurons) in a layer is its \textbf{width}.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=1.8cm and 2.5cm,
+    neuron/.style={circle, draw=tudelftblue, fill=tudelftblue!10, thick, minimum size=0.9cm, font=\footnotesize},
+    input neuron/.style={neuron, fill=tudelftcyan!20, draw=tudelftcyan},
+    output neuron/.style={neuron, fill=tudelftblue!30, draw=tudelftdarkblue},
+    connection/.style={->, thick, gray!70},
+    layer label/.style={font=\small\bfseries, text=tudelftdarkblue}
+]
+    % Input Layer
+    \node[input neuron] (x1) at (0, 1.2) {$x_1$};
+    \node[input neuron] (x2) at (0, 0) {$x_2$};
+    \node[input neuron] (x3) at (0, -1.2) {$x_3$};
+    \node[layer label, above=0.5cm of x1] {Input};
+    
+    % Hidden Layer 1
+    \node[neuron] (h11) at (2.5, 1.8) {$h_1^{(1)}$};
+    \node[neuron] (h12) at (2.5, 0.6) {$h_2^{(1)}$};
+    \node[neuron] (h13) at (2.5, -0.6) {$h_3^{(1)}$};
+    \node[neuron] (h14) at (2.5, -1.8) {$h_4^{(1)}$};
+    \node[layer label, above=0.5cm of h11] {Hidden 1};
+    
+    % Hidden Layer 2
+    \node[neuron] (h21) at (5, 0.9) {$h_1^{(2)}$};
+    \node[neuron] (h22) at (5, -0.3) {$h_2^{(2)}$};
+    \node[neuron] (h23) at (5, -1.5) {$h_3^{(2)}$};
+    \node[layer label, above=1.4cm of h21] {Hidden 2};
+    
+    % Output Layer
+    \node[output neuron] (y1) at (7.5, 0.3) {$y_1$};
+    \node[output neuron] (y2) at (7.5, -0.9) {$y_2$};
+    \node[layer label, above=1.6cm of y1] {Output};
+    
+    % Connections: Input -> Hidden 1
+    \foreach \i in {1,2,3} {
+        \foreach \j in {1,2,3,4} {
+            \draw[connection] (x\i) -- (h1\j);
+        }
+    }
+    
+    % Connections: Hidden 1 -> Hidden 2
+    \foreach \i in {1,2,3,4} {
+        \foreach \j in {1,2,3} {
+            \draw[connection] (h1\i) -- (h2\j);
+        }
+    }
+    
+    % Connections: Hidden 2 -> Output
+    \foreach \i in {1,2,3} {
+        \foreach \j in {1,2} {
+            \draw[connection] (h2\i) -- (y\j);
+        }
+    }
+    
+    % Annotations
+    \draw [decorate, decoration={brace, amplitude=8pt, raise=5pt}, thick, tudelftdarkblue] (7.8, 1) -- (7.8, -1.2) node [midway, right, xshift=12pt, align=left, font=\footnotesize] {2 outputs\\(e.g., classes)};
+    \draw [decorate, decoration={brace, amplitude=8pt, raise=5pt, mirror}, thick, tudelftdarkblue] (-0.3, 1.5) -- (-0.3, -1.5) node [midway, left, xshift=-12pt, align=right, font=\footnotesize] {3 input\\features};
+\end{tikzpicture}
+\caption{Architecture of a feedforward neural network with two hidden layers. Arrows represent weighted connections. Each unit in a hidden layer computes a weighted sum of its inputs, adds a bias, and applies a non-linear activation function. This network has depth 4 (input + 2 hidden + output) and varying widths per layer.}
+\label{fig:mlp_architecture}
+\end{figure}
+
+\subsubsection{The Computation Within a Layer}
+Each layer $l$ performs a simple computation. Let $\mathbf{h}^{(l-1)}$ be the output of the previous layer (or the input $\mathbf{x}$ for the first layer). The layer computes:
+\begin{equation}
+	\mathbf{h}^{(l)} = g\left( \mathbf{W}^{(l)} \mathbf{h}^{(l-1)} + \mathbf{b}^{(l)} \right)
+\end{equation}
+where $\mathbf{W}^{(l)}$ is the \textbf{weight matrix}, $\mathbf{b}^{(l)}$ is the \textbf{bias vector}, and $g(\cdot)$ is a non-linear \textbf{activation function} applied element-wise. The weights and biases constitute the learnable parameters $\boldsymbol{\theta}$.
+
+\subsubsection{Parameter Counting}
+Understanding the number of parameters in a network is crucial for estimating its capacity and computational cost. Consider a simple network with:
+\begin{itemize}
+	\item Input dimensionality: $d_{in} = 2$
+	\item One hidden layer with $d_h = 2$ neurons
+	\item Output dimensionality: $d_{out} = 1$
+\end{itemize}
+The total number of parameters is calculated layer by layer:
+\begin{enumerate}
+	\item \textbf{Input to Hidden:} Weight matrix $\mathbf{W}^{(1)} \in \mathbb{R}^{d_h \times d_{in}} = \mathbb{R}^{2 \times 2}$ has $2 \times 2 = 4$ weights. Bias vector $\mathbf{b}^{(1)} \in \mathbb{R}^{d_h}$ has 2 biases. \textbf{Total: 6 parameters.}
+	\item \textbf{Hidden to Output:} Weight matrix $\mathbf{W}^{(2)} \in \mathbb{R}^{d_{out} \times d_h} = \mathbb{R}^{1 \times 2}$ has $1 \times 2 = 2$ weights. Bias $b^{(2)} \in \mathbb{R}$ has 1 bias. \textbf{Total: 3 parameters.}
+\end{enumerate}
+\textbf{Grand Total:} $6 + 3 = 9$ parameters. Formally, the full model can be written as:
+\begin{equation}
+	f(\mathbf{x}; \boldsymbol{\theta}) = \mathbf{W}^{(2)} g\left( \mathbf{W}^{(1)} \mathbf{x} + \mathbf{b}^{(1)} \right) + b^{(2)}
+\end{equation}
+The goal of training is to find the values of $\boldsymbol{\theta} = \{\mathbf{W}^{(1)}, \mathbf{b}^{(1)}, \mathbf{W}^{(2)}, b^{(2)}\}$ such that $f(\mathbf{x}; \boldsymbol{\theta})$ approximates the target function $f^*(\mathbf{x})$.
+
+\subsection{Activation Functions}
+The non-linear activation function $g(\cdot)$ is the key ingredient that gives neural networks their power. Without it, a multi-layer network would collapse into a single linear transformation, regardless of its depth. This section details the most common activation functions.
+
+\begin{figure}[H]
+\begin{pycode}
+z = np.linspace(-4, 4, 200)
+
+# Activation Functions
+relu = np.maximum(0, z)
+leaky_relu = np.where(z > 0, z, 0.1 * z)
+sigmoid = 1 / (1 + np.exp(-z))
+tanh = np.tanh(z)
+
+fig, axes = plt.subplots(1, 2, figsize=(12, 4.5))
+
+# === Left: Activation Functions ===
+axes[0].plot(z, relu, label=r'ReLU: $\max(0, z)$', color=utils.COLORS['primary'], linewidth=2.5)
+axes[0].plot(z, leaky_relu, label=r'Leaky ReLU: $\max(0.1z, z)$', color=utils.COLORS['cyan'], linewidth=2, linestyle='--')
+axes[0].plot(z, sigmoid, label=r'Sigmoid: $\sigma(z)$', color=utils.COLORS['red'], linewidth=2)
+axes[0].plot(z, tanh, label='Tanh', color=utils.COLORS['green'], linewidth=2)
+
+axes[0].axhline(0, color='gray', linewidth=0.5)
+axes[0].axvline(0, color='gray', linewidth=0.5)
+axes[0].set_title('Common Activation Functions')
+axes[0].set_xlabel('$z$ (pre-activation)')
+axes[0].set_ylabel('$g(z)$')
+axes[0].legend(loc='upper left')
+axes[0].set_ylim(-1.5, 4)
+axes[0].grid(True, linestyle=':', alpha=0.5)
+
+# === Right: Derivatives ===
+# Derivatives
+d_relu = np.where(z > 0, 1, 0).astype(float)
+d_leaky_relu = np.where(z > 0, 1, 0.1)
+d_sigmoid = sigmoid * (1 - sigmoid)
+d_tanh = 1 - tanh**2
+
+axes[1].plot(z, d_relu, label="ReLU'", color=utils.COLORS['primary'], linewidth=2.5)
+axes[1].plot(z, d_leaky_relu, label="Leaky ReLU'", color=utils.COLORS['cyan'], linewidth=2, linestyle='--')
+axes[1].plot(z, d_sigmoid, label="Sigmoid'", color=utils.COLORS['red'], linewidth=2)
+axes[1].plot(z, d_tanh, label="Tanh'", color=utils.COLORS['green'], linewidth=2)
+
+axes[1].axhline(0, color='gray', linewidth=0.5)
+axes[1].axvline(0, color='gray', linewidth=0.5)
+axes[1].set_title('Derivatives (Crucial for Backpropagation)')
+axes[1].set_xlabel('$z$ (pre-activation)')
+axes[1].set_ylabel("$g'(z)$")
+axes[1].legend(loc='upper right')
+axes[1].set_ylim(-0.1, 1.5)
+axes[1].grid(True, linestyle=':', alpha=0.5)
+
+utils.save_and_include("activation_functions.pdf", width=r"1.0\textwidth")
+\end{pycode}
+\caption{\textbf{Left:} Common activation functions. ReLU is the modern default due to its simplicity and favorable gradient properties. \textbf{Right:} The derivatives of these functions. Note how Sigmoid and Tanh derivatives saturate to near-zero for large $|z|$, which can cause vanishing gradients. ReLU's derivative is a constant 1 for positive inputs, ensuring healthy gradient flow.}
+\label{fig:activation_functions}
+\end{figure}
+
+\paragraph{ReLU (Rectified Linear Unit):} Defined as $g(z) = \max\{0, z\}$. This is the default choice for modern deep learning for several reasons:
+\begin{itemize}
+    \item \textbf{Computational Efficiency:} It involves only a simple thresholding operation.
+    \item \textbf{Sparsity:} For negative inputs, the output is exactly zero, leading to sparse activations which can improve efficiency and representation.
+    \item \textbf{Non-saturating Gradient:} For positive inputs, the gradient is 1, which mitigates the \textit{vanishing gradient problem} that plagued earlier networks using Sigmoid or Tanh.
+\end{itemize}
+A known issue is the \textbf{Dying ReLU Problem}: if a neuron's input is always negative, its gradient is always zero, and it stops learning entirely.
+
+\paragraph{Leaky ReLU:} A variant designed to fix the dying ReLU problem: $g(z) = \max\{\alpha z, z\}$, where $\alpha$ is a small constant (e.g., 0.01 or 0.1). This provides a small, non-zero gradient when the unit is not active.
+
+\paragraph{Sigmoid:} Defined as $\sigma(z) = \frac{1}{1+e^{-z}}$. It squashes the input to the range $(0, 1)$. Historically important, it is now mostly used in output layers for binary classification (to produce a probability) rather than in hidden layers, due to its tendency to saturate.
+
+\paragraph{Tanh (Hyperbolic Tangent):} Defined as $\tanh(z) = \frac{e^z - e^{-z}}{e^z + e^{-z}}$. Similar to Sigmoid but outputs are centered around zero, in the range $(-1, 1)$. This can be beneficial as it means the output of one layer has zero mean, which can help with the dynamics of training in some cases.
+
+\subsection{The Need for Non-Linearity: The XOR Problem}
+Why is non-linearity so essential? A linear model defines a hyperplane decision boundary: $y = \mathbf{w}^T \mathbf{x} + b$. Consider the classic \textbf{XOR (exclusive or)} problem:
+\begin{itemize}
+	\item Inputs: $\mathbf{X} = \{[0, 0]^T, [0, 1]^T, [1, 0]^T, [1, 1]^T\}$
+	\item Labels: $Y = \{0, 1, 1, 0\}$
+\end{itemize}
+These points are \textbf{not linearly separable}. No single straight line can separate the class-0 points $\{(0,0), (1,1)\}$ from the class-1 points $\{(0,1), (1,0)\}$.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=2.5]
+    % Grid
+    \draw[gray!30, very thin] (-0.3, -0.3) grid[step=0.5] (1.3, 1.3);
+    \draw[->] (-0.3, 0) -- (1.4, 0) node[right] {$x_1$};
+    \draw[->] (0, -0.3) -- (0, 1.4) node[above] {$x_2$};
+    
+    % Points - Class 0 (Blue circles)
+    \node[circle, fill=tudelftblue, draw=tudelftdarkblue, thick, minimum size=0.4cm, label={[font=\footnotesize]below left:$(0,0) \to 0$}] at (0, 0) {};
+    \node[circle, fill=tudelftblue, draw=tudelftdarkblue, thick, minimum size=0.4cm, label={[font=\footnotesize]above right:$(1,1) \to 0$}] at (1, 1) {};
+    
+    % Points - Class 1 (Red squares)
+    \node[regular polygon, regular polygon sides=4, fill=red!70, draw=red!80!black, thick, minimum size=0.4cm, label={[font=\footnotesize]above left:$(0,1) \to 1$}] at (0, 1) {};
+    \node[regular polygon, regular polygon sides=4, fill=red!70, draw=red!80!black, thick, minimum size=0.4cm, label={[font=\footnotesize]below right:$(1,0) \to 1$}] at (1, 0) {};
+    
+    % Failed linear boundaries (dashed, to show impossibility)
+    \draw[dashed, thick, gray] (-0.2, 0.5) -- (1.2, 0.5);
+    \draw[dashed, thick, gray] (0.5, -0.2) -- (0.5, 1.2);
+    \draw[dashed, thick, gray] (-0.2, 1.2) -- (1.2, -0.2);
+    
+    % Annotation
+    \node[align=center, font=\small, text=tudelftdarkblue] at (0.5, -0.6) {No single line can separate\\the blue circles from the red squares.};
+\end{tikzpicture}
+\caption{The XOR problem is not linearly separable. The dashed lines show examples of linear decision boundaries, none of which can correctly classify all four points. This demonstrates the fundamental limitation of linear models.}
+\label{fig:xor_problem}
+\end{figure}
+
+\subsubsection{The Solution: Learned Representations}
+The key insight of deep learning is that we can use a hidden layer to \textbf{transform} the input into a new representation where the problem \textit{becomes} linearly separable. We introduce a hidden layer $\mathbf{h} = g(\mathbf{W}^{(1)} \mathbf{x} + \mathbf{b}^{(1)})$ with a non-linear activation $g$. The output is then a linear function of this hidden representation: $y = \mathbf{w}^T \mathbf{h} + b$.
+
+The full model is:
+\begin{equation}
+	f(\mathbf{x}) = \mathbf{w}^T g(\mathbf{W}^{(1)} \mathbf{x} + \mathbf{b}^{(1)}) + b
+\end{equation}
+By learning the parameters $\mathbf{W}^{(1)}, \mathbf{b}^{(1)}$, the network learns a \textit{feature map} $\phi(\mathbf{x}) = g(\mathbf{W}^{(1)} \mathbf{x} + \mathbf{b}^{(1)})$ that ``unfolds'' the data so that a simple linear classifier on $\mathbf{h}$ can solve the original problem. This is the essence of \textbf{representation learning}.
+
+\subsection{Worked Example: Solving XOR}
+Let's construct a network that solves XOR using the ReLU activation function $g(z) = \max\{0, z\}$.
+
+\textbf{Architecture:} 2 input units $\to$ 2 hidden units $\to$ 1 output unit.
+
+\textbf{Manually Designed Parameters:}
+\begin{equation}
+	\mathbf{W}^{(1)} = \begin{pmatrix} 1 & 1 \\ 1 & 1 \end{pmatrix}, \quad
+	\mathbf{b}^{(1)} = \begin{pmatrix} 0 \\ -1 \end{pmatrix}, \quad
+	\mathbf{w} = \begin{pmatrix} 1 \\ -2 \end{pmatrix}, \quad
+	b = 0
+\end{equation}
+
+\textbf{Forward Pass Computation:}
+We compute $\mathbf{h} = \max\{0, \mathbf{W}^{(1)} \mathbf{x} + \mathbf{b}^{(1)}\}$ and then $y = \mathbf{w}^T \mathbf{h} + b$ for each input.
+
+\begin{table}[H]
+\centering
+\begin{tblr}{
+  colspec = {c|c|c|c|c},
+  row{1} = {font=\bfseries},
+  hline{1,2,Z} = {solid},
+}
+Input $\mathbf{x}$ & $\mathbf{W}^{(1)}\mathbf{x} + \mathbf{b}^{(1)}$ & $\mathbf{h} = \text{ReLU}(\cdot)$ & $y = \mathbf{w}^T\mathbf{h}$ & Target \\
+$[0, 0]^T$ & $[0, -1]^T$ & $[0, 0]^T$ & $1(0) - 2(0) = \mathbf{0}$ & 0 \\
+$[0, 1]^T$ & $[1, 0]^T$ & $[1, 0]^T$ & $1(1) - 2(0) = \mathbf{1}$ & 1 \\
+$[1, 0]^T$ & $[1, 0]^T$ & $[1, 0]^T$ & $1(1) - 2(0) = \mathbf{1}$ & 1 \\
+$[1, 1]^T$ & $[2, 1]^T$ & $[2, 1]^T$ & $1(2) - 2(1) = \mathbf{0}$ & 0 \\
+\end{tblr}
+\caption{Step-by-step computation of the XOR network, showing the hidden representation $\mathbf{h}$ and the final output $y$ for each input.}
+\label{tab:xor_computation}
+\end{table}
+
+The network correctly computes the XOR function for all inputs. The key is looking at the hidden representation column: the hidden layer has mapped the four input points to only three distinct points in the hidden space. Crucially, the class-0 inputs $(0,0)$ and $(1,1)$ are now separated from the class-1 inputs.
+
+\begin{figure}[H]
+\begin{pycode}
+# Define our XOR Network Parameters manually to match the worked example
+W = np.array([[1, 1], [1, 1]])
+c = np.array([0, -1])
+w = np.array([1, -2])
+b = 0
+
+def relu(z):
+    return np.maximum(0, z)
+
+def forward(X):
+    z = X @ W + c
+    h = relu(z)
+    y = h @ w + b
+    return h, y
+
+# Generate Grid for Input Space
+resolution = 0.02
+x_min, x_max = -0.3, 1.3
+xx1, xx2 = np.meshgrid(np.arange(x_min, x_max, resolution),
+                       np.arange(x_min, x_max, resolution))
+X_grid = np.array([xx1.ravel(), xx2.ravel()]).T
+
+# Forward pass on grid
+H_grid, Y_grid = forward(X_grid)
+Y_grid_reshaped = Y_grid.reshape(xx1.shape)
+
+# XOR Data Points
+X_xor = np.array([[0,0], [0,1], [1,0], [1,1]])
+y_xor = np.array([0, 1, 1, 0])
+colors = [utils.COLORS['primary'] if y == 0 else utils.COLORS['red'] for y in y_xor]
+markers = ['o' if y==0 else 's' for y in y_xor]
+
+# === Plotting ===
+fig, axes = plt.subplots(1, 2, figsize=(11, 4.5))
+
+# 1. Input Space Decision Boundary
+axes[0].contourf(xx1, xx2, Y_grid_reshaped, alpha=0.5, levels=[-0.5, 0.5, 1.5],
+                 colors=[utils.COLORS['light_bg'][0], utils.COLORS['light_bg'][2]])
+# Draw the actual non-linear decision boundary (contour at y=0.5)
+axes[0].contour(xx1, xx2, Y_grid_reshaped, levels=[0.5], colors=utils.COLORS['dark'], linewidths=2)
+
+for i in range(4):
+    axes[0].scatter(X_xor[i, 0], X_xor[i, 1], c=colors[i], marker=markers[i], s=150, edgecolors='k', linewidths=1.5, zorder=10)
+
+axes[0].set_title('Input Space $(x_1, x_2)$\n(Non-linear Decision Boundary)', fontsize=11)
+axes[0].set_xlabel('$x_1$')
+axes[0].set_ylabel('$x_2$')
+axes[0].set_xlim(-0.3, 1.3)
+axes[0].set_ylim(-0.3, 1.3)
+axes[0].set_aspect('equal')
+
+# 2. Hidden Space Representation
+H_xor, _ = forward(X_xor)
+
+# Define h-space grid for background
+h_min, h_max = -0.3, 2.3
+hh1, hh2 = np.meshgrid(np.arange(h_min, h_max, resolution),
+                       np.arange(h_min, h_max, resolution))
+H_grid_manual = np.array([hh1.ravel(), hh2.ravel()]).T
+Y_h_space = H_grid_manual @ w + b
+Y_h_space = Y_h_space.reshape(hh1.shape)
+
+axes[1].contourf(hh1, hh2, Y_h_space, alpha=0.5, levels=[-3, 0.5, 3],
+                 colors=[utils.COLORS['light_bg'][0], utils.COLORS['light_bg'][2]])
+# Linear decision boundary in hidden space: w^T h = 0.5 => h1 - 2*h2 = 0.5 => h2 = (h1 - 0.5)/2
+axes[1].contour(hh1, hh2, Y_h_space, levels=[0.5], colors=utils.COLORS['dark'], linewidths=2)
+
+for i in range(4):
+    # Small offset for overlapping points
+    offset = [0, 0]
+    if i == 1: offset = [0.05, 0.03]  # (0,1)
+    if i == 2: offset = [-0.05, -0.03] # (1,0)
+    axes[1].scatter(H_xor[i, 0] + offset[0], H_xor[i, 1] + offset[1], c=colors[i], marker=markers[i], s=150, edgecolors='k', linewidths=1.5, zorder=10)
+
+# Annotations for the hidden space points
+axes[1].annotate(r'$(0,0) \to (0,0)$', xy=(0, 0), xytext=(-0.15, 0.3), fontsize=8, color=utils.COLORS['dark'])
+axes[1].annotate(r'$(0,1), (1,0) \to (1,0)$', xy=(1, 0), xytext=(1.1, 0.35), fontsize=8, color=utils.COLORS['dark'])
+axes[1].annotate(r'$(1,1) \to (2,1)$', xy=(2, 1), xytext=(1.5, 1.3), fontsize=8, color=utils.COLORS['dark'])
+
+
+axes[1].set_title(r'Hidden Space $(h_1, h_2)$' + '\n(Linear Decision Boundary!)', fontsize=11)
+axes[1].set_xlabel(r'$h_1 = \max(0, x_1+x_2)$')
+axes[1].set_ylabel(r'$h_2 = \max(0, x_1+x_2-1)$')
+axes[1].set_xlim(-0.3, 2.3)
+axes[1].set_ylim(-0.3, 1.5)
+axes[1].set_aspect('equal')
+
+utils.save_and_include("xor_solution_enhanced.pdf", width=r"1.0\textwidth")
+\end{pycode}
+\caption{Solving XOR with a hidden layer. \textbf{Left:} The learned decision boundary in the original input space is non-linear (a composition of two lines due to ReLU). \textbf{Right:} In the hidden representation space $(h_1, h_2)$, the four original points are mapped to only three locations, and these are now linearly separable. The network has learned a representation that makes the problem easy.}
+\label{fig:xor_solution}
+\end{figure}
+
+\subsection{Training Neural Networks with Gradient Descent}
+How do we find the parameters $\boldsymbol{\theta}$ that minimize the loss? In the XOR example, we manually crafted a solution, but for real problems with millions of parameters, this is impossible. We rely on \textbf{Gradient Descent}.
+
+The idea is simple: start with random parameters, compute the gradient of the loss function with respect to all parameters, and iteratively update the parameters in the direction that reduces the loss.
+\begin{equation}
+	\boldsymbol{\theta}' = \boldsymbol{\theta} - \epsilon \nabla_{\boldsymbol{\theta}} J(\boldsymbol{\theta})
+\end{equation}
+where $\epsilon$ is the \textbf{learning rate}, a crucial hyperparameter that controls the step size.
+
+\paragraph{Stochastic Gradient Descent (SGD):}
+Computing the gradient over the entire dataset (\textbf{Batch Gradient Descent}) is computationally prohibitive for large datasets. \textbf{Stochastic Gradient Descent (SGD)} instead computes an estimate of the gradient using a small random subset of the data called a \textbf{mini-batch}:
+\begin{equation}
+	\boldsymbol{\theta}' = \boldsymbol{\theta} - \epsilon \frac{1}{|\mathcal{B}|} \sum_{i \in \mathcal{B}} \nabla_{\boldsymbol{\theta}} L(\mathbf{x}^{(i)}, y^{(i)}; \boldsymbol{\theta})
+\end{equation}
+where $\mathcal{B}$ is the mini-batch. This introduces noise into the gradient estimate, but it allows for much faster updates and, surprisingly, the noise can even help escape shallow local minima.
+
+\begin{figure}[H]
+\begin{pycode}
+# Visualize Gradient Descent on a 2D loss surface (Rosenbrock-like function for visual appeal)
+from matplotlib.colors import LogNorm
+
+# Define a loss surface (simple quadratic for clarity)
+def loss_func(w1, w2):
+    # An elongated valley loss landscape
+    return 0.5 * (w1**2 + 10 * w2**2)
+
+# Generate grid for contour plot
+w1_range = np.linspace(-3, 3, 100)
+w2_range = np.linspace(-1.5, 1.5, 100)
+W1, W2 = np.meshgrid(w1_range, w2_range)
+L = loss_func(W1, W2)
+
+# Simulate Gradient Descent
+def gd_update(w, lr, grad_func):
+    g = grad_func(w)
+    return w - lr * g
+
+def grad_loss(w):
+    return np.array([w[0], 10 * w[1]])
+
+# Run GD
+np.random.seed(42)
+lr = 0.15
+w_init = np.array([-2.5, 1.2])
+trajectory = [w_init.copy()]
+w = w_init.copy()
+for _ in range(15):
+    w = gd_update(w, lr, grad_loss)
+    trajectory.append(w.copy())
+trajectory = np.array(trajectory)
+
+fig, ax = plt.subplots(figsize=(8, 5))
+
+# Contour plot
+contour = ax.contour(W1, W2, L, levels=15, cmap='Blues', linewidths=0.7)
+ax.contourf(W1, W2, L, levels=15, cmap='Blues', alpha=0.3)
+ax.clabel(contour, inline=True, fontsize=7, fmt='%.1f')
+
+# Plot trajectory
+ax.plot(trajectory[:, 0], trajectory[:, 1], 'o-', color=utils.COLORS['red'], markersize=6, linewidth=1.5, label='GD Path')
+ax.scatter(trajectory[0, 0], trajectory[0, 1], s=100, c=utils.COLORS['red'], marker='X', zorder=10, edgecolors='k', label='Start')
+ax.scatter(0, 0, s=150, c=utils.COLORS['green'], marker='*', zorder=10, edgecolors='k', label='Optimum')
+
+ax.set_xlabel('$w_1$')
+ax.set_ylabel('$w_2$')
+ax.set_title('Gradient Descent on a Loss Surface')
+ax.legend(loc='upper right')
+ax.set_xlim(-3, 3)
+ax.set_ylim(-1.5, 1.5)
+
+utils.save_and_include("gradient_descent_contour.pdf", width=r"0.8\textwidth")
+\end{pycode}
+\caption{Gradient descent visualized on a 2D loss contour. The red path shows the trajectory of the parameters as they are iteratively updated in the direction of steepest descent. The algorithm converges towards the global minimum (green star). Notice how the trajectory can oscillate in directions of high curvature (steep gradients).}
+\label{fig:gd_contour}
+\end{figure}
+
+\subsection{The Universal Approximation Theorem}
+A natural question arises: what functions can a neural network represent? The \textbf{Universal Approximation Theorem} provides a powerful theoretical answer.
+
+\begin{tcolorbox}[colback=tudelftblue!5!white, colframe=tudelftblue, title=Universal Approximation Theorem]
+A feedforward network with a single hidden layer containing a finite number of neurons can approximate any continuous function on a compact subset of $\mathbb{R}^n$ to arbitrary accuracy, provided the activation function is non-polynomial (e.g., Sigmoid, Tanh, or ReLU).
+\end{tcolorbox}
+
+This is a remarkable result: it tells us that neural networks are \textbf{universal function approximators}. However, the theorem comes with crucial caveats:
+\begin{itemize}
+	\item \textbf{Existence, not construction:} It guarantees that a solution \textit{exists} but says nothing about how to find it (i.e., whether gradient descent will converge to it).
+	\item \textbf{Width, not depth:} It proves that a single, sufficiently \textit{wide} layer is enough. It does not explain the empirical success of \textit{deep} (many-layered) networks. In practice, depth is often more parameter-efficient than width for approximating complex functions.
+	\item \textbf{No guarantees on size:} The number of neurons required could be astronomically large for complex functions.
+\end{itemize}
+In essence, the theorem assures us that neural networks are a flexible enough model family. The practical challenge lies in finding a good solution within the vast parameter space, which is the domain of optimization algorithms and the art of deep learning.
+
+\subsection{Depth vs. Width: Why ``Deep'' Learning?}
+If a single wide layer is theoretically sufficient, why do we use deep networks with many layers?
+
+\paragraph{Hierarchical Representations:} Many real-world functions (like image recognition) have a hierarchical structure. Early layers can learn simple features (edges, colors), intermediate layers combine these into parts (eyes, noses), and later layers assemble parts into objects (faces). Depth allows the network to naturally capture this compositional structure.
+
+\paragraph{Exponential Efficiency:} For certain classes of functions, deep networks can represent them with exponentially fewer parameters than a shallow network of the same accuracy. Intuitively, depth allows for efficient re-use of computations. A feature learned in an early layer can be combined in many different ways by later layers, leading to combinatorial richness.
+
+\paragraph{Empirical Success:} In practice, deep networks consistently outperform shallow ones on complex tasks like image classification, natural language processing, and game playing, even when the total number of parameters is matched. The inductive bias towards hierarchical, compositional features seems to match the structure of many problems we care about.
+
+
+\section{Loss Functions}
+\label{sec:dl_loss}
+
+In the previous section, we saw how to build feedforward networks and update their weights using gradient descent. But gradient descent requires a scalar objective function, which is a single number that tells us how ``wrong'' our model is. This section answers a fundamental question: \textbf{how do we define this objective?}
+
+The choice of loss function is not arbitrary. A principled approach comes from the framework of \textbf{Maximum Likelihood Estimation (MLE)}, which connects our learning objective to the goal of finding a model that best explains the observed data.
+
+\subsection{Maximum Likelihood Estimation}
+Suppose we have a training set of $m$ samples $\mathcal{D} = \{\mathbf{x}^{(1)}, \mathbf{x}^{(2)}, \ldots, \mathbf{x}^{(m)}\}$, drawn independently and identically distributed (i.i.d.) from an unknown true data distribution $p_{\text{data}}(\mathbf{x})$. Our model defines a family of probability distributions $p_{\text{model}}(\mathbf{x}; \boldsymbol{\theta})$ parameterized by $\boldsymbol{\theta}$.
+
+The \textbf{Maximum Likelihood Estimator} chooses the parameters that maximize the probability of the observed data under our model:
+\begin{equation}
+	\boldsymbol{\theta}_{\text{ML}} = \arg\max_{\boldsymbol{\theta}} p_{\text{model}}(\mathcal{D}; \boldsymbol{\theta})
+\end{equation}
+Thanks to the i.i.d. assumption, the probability of the entire dataset is the product of probabilities for each sample:
+\begin{equation}
+	\boldsymbol{\theta}_{\text{ML}} = \arg\max_{\boldsymbol{\theta}} \prod_{i=1}^{m} p_{\text{model}}(\mathbf{x}^{(i)}; \boldsymbol{\theta})
+\end{equation}
+Multiplying many probabilities (values between 0 and 1) quickly leads to numerical underflow. To solve this, we take the logarithm. Since $\log$ is a monotonically increasing function, it preserves the $\arg\max$. Products become sums:
+\begin{equation}
+	\boldsymbol{\theta}_{\text{ML}} = \arg\max_{\boldsymbol{\theta}} \sum_{i=1}^{m} \log p_{\text{model}}(\mathbf{x}^{(i)}; \boldsymbol{\theta})
+\end{equation}
+Dividing by $m$ (which does not change the $\arg\max$) gives us the expectation with respect to the empirical data distribution $\hat{p}_{\text{data}}$:
+\begin{equation}
+	\boldsymbol{\theta}_{\text{ML}} = \arg\max_{\boldsymbol{\theta}} \mathbb{E}_{\mathbf{x} \sim \hat{p}_{\text{data}}} \left[ \log p_{\text{model}}(\mathbf{x}; \boldsymbol{\theta}) \right]
+\end{equation}
+This is our training objective: maximize the average log-probability of the data under our model.
+
+\subsection{KL Divergence and Cross-Entropy}
+An alternative interpretation of MLE comes from information theory. We want our model distribution $p_{\text{model}}$ to be ``close'' to the true data distribution $p_{\text{data}}$. A natural measure of the dissimilarity between two distributions is the \textbf{Kullback-Leibler (KL) Divergence}:
+\begin{equation}
+	D_{\text{KL}}(p_{\text{data}} \| p_{\text{model}}) = \mathbb{E}_{\mathbf{x} \sim p_{\text{data}}} \left[ \log \frac{p_{\text{data}}(\mathbf{x})}{p_{\text{model}}(\mathbf{x}; \boldsymbol{\theta})} \right]
+\end{equation}
+Expanding the logarithm:
+\begin{equation}
+	D_{\text{KL}}(p_{\text{data}} \| p_{\text{model}}) = \mathbb{E}_{\mathbf{x} \sim p_{\text{data}}} [\log p_{\text{data}}(\mathbf{x})] - \mathbb{E}_{\mathbf{x} \sim p_{\text{data}}} [\log p_{\text{model}}(\mathbf{x}; \boldsymbol{\theta})]
+\end{equation}
+The first term, $-H(p_{\text{data}})$, is the negative entropy of the data distribution, which does not depend on $\boldsymbol{\theta}$. Therefore, minimizing the KL divergence is equivalent to minimizing the \textbf{negative log-likelihood}, which is known as the \textbf{Cross-Entropy}:
+\begin{equation}
+	H(p_{\text{data}}, p_{\text{model}}) = -\mathbb{E}_{\mathbf{x} \sim p_{\text{data}}} [\log p_{\text{model}}(\mathbf{x}; \boldsymbol{\theta})]
+\end{equation}
+
+\begin{tcolorbox}[colback=tudelftblue!5!white, colframe=tudelftblue, title=Equivalent Objectives]
+The following are all equivalent objectives for training:
+\begin{itemize}
+	\item Maximize the \textbf{log-likelihood} (MLE)
+	\item Minimize the \textbf{negative log-likelihood}
+	\item Minimize the \textbf{KL divergence} from the data to the model
+	\item Minimize the \textbf{cross-entropy} between data and model
+\end{itemize}
+\end{tcolorbox}
+
+\subsection{Conditional Likelihood for Classification}
+In most supervised learning problems, we are not interested in modeling the distribution of inputs $p(\mathbf{x})$. Instead, we want to predict labels $y$ given inputs $\mathbf{x}$. This leads us to the \textbf{conditional log-likelihood}:
+\begin{equation}
+	\boldsymbol{\theta}_{\text{ML}} = \arg\max_{\boldsymbol{\theta}} \sum_{i=1}^{m} \log p_{\text{model}}(y^{(i)} | \mathbf{x}^{(i)}; \boldsymbol{\theta})
+\end{equation}
+The form of $p_{\text{model}}(y | \mathbf{x})$ depends on the task:
+\begin{itemize}
+	\item For \textbf{binary classification}: $y \in \{0, 1\}$, modeled by a Bernoulli distribution.
+	\item For \textbf{multiclass classification}: $y \in \{1, 2, \ldots, K\}$, modeled by a Categorical distribution.
+	\item For \textbf{regression}: $y \in \mathbb{R}$, often modeled by a Gaussian (which leads to the familiar MSE loss).
+\end{itemize}
+The \textbf{output unit} of the network (e.g., Sigmoid, Softmax, Linear) determines which distribution we are using, and thus the specific form of the loss function.
+
+\subsection{Binary Classification: Logistic Regression}
+For binary classification, we need our model to output a probability $\hat{y} = P(y=1 | \mathbf{x}) \in [0, 1]$. A naïve approach is to use a linear output and clamp it: $\hat{y} = \max\{0, \min\{1, \mathbf{w}^T\mathbf{x} + b\}\}$. However, this kills gradients outside the $[0, 1]$ interval.
+
+The solution is the \textbf{Sigmoid} (or logistic) function, which smoothly squashes any real number into $(0, 1)$:
+\begin{equation}
+	\sigma(z) = \frac{1}{1 + e^{-z}}
+\end{equation}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=1.0]
+    % Axes
+    \draw[->] (-5, 0) -- (5.5, 0) node[right] {$z$ (logit)};
+    \draw[->] (0, -0.3) -- (0, 1.5) node[above] {$\sigma(z)$};
+    
+    % Grid lines
+    \draw[gray!30, thin] (-5, 0.5) -- (5, 0.5);
+    \draw[gray!30, thin] (-5, 1) -- (5, 1);
+    
+    % Sigmoid curve
+    \draw[tudelftblue, very thick, domain=-5:5, samples=100] plot (\x, {1/(1+exp(-\x))});
+    
+    % Asymptotes
+    \draw[dashed, gray] (-5, 0) -- (-5, 0.01);
+    \draw[dashed, gray] (-5, 1) -- (5, 1);
+    \draw[dashed, gray] (-5, 0) -- (5, 0);
+    
+    % Labels for asymptotes
+    \node[left] at (-0.1, 1) {$1$};
+    \node[left] at (-0.1, 0.5) {$0.5$};
+    \node[below] at (0, -0.1) {$0$};
+    
+    % Saturation regions
+    \fill[red!20, opacity=0.5] (-5, 0) rectangle (-2.5, 1.3);
+    \fill[red!20, opacity=0.5] (2.5, 0) rectangle (5, 1.3);
+    
+    % Annotations
+    \node[align=center, font=\footnotesize, text=red!70!black] at (-3.75, 1.15) {Saturation:\\$\sigma'(z) \approx 0$};
+    \node[align=center, font=\footnotesize, text=red!70!black] at (3.75, 1.15) {Saturation:\\$\sigma'(z) \approx 0$};
+    \node[align=center, font=\footnotesize, text=tudelftdarkblue] at (0, 0.75) {Linear\\region};
+    
+    % Key point
+    \fill[tudelftblue] (0, 0.5) circle (2pt);
+    \node[below right, font=\footnotesize] at (0.1, 0.5) {$\sigma(0) = 0.5$};
+\end{tikzpicture}
+\caption{The Sigmoid function. It maps any real-valued logit $z$ to a probability in $(0, 1)$. In the \textbf{saturation regions} (red), the gradient $\sigma'(z) = \sigma(z)(1-\sigma(z))$ is very small, which can cause slow learning if the wrong loss function is used.}
+\label{fig:sigmoid_annotated}
+\end{figure}
+
+The input $z = \mathbf{w}^T\mathbf{x} + b$ is called the \textbf{logit}. The complete model for \textbf{logistic regression} is:
+\begin{equation}
+	\hat{y} = \sigma(\mathbf{w}^T\mathbf{x} + b)
+\end{equation}
+
+\subsubsection{The Binary Cross-Entropy Loss}
+Since $y \in \{0, 1\}$ follows a Bernoulli distribution, the likelihood is $P(y | \mathbf{x}) = \hat{y}^y (1-\hat{y})^{1-y}$. Taking the negative log gives the \textbf{Binary Cross-Entropy} (BCE) loss:
+\begin{equation}
+	L_{\text{BCE}}(\hat{y}, y) = -y \log \hat{y} - (1-y) \log(1 - \hat{y})
+\end{equation}
+This can be understood intuitively:
+\begin{itemize}
+	\item If the true label is $y=1$: The loss is $-\log \hat{y}$. This penalizes low predictions heavily.
+	\item If the true label is $y=0$: The loss is $-\log(1-\hat{y})$. This penalizes high predictions heavily.
+\end{itemize}
+
+\subsubsection{Why Not Squared Error?}
+A natural question is: why not simply use the Squared Error $L_{\text{SE}} = \frac{1}{2}(\hat{y} - y)^2$? The answer lies in the gradients.
+
+When we compute the gradient of the loss with respect to the logit $z$:
+\begin{itemize}
+	\item \textbf{Squared Error:} $\frac{\partial L_{\text{SE}}}{\partial z} = (\hat{y} - y) \cdot \sigma'(z) = (\hat{y} - y) \cdot \hat{y}(1-\hat{y})$
+	\item \textbf{Cross-Entropy:} $\frac{\partial L_{\text{BCE}}}{\partial z} = \hat{y} - y$
+\end{itemize}
+With Squared Error, the gradient includes the term $\hat{y}(1-\hat{y})$. When the model is \textit{confidently wrong} (e.g., $y=1$ but $\hat{y} \approx 0$), this term is nearly zero, causing the \textbf{vanishing gradient problem}. Cross-Entropy's gradient is simply proportional to the error $(\hat{y} - y)$, which remains large when predictions are wrong.
+
+\begin{figure}[H]
+\begin{pycode}
+# Plot comparing gradients of SE vs CE for Sigmoid
+z = np.linspace(-10, 10, 400)
+y_pred = 1 / (1 + np.exp(-z))
+t = 1 # Target is class 1
+
+# Losses
+loss_ce = -np.log(y_pred + 1e-10)  # add eps for stability
+loss_se = 0.5 * (y_pred - t)**2
+
+# Gradients w.r.t z
+grad_ce = y_pred - t
+grad_se = (y_pred - t) * y_pred * (1 - y_pred)
+
+fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+
+# Plot Losses
+axes[0].plot(z, loss_ce, label='Cross-Entropy', color=utils.COLORS['primary'], linewidth=2)
+axes[0].plot(z, loss_se, label='Squared Error', color=utils.COLORS['red'], linewidth=2)
+axes[0].set_title(r'Loss Value (Target $y=1$)')
+axes[0].set_xlabel(r'$z$ (Logit)')
+axes[0].set_ylabel('Loss')
+axes[0].legend()
+axes[0].set_ylim(0, 4)
+axes[0].grid(True, linestyle=':', alpha=0.6)
+
+# Plot Derivatives (Magnitude)
+axes[1].plot(z, np.abs(grad_ce), label=r'$|\nabla_z L_{CE}| = |\hat{y}-y|$', color=utils.COLORS['primary'], linewidth=2)
+axes[1].plot(z, np.abs(grad_se), label=r'$|\nabla_z L_{SE}| = |(\hat{y}-y)\hat{y}(1-\hat{y})|$', color=utils.COLORS['red'], linewidth=2)
+axes[1].set_title(r'Gradient Magnitude (Target $y=1$)')
+axes[1].set_xlabel(r'$z$ (Logit)')
+axes[1].set_ylabel('Gradient Magnitude')
+axes[1].legend()
+axes[1].grid(True, linestyle=':', alpha=0.6)
+
+# Annotation for vanishing gradient
+axes[1].annotate('Vanishing Gradient\n(SE)', xy=(-5, 0.02), xytext=(-5, 0.5),
+                 arrowprops=dict(facecolor=utils.COLORS['red'], shrink=0.05, width=1.5),
+                 ha='center', color=utils.COLORS['red'], fontsize=9)
+
+utils.save_and_include("loss_gradient_comparison.pdf", width=r"1.0\textwidth")
+\end{pycode}
+\caption{Comparison of Cross-Entropy and Squared Error for a target $y=1$. \textbf{Left:} CE punishes confidently wrong predictions ($z \ll 0$) much more heavily than SE. \textbf{Right:} The gradient of SE vanishes when the model is saturated (large negative $z$), while CE maintains a strong, learning-friendly gradient.}
+\label{fig:loss_gradient_comparison}
+\end{figure}
+
+\subsection{Multiclass Classification: Softmax}
+When there are $K > 2$ classes, we predict a probability distribution over all classes. Labels are typically represented using \textbf{one-hot encoding}: a vector $\mathbf{y} = (0, \ldots, 0, 1, 0, \ldots, 0)^T$ where only the entry corresponding to the true class is 1.
+
+The network produces $K$ logits $\mathbf{z} = (z_1, z_2, \ldots, z_K)^T$, one for each class. The \textbf{Softmax} function converts these into a valid probability distribution:
+\begin{equation}
+	\hat{y}_k = \text{softmax}(\mathbf{z})_k = \frac{e^{z_k}}{\sum_{j=1}^{K} e^{z_j}}
+\end{equation}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=0.8cm,
+    box/.style={rectangle, draw=tudelftblue, fill=tudelftblue!10, thick, minimum width=1.2cm, minimum height=0.7cm, font=\small},
+    arrow/.style={->, thick, tudelftdarkblue},
+    label/.style={font=\footnotesize}
+]
+    % Input logits
+    \node[box] (z1) at (0, 2) {$z_1 = 2.0$};
+    \node[box] (z2) at (0, 1) {$z_2 = 1.0$};
+    \node[box] (z3) at (0, 0) {$z_3 = 0.1$};
+    \node[label, above=0.2cm of z1] {Logits $\mathbf{z}$};
+    
+    % Exp
+    \node[box] (e1) at (3, 2) {$e^{2.0} \approx 7.4$};
+    \node[box] (e2) at (3, 1) {$e^{1.0} \approx 2.7$};
+    \node[box] (e3) at (3, 0) {$e^{0.1} \approx 1.1$};
+    \node[label, above=0.2cm of e1] {Exponentiate};
+    
+    % Sum
+    \node[box, minimum width=2.5cm] (sum) at (6, 1) {$\Sigma = 11.2$};
+    \node[label, above=0.2cm of sum] {Sum};
+    
+    % Output probabilities
+    \node[box, fill=tudelftcyan!20] (p1) at (9, 2) {$\hat{y}_1 = 0.66$};
+    \node[box, fill=tudelftcyan!20] (p2) at (9, 1) {$\hat{y}_2 = 0.24$};
+    \node[box, fill=tudelftcyan!20] (p3) at (9, 0) {$\hat{y}_3 = 0.10$};
+    \node[label, above=0.2cm of p1] {Probabilities $\hat{\mathbf{y}}$};
+    
+    % Arrows
+    \draw[arrow] (z1) -- (e1);
+    \draw[arrow] (z2) -- (e2);
+    \draw[arrow] (z3) -- (e3);
+    
+    \draw[arrow] (e1.east) -- ++(0.5, 0) |- (sum.west);
+    \draw[arrow] (e2) -- (sum);
+    \draw[arrow] (e3.east) -- ++(0.5, 0) |- (sum.west);
+    
+    \draw[arrow] (sum.east) -- ++(0.5, 0) |- (p1.west);
+    \draw[arrow] (sum.east) -- ++(0.5, 0) |- (p2.west);
+    \draw[arrow] (sum.east) -- ++(0.5, 0) |- (p3.west);
+    
+    % Division annotation
+    \node[label, text=gray] at (7.5, -0.5) {Divide each $e^{z_k}$ by $\Sigma$};
+\end{tikzpicture}
+\caption{The Softmax function transforms raw logits into a valid probability distribution. All outputs are positive (due to $\exp$) and sum to 1 (due to normalization). The largest logit gets the highest probability.}
+\label{fig:softmax_flow}
+\end{figure}
+
+Key properties of Softmax:
+\begin{itemize}
+	\item All outputs are \textbf{positive} (due to exponentials) and \textbf{sum to 1} (due to normalization).
+	\item It is a \textbf{soft} version of the $\arg\max$: if one logit is much larger than the others, its probability approaches 1.
+	\item It is a generalization of the Sigmoid: for $K=2$, $\text{softmax}(z_1, z_2)_1 = \sigma(z_1 - z_2)$.
+\end{itemize}
+
+\subsubsection{Categorical Cross-Entropy Loss}
+For multiclass classification, the negative log-likelihood of the Categorical distribution gives the \textbf{Categorical Cross-Entropy} loss:
+\begin{equation}
+	L_{\text{CCE}}(\hat{\mathbf{y}}, \mathbf{y}) = -\sum_{k=1}^{K} y_k \log \hat{y}_k = -\mathbf{y}^T \log \hat{\mathbf{y}}
+\end{equation}
+Since only one entry of $\mathbf{y}$ is 1 (for the true class $c$), this simplifies to:
+\begin{equation}
+	L_{\text{CCE}} = -\log \hat{y}_c
+\end{equation}
+The loss is simply the negative log-probability assigned to the correct class.
+
+\subsection{Summary of Output Units and Loss Functions}
+The choice of output activation and loss function are tightly coupled, determined by the task:
+
+\begin{table}[H]
+\centering
+\begin{tblr}{
+  colspec = {l l l l},
+  row{1} = {font=\bfseries},
+  hline{1,2,Z} = {solid},
+}
+Task & Output Activation & Loss Function & Output Distribution \\
+Binary Classification & Sigmoid & Binary Cross-Entropy & Bernoulli \\
+Multiclass Classification & Softmax & Categorical Cross-Entropy & Categorical \\
+Regression & Linear (none) & Mean Squared Error & Gaussian \\
+\end{tblr}
+\caption{Summary of common output units and their corresponding loss functions, derived from the principle of maximum likelihood.}
+\label{tab:loss_summary}
+\end{table}
+
+\section{Backpropagation}
+\label{sec:dl_backprop}
+
+We have established that training a neural network means minimizing a loss function $L(\boldsymbol{\theta})$, and that gradient descent requires computing $\nabla_{\boldsymbol{\theta}} L$, i.e. the gradient of the loss with respect to \textit{every} learnable parameter. In a modern network with millions of parameters, how do we compute these gradients efficiently?
+
+\textbf{Backpropagation} (short for ``backward propagation of errors'') is the answer. It is not a new optimization algorithm, but rather a highly efficient method for computing gradients by cleverly applying the \textbf{chain rule of calculus} to the \textbf{computational graph} of the network. It powers virtually all of modern deep learning.
+
+\subsection{The Chain Rule of Calculus}
+Recall that a deep network is a composition of functions: $f(\mathbf{x}) = f^{(L)}( f^{(L-1)}( \cdots f^{(1)}(\mathbf{x}) \cdots ))$. To find how the loss changes with respect to a parameter deep inside the network, we need to trace how changes propagate through all the intermediate functions.
+
+\paragraph{Single Variable Chain Rule:}
+If $y = g(x)$ and $z = f(y) = f(g(x))$, then:
+\begin{equation}
+	\frac{dz}{dx} = \frac{dz}{dy} \cdot \frac{dy}{dx}
+\end{equation}
+The derivative of the composition is the product of the individual derivatives.
+
+\paragraph{Multivariate Chain Rule:}
+If a variable $x$ influences the output $L$ through multiple intermediate paths, we must sum the contributions from each path. If $L$ depends on $y_1, y_2, \ldots, y_n$, and each $y_i$ depends on $x$, then:
+\begin{equation}
+	\frac{\partial L}{\partial x} = \sum_{i=1}^{n} \frac{\partial L}{\partial y_i} \cdot \frac{\partial y_i}{\partial x}
+\end{equation}
+This is the key formula for backpropagation: the gradient with respect to a node is the sum of gradients flowing back from all its children.
+
+\subsection{Computational Graphs}
+To systematically apply the chain rule, we represent the network as a \textbf{computational graph}, a directed acyclic graph (DAG) where:
+\begin{itemize}
+	\item \textbf{Nodes} represent variables (scalars, vectors, matrices, tensors).
+	\item \textbf{Edges} represent operations: an edge from $x$ to $y$ means $y$ is computed from $x$.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=1.5cm,
+    var/.style={circle, draw=tudelftblue, fill=tudelftblue!10, thick, minimum size=1cm, font=\small},
+    param/.style={circle, draw=tudelftcyan, fill=tudelftcyan!20, thick, minimum size=1cm, font=\small},
+    loss/.style={circle, draw=red!70!black, fill=red!20, thick, minimum size=1cm, font=\small},
+    op/.style={rectangle, draw=gray, fill=gray!10, thick, minimum size=0.6cm, font=\footnotesize},
+    arrow/.style={->, thick}
+]
+    % Input and parameters
+    \node[var] (x) at (0, 0) {$x$};
+    \node[param] (w) at (0, 2) {$w$};
+    \node[param] (b) at (0, -2) {$b$};
+    
+    % z = wx + b
+    \node[var] (z) at (3, 0) {$z$};
+    \node[op] (mult) at (1.5, 1) {$\times$};
+    \node[op] (add) at (1.5, -0.5) {$+$};
+    
+    % y = sigma(z)
+    \node[var] (y) at (5.5, 0) {$y$};
+    \node[op] (sig) at (4.25, 0) {$\sigma$};
+    
+    % t (target)
+    \node[var] (t) at (5.5, -2) {$t$};
+    
+    % Loss
+    \node[loss] (L) at (8, 0) {$L$};
+    \node[op] (lossfn) at (6.75, -0.5) {$\frac{1}{2}(\cdot - \cdot)^2$};
+    
+    % Forward arrows
+    \draw[arrow] (x) -- (mult);
+    \draw[arrow] (w) -- (mult);
+    \draw[arrow] (mult) -- (add);
+    \draw[arrow] (b) -- (add);
+    \draw[arrow] (add) -- (z);
+    \draw[arrow] (z) -- (sig);
+    \draw[arrow] (sig) -- (y);
+    \draw[arrow] (y) -- (lossfn);
+    \draw[arrow] (t) -- (lossfn);
+    \draw[arrow] (lossfn) -- (L);
+    
+    % Labels
+    \node[below=0.3cm of x, font=\footnotesize, text=gray] {input};
+    \node[above=0.3cm of w, font=\footnotesize, text=tudelftcyan] {weight};
+    \node[below=0.3cm of b, font=\footnotesize, text=tudelftcyan] {bias};
+    \node[below=0.3cm of t, font=\footnotesize, text=gray] {target};
+    \node[above=0.3cm of L, font=\footnotesize, text=red!70!black] {loss};
+    
+    % Annotations for z
+    \node[above=0.1cm of z, font=\footnotesize] {$z = wx + b$};
+    \node[above=0.1cm of y, font=\footnotesize] {$y = \sigma(z)$};
+\end{tikzpicture}
+\caption{A computational graph for logistic regression with squared error loss. Blue nodes are inputs/intermediate values, cyan nodes are learnable parameters ($w$, $b$), and the red node is the loss. Edges show the flow of computation during the forward pass.}
+\label{fig:comp_graph_forward}
+\end{figure}
+
+\subsection{Forward Pass and Backward Pass}
+The backpropagation algorithm consists of two phases:
+
+\paragraph{1. Forward Pass:}
+Starting from the inputs, compute and cache the value of every node in topological order (parents before children) until we reach the loss $L$. This is simply running the network to get a prediction.
+
+\paragraph{2. Backward Pass:}
+Starting from the loss, compute the gradient of $L$ with respect to every node in \textit{reverse} topological order (children before parents). We use the chain rule: the gradient of a node is the sum of gradients flowing back from all its children, each multiplied by the local derivative.
+
+Let $\bar{n} = \frac{\partial L}{\partial n}$ denote the gradient of the loss with respect to node $n$ (``bar notation''). The backward pass computes:
+\begin{equation}
+	\bar{n} = \sum_{c \in \text{Children}(n)} \bar{c} \cdot \frac{\partial c}{\partial n}
+\end{equation}
+where ``Children($n$)'' are all nodes that directly depend on $n$.
+
+\subsection{Worked Example: Logistic Regression}
+Consider the model $L = \frac{1}{2}(y - t)^2$, where $y = \sigma(z)$ and $z = wx + b$. We want $\frac{\partial L}{\partial w}$ and $\frac{\partial L}{\partial b}$.
+
+\subsubsection{The Naïve Approach}
+Directly applying the chain rule from scratch for each parameter:
+\begin{align}
+	\frac{\partial L}{\partial w} &= \frac{\partial}{\partial w} \left[ \frac{1}{2}(\sigma(wx+b) - t)^2 \right] \\
+	&= (\sigma(wx+b) - t) \cdot \sigma'(wx+b) \cdot x
+\end{align}
+Similarly for $b$. The problem: we recompute many sub-expressions (like $\sigma'(wx+b)$) multiple times. For deep networks, this redundancy leads to \textbf{exponential complexity}.
+
+\subsubsection{The Backpropagation Approach}
+Decompose the computation into elementary steps and reuse intermediate gradients.
+
+\textbf{Forward Pass:} Compute and store:
+\begin{align}
+	z &= wx + b \\
+	y &= \sigma(z) \\
+	L &= \frac{1}{2}(y - t)^2
+\end{align}
+
+\textbf{Backward Pass (using bar notation $\bar{n} = \frac{\partial L}{\partial n}$):}
+\begin{enumerate}
+	\item $\bar{L} = 1$ \quad (gradient of loss w.r.t. itself)
+	\item $\bar{y} = \bar{L} \cdot \frac{\partial L}{\partial y} = 1 \cdot (y - t) = y - t$
+	\item $\bar{z} = \bar{y} \cdot \frac{\partial y}{\partial z} = (y - t) \cdot \sigma'(z)$
+	\item $\bar{w} = \bar{z} \cdot \frac{\partial z}{\partial w} = \bar{z} \cdot x$ \quad $\leftarrow$ \textbf{This is $\frac{\partial L}{\partial w}$}
+	\item $\bar{b} = \bar{z} \cdot \frac{\partial z}{\partial b} = \bar{z} \cdot 1 = \bar{z}$ \quad $\leftarrow$ \textbf{This is $\frac{\partial L}{\partial b}$}
+\end{enumerate}
+
+Notice that $\bar{z}$ is computed \textit{once} and reused to compute both $\bar{w}$ and $\bar{b}$. This reuse is what makes backpropagation efficient: we only compute each intermediate gradient once, achieving \textbf{linear complexity} in the number of nodes.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=1.8cm,
+    var/.style={circle, draw=tudelftblue, fill=tudelftblue!10, thick, minimum size=1.2cm, font=\small, align=center},
+    arrow/.style={->, very thick, red!70!black},
+    label/.style={font=\footnotesize, text=red!70!black}
+]
+    % Nodes
+    \node[var] (L) at (0, 0) {$L$\\[-2pt]\footnotesize$\bar{L}=1$};
+    \node[var] (y) at (3, 0) {$y$\\[-2pt]\footnotesize$\bar{y}=y{-}t$};
+    \node[var] (z) at (6, 0) {$z$\\[-2pt]\footnotesize$\bar{z}=\bar{y}\sigma'$};
+    \node[var] (w) at (9, 1) {$w$\\[-2pt]\footnotesize$\bar{w}=\bar{z}x$};
+    \node[var] (b) at (9, -1) {$b$\\[-2pt]\footnotesize$\bar{b}=\bar{z}$};
+    
+    % Backward arrows (reversed direction, showing gradient flow)
+    \draw[arrow] (L) -- node[above, label] {$\times(y{-}t)$} (y);
+    \draw[arrow] (y) -- node[above, label] {$\times\sigma'(z)$} (z);
+    \draw[arrow] (z) -- node[above, label, sloped] {$\times x$} (w);
+    \draw[arrow] (z) -- node[below, label, sloped] {$\times 1$} (b);
+    
+    % Title
+    \node[above=0.5cm of y, font=\bfseries, text=tudelftdarkblue] {Backward Pass: Gradient Flow};
+\end{tikzpicture}
+\caption{Gradient flow in the backward pass. Starting from $\bar{L} = 1$, we propagate gradients backwards, multiplying by local derivatives at each step. The gradient $\bar{z}$ is computed once and reused for both $\bar{w}$ and $\bar{b}$.}
+\label{fig:backprop_flow}
+\end{figure}
+
+\subsection{Modularity: Local Gradients}
+A beautiful property of backpropagation is its \textbf{modularity}. Each node in the computational graph only needs to know:
+\begin{enumerate}
+	\item How to compute its output given its inputs (for the forward pass).
+	\item How to compute the gradient with respect to its inputs, given the gradient with respect to its output (for the backward pass).
+\end{enumerate}
+This is why deep learning frameworks like PyTorch and TensorFlow can automatically differentiate arbitrary compositions of operations: each operation is a module that defines its own forward and backward functions. You can compose modules freely, and the framework handles the gradient computation.
+
+\begin{table}[H]
+\centering
+\begin{tblr}{
+  colspec = {l l l},
+  row{1} = {font=\bfseries},
+  hline{1,2,Z} = {solid},
+}
+Operation & Forward: $y = f(x)$ & Backward: $\bar{x} = \bar{y} \cdot \frac{\partial y}{\partial x}$ \\
+Addition: $y = x_1 + x_2$ & $y = x_1 + x_2$ & $\bar{x}_1 = \bar{y}$, $\bar{x}_2 = \bar{y}$ \\
+Multiplication: $y = x_1 \cdot x_2$ & $y = x_1 \cdot x_2$ & $\bar{x}_1 = \bar{y} \cdot x_2$, $\bar{x}_2 = \bar{y} \cdot x_1$ \\
+ReLU: $y = \max(0, x)$ & $y = \max(0, x)$ & $\bar{x} = \bar{y} \cdot \mathbf{1}_{x > 0}$ \\
+Sigmoid: $y = \sigma(x)$ & $y = \frac{1}{1+e^{-x}}$ & $\bar{x} = \bar{y} \cdot y(1-y)$ \\
+\end{tblr}
+\caption{Examples of local forward and backward rules for common operations. Each operation only needs to know its own local derivative. The framework chains these together using the chain rule.}
+\label{tab:local_gradients}
+\end{table}
+
+\subsection{Complexity Analysis}
+\paragraph{Naïve Approach:} Computing each parameter's gradient independently requires tracing back through the entire graph for each parameter, leading to $O(N \cdot M)$ complexity where $N$ is the number of nodes and $M$ is the number of parameters.
+
+\paragraph{Backpropagation:} By caching and reusing intermediate gradients, backpropagation computes \textit{all} gradients in a single backward pass with $O(N)$ complexity (the same order as the forward pass). This is an enormous saving for networks with millions of parameters.
+
+
+\section{Optimization Algorithms}
+\label{sec:dl_optimization}
+
+We have a loss function and we know how to compute its gradient via backpropagation. The final ingredient is an algorithm to actually update the parameters. While vanilla Stochastic Gradient Descent (SGD) is the conceptual foundation, its noisy updates can lead to slow, oscillating convergence. Modern optimizers leverage \textbf{past gradient statistics} to smooth out noise and accelerate training.
+
+\subsection{The Problem with Vanilla SGD}
+Recall the SGD update rule for a mini-batch of $k$ samples:
+\begin{equation}
+	\boldsymbol{\theta}_{t+1} = \boldsymbol{\theta}_t - \eta \cdot \frac{1}{k} \sum_{i=1}^{k} \nabla_{\boldsymbol{\theta}} L(\mathbf{x}^{(i)}, y^{(i)}; \boldsymbol{\theta}_t)
+\end{equation}
+where $\eta$ is the learning rate. The key issue is that the mini-batch gradient is a \textit{noisy estimate} of the true gradient over the full dataset. This stochasticity is a blessing (it enables training on huge datasets and can help escape local minima) but also a curse:
+\begin{itemize}
+	\item \textbf{Oscillations in ravines:} When the loss surface is much steeper in one direction than another (an elongated ``ravine''), SGD oscillates back and forth across the steep direction while making slow progress along the shallow direction.
+	\item \textbf{Learning rate sensitivity:} A learning rate that is too high causes divergence; too low causes painfully slow convergence.
+\end{itemize}
+
+\subsection{Exponentially Weighted Moving Average (EWMA)}
+The solution is to smooth out the noisy gradient estimates using their history. A naïve approach of storing all past gradients is infeasible for networks with millions of parameters. Instead, we use the \textbf{Exponentially Weighted Moving Average (EWMA)}, an elegant recursive formula that summarizes history in a single vector:
+\begin{equation}
+	v_t = \rho \cdot v_{t-1} + (1 - \rho) \cdot g_t
+\end{equation}
+where $g_t$ is the current gradient, $v_t$ is the smoothed average, and $\rho \in [0, 1)$ is the \textbf{decay rate} controlling how much history to retain. A higher $\rho$ means more smoothing (longer memory).
+
+\paragraph{Bias Correction:} Initializing $v_0 = 0$ biases the estimate towards zero in early iterations. We correct this:
+\begin{equation}
+	\hat{v}_t = \frac{v_t}{1 - \rho^t}
+\end{equation}
+As $t \to \infty$, the correction factor $1 - \rho^t \to 1$, so it only matters at the start.
+
+\begin{figure}[H]
+\begin{pycode}
+# Exponential Weighted Moving Average (EWMA) Visualization
+np.random.seed(42)
+T = 100
+t_arr = np.arange(1, T + 1)
+# Generate noisy data: True signal is 1, plus noise
+true_signal = np.ones(T)
+noise = np.random.normal(0, 0.5, T)
+y = true_signal + noise
+
+# EWMA Calculation
+rho = 0.9
+v = np.zeros(T)
+v_corrected = np.zeros(T)
+current_v = 0
+
+for i in range(T):
+    current_v = rho * current_v + (1 - rho) * y[i]
+    v[i] = current_v
+    # Bias correction
+    v_corrected[i] = current_v / (1 - rho**(i + 1))
+
+fig, ax = plt.subplots(figsize=(10, 5))
+
+# Plot Raw Noisy Data
+ax.plot(t_arr, y, 'o', color=utils.COLORS['gray'], alpha=0.4, label=r'Noisy Gradients ($g_t$)', markersize=4)
+
+# Plot Uncorrected EWMA
+ax.plot(t_arr, v, '--', color=utils.COLORS['red'], linewidth=2, label=rf'EWMA ($\rho={rho}$, No Bias Corr.)')
+
+# Plot Corrected EWMA
+ax.plot(t_arr, v_corrected, '-', color=utils.COLORS['primary'], linewidth=2.5, label=rf'EWMA ($\rho={rho}$, Bias Corrected)')
+
+ax.axhline(1.0, color='black', linestyle=':', label='True Mean')
+
+ax.set_title('Smoothing Noisy Signals with EWMA')
+ax.set_xlabel('Iteration ($t$)')
+ax.set_ylabel('Value')
+ax.legend(loc='lower right')
+ax.grid(True, linestyle=':', alpha=0.6)
+
+utils.save_and_include("ewma_bias_correction.pdf", width=r"0.9\textwidth")
+\end{pycode}
+\caption{EWMA and Bias Correction. The noisy gradients (gray dots) are smoothed. Without bias correction (red dashed), the estimate starts near zero. With bias correction (blue solid), the estimate tracks the true mean from the beginning.}
+\label{fig:ewma_bias_correction}
+\end{figure}
+
+\subsection{Momentum}
+\textbf{Momentum} applies EWMA directly to the gradient, accumulating a ``velocity'' vector that smooths out oscillations and accelerates motion in consistent directions:
+
+\begin{tcolorbox}[colback=tudelftblue!5!white, colframe=tudelftblue, title=SGD with Momentum]
+\textbf{Initialize:} $\mathbf{v}_0 = \mathbf{0}$
+
+\textbf{At each iteration $t$:}
+\begin{enumerate}
+	\item Compute gradient: $\mathbf{g}_t = \nabla_{\boldsymbol{\theta}} L(\boldsymbol{\theta}_{t-1})$
+	\item Update velocity: $\mathbf{v}_t = \rho \cdot \mathbf{v}_{t-1} + (1 - \rho) \cdot \mathbf{g}_t$
+	\item Update parameters: $\boldsymbol{\theta}_t = \boldsymbol{\theta}_{t-1} - \eta \cdot \mathbf{v}_t$
+\end{enumerate}
+\textbf{Typical hyperparameter:} $\rho = 0.9$
+\end{tcolorbox}
+
+The intuition: imagine a ball rolling down a hill. It doesn't just follow the local gradient; it builds up speed. If the gradient consistently points in one direction, the velocity grows. If it oscillates, the velocity damps out. This allows Momentum to traverse ravines efficiently.
+
+\subsection{RMSprop}
+While Momentum smooths the \textit{direction} of the gradient, \textbf{RMSprop} (Root Mean Square Propagation) addresses its \textit{magnitude}. It maintains an EWMA of the \textit{squared} gradients, which estimates the variance:
+
+\begin{tcolorbox}[colback=tudelftblue!5!white, colframe=tudelftblue, title=RMSprop]
+\textbf{Initialize:} $\mathbf{r}_0 = \mathbf{0}$
+
+\textbf{At each iteration $t$:}
+\begin{enumerate}
+	\item Compute gradient: $\mathbf{g}_t = \nabla_{\boldsymbol{\theta}} L(\boldsymbol{\theta}_{t-1})$
+	\item Update squared gradient average: $\mathbf{r}_t = \rho \cdot \mathbf{r}_{t-1} + (1 - \rho) \cdot \mathbf{g}_t^2$ \quad (element-wise)
+	\item Update parameters: $\boldsymbol{\theta}_t = \boldsymbol{\theta}_{t-1} - \frac{\eta}{\sqrt{\mathbf{r}_t} + \epsilon} \odot \mathbf{g}_t$
+\end{enumerate}
+\textbf{Typical hyperparameters:} $\rho = 0.99$, $\epsilon = 10^{-8}$ (for numerical stability)
+\end{tcolorbox}
+
+The key insight: dividing by $\sqrt{\mathbf{r}_t}$ \textit{normalizes} the update. Parameters with large, variable gradients get smaller updates (preventing exploding steps), while parameters with small, consistent gradients get larger updates (accelerating through flat regions). RMSprop adapts the learning rate \textit{per-parameter}.
+
+\subsection{Adam (Adaptive Moment Estimation)}
+\textbf{Adam} combines the best of both worlds: Momentum's smoothed gradient direction and RMSprop's per-parameter adaptive learning rate. It is currently the \textbf{default optimizer} for most deep learning applications.
+
+\begin{tcolorbox}[colback=tudelftblue!5!white, colframe=tudelftblue, title=Adam Optimizer]
+\textbf{Initialize:} $\mathbf{m}_0 = \mathbf{0}$ (first moment), $\mathbf{v}_0 = \mathbf{0}$ (second moment)
+
+\textbf{At each iteration $t$:}
+\begin{enumerate}
+	\item Compute gradient: $\mathbf{g}_t = \nabla_{\boldsymbol{\theta}} L(\boldsymbol{\theta}_{t-1})$
+	\item Update first moment (mean): $\mathbf{m}_t = \beta_1 \cdot \mathbf{m}_{t-1} + (1 - \beta_1) \cdot \mathbf{g}_t$
+	\item Update second moment (variance): $\mathbf{v}_t = \beta_2 \cdot \mathbf{v}_{t-1} + (1 - \beta_2) \cdot \mathbf{g}_t^2$
+	\item Bias correction: $\hat{\mathbf{m}}_t = \frac{\mathbf{m}_t}{1 - \beta_1^t}$, \quad $\hat{\mathbf{v}}_t = \frac{\mathbf{v}_t}{1 - \beta_2^t}$
+	\item Update parameters: $\boldsymbol{\theta}_t = \boldsymbol{\theta}_{t-1} - \frac{\eta \cdot \hat{\mathbf{m}}_t}{\sqrt{\hat{\mathbf{v}}_t} + \epsilon}$
+\end{enumerate}
+\textbf{Default hyperparameters:} $\beta_1 = 0.9$, $\beta_2 = 0.999$, $\epsilon = 10^{-8}$
+\end{tcolorbox}
+
+\subsection{Summary of Optimizers}
+
+\begin{table}[H]
+\centering
+\begin{tblr}{
+  colspec = {l l X[l]},
+  row{1} = {font=\bfseries},
+  hline{1,2,Z} = {solid},
+}
+Optimizer & Tracks & Key Benefit \\
+SGD & --- & Simple baseline \\
+Momentum & EWMA of $\mathbf{g}$ (first moment) & Smooths direction, accelerates in consistent directions \\
+RMSprop & EWMA of $\mathbf{g}^2$ (second moment) & Adapts learning rate per-parameter \\
+Adam & Both first and second moments & Combines benefits of Momentum and RMSprop \\
+\end{tblr}
+\caption{Comparison of optimization algorithms.}
+\label{tab:optimizer_comparison}
+\end{table}
+
+\section{Normalization Techniques}
+\label{sec:dl_normalization}
+
+Optimization is significantly easier when the loss landscape is \textbf{well-conditioned}---spherical rather than elongated. Normalizing the inputs to have zero mean and unit variance is a well-known preprocessing step. But what about the hidden layers?
+
+\subsection{The Internal Covariate Shift Problem}
+As a deep network trains, the distribution of activations in each hidden layer changes continuously because the parameters of preceding layers are being updated. This phenomenon, called \textbf{Internal Covariate Shift}, forces each layer to constantly adapt to new input distributions, slowing down training.
+
+\subsection{Batch Normalization}
+\textbf{Batch Normalization (BatchNorm)} addresses this by normalizing the activations within each mini-batch. For a layer with pre-activation $\mathbf{z}$, given a mini-batch $\mathcal{B}$ of size $m$:
+
+\begin{enumerate}
+	\item \textbf{Compute batch statistics:}
+	\begin{equation}
+		\mu_{\mathcal{B}} = \frac{1}{m} \sum_{i=1}^{m} z_i, \qquad \sigma_{\mathcal{B}}^2 = \frac{1}{m} \sum_{i=1}^{m} (z_i - \mu_{\mathcal{B}})^2
+	\end{equation}
+	\item \textbf{Normalize:}
+	\begin{equation}
+		\hat{z}_i = \frac{z_i - \mu_{\mathcal{B}}}{\sqrt{\sigma_{\mathcal{B}}^2 + \epsilon}}
+	\end{equation}
+	where $\epsilon$ (e.g., $10^{-8}$) prevents division by zero.
+	\item \textbf{Scale and shift} (learnable parameters $\gamma$, $\beta$):
+	\begin{equation}
+		y_i = \gamma \hat{z}_i + \beta
+	\end{equation}
+\end{enumerate}
+
+The learnable parameters $\gamma$ and $\beta$ are crucial: they allow the network to \textit{undo} the normalization if that is optimal, restoring the representational power. In fact, setting $\gamma = \sigma_{\mathcal{B}}$ and $\beta = \mu_{\mathcal{B}}$ recovers the original activations.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    block/.style={rectangle, draw=tudelftblue, fill=tudelftblue!10, thick, minimum width=2.2cm, minimum height=0.8cm, font=\small, align=center},
+    arrow/.style={->, thick, tudelftdarkblue},
+    label/.style={font=\footnotesize, text=gray}
+]
+    % Nodes
+    \node[block] (z) at (0, 0) {$\mathbf{z}$\\Pre-activation};
+    \node[block] (norm) at (4, 0) {$\hat{\mathbf{z}} = \frac{\mathbf{z} - \mu}{\sigma}$\\Normalize};
+    \node[block] (scale) at (8, 0) {$\mathbf{y} = \gamma\hat{\mathbf{z}} + \beta$\\Scale \& Shift};
+    \node[block] (act) at (12, 0) {$g(\mathbf{y})$\\Activation};
+    
+    % Arrows
+    \draw[arrow] (z) -- (norm);
+    \draw[arrow] (norm) -- (scale);
+    \draw[arrow] (scale) -- (act);
+    
+    % Annotations
+    \node[label, below=0.3cm of norm] {$\mu, \sigma$ from batch};
+    \node[label, below=0.3cm of scale] {$\gamma, \beta$ learned};
+\end{tikzpicture}
+\caption{Batch Normalization pipeline. The pre-activations are normalized using batch statistics, then scaled and shifted by learnable parameters before being passed through the activation function.}
+\label{fig:batchnorm_pipeline}
+\end{figure}
+
+\paragraph{Inference Time:} At test time, we don't have a batch to compute statistics from. Instead, we use \textbf{running averages} of $\mu$ and $\sigma^2$ accumulated during training (using EWMA, our friend from optimization!).
+
+\paragraph{Where to Apply BatchNorm:} There is some debate, but the common practice is to apply BatchNorm \textit{before} the activation function: $\text{Activation}(\text{BatchNorm}(\mathbf{W}\mathbf{x} + \mathbf{b}))$. Note that the bias $\mathbf{b}$ becomes redundant since BatchNorm has its own learnable shift $\beta$.
+
+
+\section{Convolutional Neural Networks (CNNs)}
+\label{sec:dl_cnn}
+
+Deep Feedforward Networks are powerful universal function approximators, but they face a fundamental challenge with high-dimensional structured data like images. Consider a modest $256 \times 256$ RGB image: a fully connected layer would have $256 \times 256 \times 3 = 196,608$ input units. Connecting this to just 1,000 hidden units requires nearly 200 million parameters, and that's just the first layer! This is computationally intractable and extremely prone to overfitting.
+
+\textbf{Convolutional Neural Networks (CNNs)} solve this problem by encoding strong \textbf{prior knowledge} about the structure of images:
+\begin{enumerate}
+	\item \textbf{Locality}: Nearby pixels are strongly correlated (a sky pixel is likely surrounded by other sky pixels). Distant pixels are often unrelated.
+	\item \textbf{Translation Equivariance}: An object (e.g., a cat) is the same object regardless of where it appears in the image. The features that detect it should be shared across all positions.
+\end{enumerate}
+
+\subsection{The Convolution Operation}
+The core building block of CNNs is the \textbf{convolution} (technically, a cross-correlation). Instead of connecting every input to every output, we slide a small \textbf{kernel} (or filter) $\mathbf{K}$ over the input image $\mathbf{I}$, computing a dot product at each position:
+\begin{equation}
+	(\mathbf{I} * \mathbf{K})(i, j) = \sum_{m=0}^{k-1} \sum_{n=0}^{k-1} \mathbf{I}(i+m, j+n) \cdot \mathbf{K}(m, n)
+\end{equation}
+where $k$ is the kernel size (e.g., $3 \times 3$). This produces an \textbf{output feature map} (or activation map).
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.6]
+    % Input image (5x5 grid)
+    \foreach \i in {0,...,4} {
+        \foreach \j in {0,...,4} {
+            \draw[thick] (\i, -\j) rectangle (\i+1, -\j-1);
+        }
+    }
+    \node at (2.5, 0.5) {Input Image $\mathbf{I}$ ($5 \times 5$)};
+    
+    % Highlight the receptive field (3x3 at position 1,1)
+    \fill[tudelftblue!30] (1, -1) rectangle (4, -4);
+    
+    % Sample values in receptive field
+    \node[font=\tiny] at (1.5, -1.5) {1};
+    \node[font=\tiny] at (2.5, -1.5) {0};
+    \node[font=\tiny] at (3.5, -1.5) {1};
+    \node[font=\tiny] at (1.5, -2.5) {2};
+    \node[font=\tiny] at (2.5, -2.5) {1};
+    \node[font=\tiny] at (3.5, -2.5) {0};
+    \node[font=\tiny] at (1.5, -3.5) {1};
+    \node[font=\tiny] at (2.5, -3.5) {0};
+    \node[font=\tiny] at (3.5, -3.5) {2};
+    
+    % Multiplication symbol
+    \node at (6, -2.5) {\Large $\odot$};
+    
+    % Kernel (3x3)
+    \foreach \i in {0,...,2} {
+        \foreach \j in {0,...,2} {
+            \draw[thick, tudelftcyan] (7+\i, -1-\j) rectangle (8+\i, -2-\j);
+        }
+    }
+    \node at (8.5, -0.3) {Kernel $\mathbf{K}$ ($3 \times 3$)};
+    
+    % Kernel values
+    \node[font=\tiny] at (7.5, -1.5) {1};
+    \node[font=\tiny] at (8.5, -1.5) {0};
+    \node[font=\tiny] at (9.5, -1.5) {-1};
+    \node[font=\tiny] at (7.5, -2.5) {2};
+    \node[font=\tiny] at (8.5, -2.5) {0};
+    \node[font=\tiny] at (9.5, -2.5) {-2};
+    \node[font=\tiny] at (7.5, -3.5) {1};
+    \node[font=\tiny] at (8.5, -3.5) {0};
+    \node[font=\tiny] at (9.5, -3.5) {-1};
+    
+    % Equals
+    \node at (11, -2.5) {\Large $=$};
+    
+    % Output (single value in context of 3x3 output)
+    \draw[thick, red!70!black] (12, -2) rectangle (13, -3);
+    \node[font=\small] at (12.5, -2.5) {$4$};
+    
+    % Calculation below
+    \node[font=\scriptsize, align=left] at (8, -5.5) {$(1{\cdot}1 + 0{\cdot}0 + 1{\cdot}(-1)) + (2{\cdot}2 + 1{\cdot}0 + 0{\cdot}(-2)) + (1{\cdot}1 + 0{\cdot}0 + 2{\cdot}(-1))$};
+    \node[font=\scriptsize] at (8, -6.3) {$= 0 + 4 + (-1) + 1 = 4$};
+\end{tikzpicture}
+\caption{The convolution operation. A $3 \times 3$ kernel slides over the input. At each position, we compute the element-wise product and sum all values to produce one output. The highlighted blue region shows the \textbf{receptive field} for one output pixel.}
+\label{fig:conv_operation}
+\end{figure}
+
+\paragraph{Key Properties of Convolution:}
+\begin{itemize}
+	\item \textbf{Sparse Interactions:} Each output depends on only a small local region of the input (the kernel size), not the entire image. This drastically reduces parameters.
+	\item \textbf{Parameter Sharing:} The same kernel weights $\mathbf{K}$ are used at every spatial position. We don't learn separate weights for the top-left vs. bottom-right of the image.
+\end{itemize}
+
+\subsection{Multiple Channels and Multiple Kernels}
+Real images have multiple \textbf{input channels} (e.g., 3 for RGB). And we typically want to learn multiple different features (edges, textures, colors), requiring multiple \textbf{output channels}.
+
+For an input with $C_{in}$ channels, the kernel is actually 3-dimensional: $(C_{in} \times k \times k)$. We sum the convolutions across all input channels to produce one output channel:
+\begin{equation}
+	\text{Output}(i, j) = \sum_{c=1}^{C_{in}} (\mathbf{I}_c * \mathbf{K}_c)(i, j) + b
+\end{equation}
+To produce $C_{out}$ output channels (feature maps), we use $C_{out}$ different kernels, each of shape $(C_{in} \times k \times k)$.
+
+\begin{tcolorbox}[colback=tudelftblue!5!white, colframe=tudelftblue, title=Parameter Count for a Convolutional Layer]
+A convolutional layer with input channels $C_{in}$, output channels $C_{out}$, and kernel size $k \times k$ has:
+\begin{equation}
+	\text{Parameters} = C_{out} \times (C_{in} \times k \times k + 1) = C_{out} \cdot C_{in} \cdot k^2 + C_{out}
+\end{equation}
+where the $+1$ accounts for a bias term per output channel. For example, a $3 \times 3$ conv from 64 to 128 channels has $128 \times 64 \times 9 + 128 = 73,856$ parameters, compared to millions for a fully connected equivalent.
+\end{tcolorbox}
+
+\subsection{Padding and Stride}
+Two important hyperparameters control the spatial size of the output:
+
+\paragraph{Padding:} Without padding, applying a $k \times k$ kernel shrinks the spatial dimensions. For an input of size $N \times N$:
+\begin{equation}
+	\text{Output size (valid/no padding)} = N - k + 1
+\end{equation}
+To maintain the same spatial size, we add \textbf{zero-padding} of $p = \lfloor k/2 \rfloor$ pixels around the border (called ``same'' padding).
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.5]
+    % Valid convolution (no padding)
+    \node[font=\bfseries] at (2.5, 1) {Valid (No Padding)};
+    
+    % Input 5x5
+    \foreach \i in {0,...,4} {
+        \foreach \j in {0,...,4} {
+            \draw[thick] (\i, -\j) rectangle (\i+1, -\j-1);
+        }
+    }
+    \node[font=\footnotesize] at (2.5, -5.5) {Input: $5 \times 5$};
+    
+    % Arrow
+    \draw[->, thick] (5.5, -2.5) -- (7, -2.5);
+    \node[font=\footnotesize] at (6.25, -1.8) {$3{\times}3$ kernel};
+    
+    % Output 3x3
+    \foreach \i in {0,...,2} {
+        \foreach \j in {0,...,2} {
+            \draw[thick, tudelftblue, fill=tudelftblue!20] (7.5+\i, -1-\j) rectangle (8.5+\i, -2-\j);
+        }
+    }
+    \node[font=\footnotesize] at (9, -5.5) {Output: $3 \times 3$};
+    
+    % Same convolution (with padding)
+    \node[font=\bfseries] at (17, 1) {Same (Padding $p=1$)};
+    
+    % Padding (7x7)
+    \foreach \i in {0,...,6} {
+        \foreach \j in {0,...,6} {
+            \draw[thick, gray!50, fill=gray!10] (13+\i, -\j) rectangle (14+\i, -\j-1);
+        }
+    }
+    % Inner input 5x5
+    \foreach \i in {0,...,4} {
+        \foreach \j in {0,...,4} {
+            \draw[thick] (14+\i, -1-\j) rectangle (15+\i, -2-\j);
+        }
+    }
+    \node[font=\footnotesize] at (16.5, -7.8) {Padded Input: $7 \times 7$};
+    
+    % Arrow
+    \draw[->, thick] (20.5, -3) -- (22, -3);
+    \node[font=\footnotesize] at (21.25, -2.3) {$3{\times}3$ kernel};
+    
+    % Output 5x5
+    \foreach \i in {0,...,4} {
+        \foreach \j in {0,...,4} {
+            \draw[thick, tudelftblue, fill=tudelftblue!20] (22.5+\i, -1-\j) rectangle (23.5+\i, -2-\j);
+        }
+    }
+    \node[font=\footnotesize] at (25, -7.8) {Output: $5 \times 5$};
+\end{tikzpicture}
+\caption{\textbf{Left:} Valid convolution: no padding, output shrinks. \textbf{Right:} Same convolution: zero-padding (gray) preserves spatial dimensions.}
+\label{fig:padding}
+\end{figure}
+
+\paragraph{Stride:} Instead of moving the kernel one pixel at a time, we can move it by $s$ pixels (\textbf{stride}). This downsamples the output:
+\begin{equation}
+	\text{Output size} = \left\lfloor \frac{N + 2p - k}{s} \right\rfloor + 1
+\end{equation}
+Strided convolutions are an alternative to pooling for reducing spatial dimensions.
+
+\subsection{Pooling}
+\textbf{Pooling} layers reduce the spatial dimensions by summarizing local regions:
+\begin{itemize}
+	\item \textbf{Max Pooling:} Takes the maximum value in each region. Retains the strongest activation.
+	\item \textbf{Average Pooling:} Takes the mean value. Provides a smoother downsampling.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.6]
+    % Input 4x4
+    \node[font=\bfseries] at (2, 1) {Input ($4 \times 4$)};
+    \foreach \i in {0,...,3} {
+        \foreach \j in {0,...,3} {
+            \draw[thick] (\i, -\j) rectangle (\i+1, -\j-1);
+        }
+    }
+    % Fill quadrants with colors
+    \fill[red!20] (0, 0) rectangle (2, -2);
+    \fill[blue!20] (2, 0) rectangle (4, -2);
+    \fill[green!20] (0, -2) rectangle (2, -4);
+    \fill[yellow!20] (2, -2) rectangle (4, -4);
+    \draw[thick] (0, 0) rectangle (4, -4);
+    \draw[thick] (2, 0) -- (2, -4);
+    \draw[thick] (0, -2) -- (4, -2);
+    
+    % Values
+    \node[font=\small] at (0.5, -0.5) {1};
+    \node[font=\small] at (1.5, -0.5) {3};
+    \node[font=\small] at (0.5, -1.5) {2};
+    \node[font=\small, font=\bfseries] at (1.5, -1.5) {4};
+    
+    \node[font=\small] at (2.5, -0.5) {5};
+    \node[font=\small, font=\bfseries] at (3.5, -0.5) {6};
+    \node[font=\small] at (2.5, -1.5) {1};
+    \node[font=\small] at (3.5, -1.5) {2};
+    
+    \node[font=\small, font=\bfseries] at (0.5, -2.5) {7};
+    \node[font=\small] at (1.5, -2.5) {2};
+    \node[font=\small] at (0.5, -3.5) {0};
+    \node[font=\small] at (1.5, -3.5) {1};
+    
+    \node[font=\small] at (2.5, -2.5) {3};
+    \node[font=\small] at (3.5, -2.5) {4};
+    \node[font=\small] at (2.5, -3.5) {2};
+    \node[font=\small, font=\bfseries] at (3.5, -3.5) {8};
+    
+    % Arrow
+    \draw[->, thick] (5, -2) -- (7, -2);
+    \node[font=\footnotesize, align=center] at (6, -1) {$2 \times 2$\\Max Pool\\stride 2};
+    
+    % Output 2x2
+    \node[font=\bfseries] at (9, 1) {Output ($2 \times 2$)};
+    \fill[red!20] (8, 0) rectangle (9, -1);
+    \fill[blue!20] (9, 0) rectangle (10, -1);
+    \fill[green!20] (8, -1) rectangle (9, -2);
+    \fill[yellow!20] (9, -1) rectangle (10, -2);
+    \draw[thick] (8, 0) rectangle (10, -2);
+    \draw[thick] (9, 0) -- (9, -2);
+    \draw[thick] (8, -1) -- (10, -1);
+    
+    \node[font=\small, font=\bfseries] at (8.5, -0.5) {4};
+    \node[font=\small, font=\bfseries] at (9.5, -0.5) {6};
+    \node[font=\small, font=\bfseries] at (8.5, -1.5) {7};
+    \node[font=\small, font=\bfseries] at (9.5, -1.5) {8};
+\end{tikzpicture}
+\caption{$2 \times 2$ Max Pooling with stride 2. Each $2 \times 2$ region is replaced by its maximum value (shown in bold). Spatial dimensions are halved.}
+\label{fig:max_pooling}
+\end{figure}
+
+Pooling provides a small degree of \textbf{translation invariance}: small shifts in the input may not change the max value. Modern architectures often use strided convolutions instead of pooling, as they can be learned.
+
+\subsection{Translation Equivariance}
+A key property of convolution is \textbf{translation equivariance}. Let $T$ be a translation operator that shifts an image. Then:
+\begin{equation}
+	\text{Conv}(T(\mathbf{I})) = T(\text{Conv}(\mathbf{I}))
+\end{equation}
+If the input shifts, the output shifts by the same amount. This means the network can detect a feature (e.g., an edge) regardless of where it appears in the image, without needing to learn separate detectors for each position.
+
+Note that \textbf{equivariance} is not the same as \textbf{invariance}. Equivariance preserves the transformation (output shifts with input), while invariance ignores it (output stays the same). Pooling introduces partial invariance; the final classification layer introduces full invariance by discarding spatial information.
+
+\subsection{Receptive Field}
+The \textbf{receptive field} of a unit is the region of the input image that can influence its activation. A single $3 \times 3$ conv has a receptive field of 3. But as we stack layers, receptive fields grow:
+\begin{itemize}
+	\item Two $3 \times 3$ convs: Receptive field = $5 \times 5$
+	\item Three $3 \times 3$ convs: Receptive field = $7 \times 7$
+\end{itemize}
+\textbf{Strided convolutions or pooling} increase the receptive field multiplicatively. This allows deep networks to integrate global context while keeping kernels small.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.45]
+    % Layer labels
+    \node[font=\small] at (-2.5, -2) {Image};
+    \node[font=\small] at (-2.5, -6) {FM 1};
+    \node[font=\small] at (-2.5, -10) {FM 2};
+    \node[font=\small] at (-2.5, -14) {FM 3};
+    
+    % Image layer (11 units)
+    \foreach \i in {0,...,10} {
+        \draw[thick] (\i, -1) rectangle (\i+1, -3);
+    }
+    
+    % Feature map 1 (9 units) - after 3x3 conv
+    \foreach \i in {0,...,8} {
+        \draw[thick, tudelftblue, fill=tudelftblue!10] (\i+1, -5) rectangle (\i+2, -7);
+    }
+    
+    % Feature map 2 (7 units) - after 3x3 conv
+    \foreach \i in {0,...,6} {
+        \draw[thick, tudelftcyan, fill=tudelftcyan!10] (\i+2, -9) rectangle (\i+3, -11);
+    }
+    
+    % Feature map 3 (5 units) - after 3x3 conv
+    \foreach \i in {0,...,4} {
+        \draw[thick, red!70!black, fill=red!20] (\i+3, -13) rectangle (\i+4, -15);
+    }
+    
+    % Highlight receptive field
+    \fill[red!30, opacity=0.5] (3, -1) rectangle (10, -3);
+    \fill[red!30, opacity=0.5] (5.5, -13) rectangle (6.5, -15);
+    
+    % Connections showing receptive field growth
+    \draw[dashed, red!70!black] (3, -3) -- (4, -5);
+    \draw[dashed, red!70!black] (10, -3) -- (9, -5);
+    \draw[dashed, red!70!black] (4, -7) -- (5, -9);
+    \draw[dashed, red!70!black] (9, -7) -- (8, -9);
+    \draw[dashed, red!70!black] (5, -11) -- (5.5, -13);
+    \draw[dashed, red!70!black] (8, -11) -- (6.5, -13);
+    
+    % Annotation
+    \node[font=\footnotesize, text=red!70!black] at (14, -2) {Receptive Field};
+    \node[font=\footnotesize, text=red!70!black] at (14, -3) {= 7 pixels};
+    \draw[->, red!70!black] (12, -2.5) -- (10.2, -2);
+\end{tikzpicture}
+\caption{Receptive field growth with stacked $3 \times 3$ convolutions. One unit in Feature Map 3 (highlighted) ``sees'' 7 pixels of the original image. Three $3 \times 3$ convs have the same receptive field as one $7 \times 7$ conv, but with far fewer parameters.}
+\label{fig:receptive_field}
+\end{figure}
+
+\subsection{Convolution as a Sparse Matrix Multiplication}
+Convolution can be viewed as multiplication by a sparse, structured \textbf{Toeplitz matrix}. For 1D convolution of $[x_1, x_2, x_3, x_4]$ with kernel $[-1, 0, 1]$:
+\begin{equation}
+\begin{bmatrix}
+-1 & 0 & 1 & 0 \\
+0 & -1 & 0 & 1 \\
+\end{bmatrix}
+\begin{bmatrix}
+x_1 \\ x_2 \\ x_3 \\ x_4
+\end{bmatrix}
+=
+\begin{bmatrix}
+-x_1 + x_3 \\
+-x_2 + x_4
+\end{bmatrix}
+\end{equation}
+The matrix is:
+\begin{itemize}
+	\item \textbf{Sparse:} Many zeros, reducing computation.
+	\item \textbf{Locally connected:} Non-zeros are clustered.
+	\item \textbf{Weight-sharing:} The same kernel values appear in each row.
+\end{itemize}
+A CNN is a constrained fully-connected network. This constraint reduces parameters and encodes our prior knowledge about images.
+
+\subsection{Residual Connections (ResNets)}
+As networks become deeper (50, 100, 1000 layers), two problems arise:
+\begin{enumerate}
+	\item \textbf{Vanishing Gradients:} Gradients shrink exponentially as they backpropagate through many layers.
+	\item \textbf{Degradation Problem:} Deeper networks often perform \textit{worse} than shallower ones on training data, even though they have more capacity.
+\end{enumerate}
+
+\textbf{Residual Networks (ResNets)} solve this with \textbf{skip connections}. Instead of learning a mapping $\mathcal{H}(\mathbf{x})$ directly, a residual block learns the \textbf{residual} $\mathcal{F}(\mathbf{x}) = \mathcal{H}(\mathbf{x}) - \mathbf{x}$:
+\begin{equation}
+	\mathbf{h}_{l+1} = \mathbf{h}_l + \mathcal{F}(\mathbf{h}_l; \mathbf{W}_l)
+\end{equation}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    block/.style={rectangle, draw=tudelftblue, fill=tudelftblue!10, thick, minimum width=2cm, minimum height=0.8cm, font=\small},
+    arrow/.style={->, thick},
+    plus/.style={circle, draw=tudelftdarkblue, fill=white, thick, minimum size=0.5cm, font=\small}
+]
+    % Input
+    \node (x) at (0, 0) {$\mathbf{h}_l$};
+    
+    % Conv blocks
+    \node[block] (conv1) at (3, 0) {Conv + BN + ReLU};
+    \node[block] (conv2) at (7, 0) {Conv + BN};
+    
+    % Plus
+    \node[plus] (plus) at (10, 0) {$+$};
+    
+    % Output
+    \node (out) at (12, 0) {$\mathbf{h}_{l+1}$};
+    \node[font=\small] at (13, 0) {$\to$ ReLU};
+    
+    % Main path
+    \draw[arrow] (x) -- (conv1);
+    \draw[arrow] (conv1) -- (conv2);
+    \draw[arrow] (conv2) -- (plus);
+    \draw[arrow] (plus) -- (out);
+    
+    % Skip connection
+    \draw[arrow, tudelftcyan, thick] (x.north) -- ++(0, 1) -| node[above, pos=0.25, font=\footnotesize, text=tudelftcyan] {Skip (Identity)} (plus.north);
+    
+    % Labels
+    \node[font=\footnotesize, text=gray] at (5, -1) {$\mathcal{F}(\mathbf{h}_l)$ (Residual)};
+\end{tikzpicture}
+\caption{A Residual Block. The skip connection allows the input to bypass the weight layers. The block learns the residual $\mathcal{F}(\mathbf{h}_l)$, which is added to the input. If $\mathcal{F} = 0$, the block implements an identity mapping, which istrivially easy to learn.}
+\label{fig:resnet_block}
+\end{figure}
+
+\paragraph{Why Skip Connections Work:}
+\begin{itemize}
+	\item \textbf{Gradient Highway:} During backpropagation, gradients can flow directly through the skip connection, bypassing the nonlinearities that cause vanishing gradients.
+	\item \textbf{Easy Identity:} If the optimal solution is close to the identity, the network only needs to learn $\mathcal{F} \approx 0$, which is easier than learning a full identity mapping from scratch.
+	\item \textbf{Ensemble Perspective:} A ResNet can be seen as an ensemble of many paths of varying depths, improving robustness.
+\end{itemize}
+ResNets enabled training of networks with 100+ layers and won the ImageNet 2015 competition by a large margin.
+
+
+\section{Recurrent Neural Networks (RNNs)}
+\label{sec:dl_rnn}
+
+Feedforward networks and CNNs excel at processing fixed-size inputs, but many real-world problems involve \textbf{sequences} of variable length: text (words in a sentence), time series (stock prices), audio (speech frames), and more. For these tasks, we need architectures that can:
+\begin{enumerate}
+	\item Handle inputs of \textbf{arbitrary length}.
+	\item Preserve the \textbf{order} of elements (``the cat sat on the mat'' $\neq$ ``mat the on sat cat the'').
+	\item Model \textbf{long-range dependencies} (e.g., ``The student$_{[\text{singular}]}$, after reading the book, \textit{was}$_{[\text{singular}]}$ well prepared.'').
+\end{enumerate}
+
+\textbf{Recurrent Neural Networks (RNNs)} achieve this by maintaining an internal \textbf{hidden state} $\mathbf{h}_t$ that summarizes the sequence seen so far. At each time step, the network updates this state based on the current input and the previous state.
+
+\subsection{The Recurrence Relation}
+An RNN processes a sequence $\mathbf{x}_1, \mathbf{x}_2, \ldots, \mathbf{x}_T$ one element at a time. The core update rule is:
+\begin{equation}
+	\mathbf{h}_t = \phi(\mathbf{W}_{xh} \mathbf{x}_t + \mathbf{W}_{hh} \mathbf{h}_{t-1} + \mathbf{b}_h)
+\end{equation}
+where:
+\begin{itemize}
+	\item $\mathbf{h}_t \in \mathbb{R}^{d_h}$ is the hidden state at time $t$ (the ``memory'').
+	\item $\mathbf{x}_t \in \mathbb{R}^{d_x}$ is the input at time $t$ (e.g., a one-hot encoded word).
+	\item $\mathbf{W}_{xh} \in \mathbb{R}^{d_h \times d_x}$ transforms the input.
+	\item $\mathbf{W}_{hh} \in \mathbb{R}^{d_h \times d_h}$ transforms the previous hidden state.
+	\item $\phi$ is a non-linearity, typically $\tanh$ (outputs in $(-1, 1)$).
+\end{itemize}
+An optional output $\mathbf{y}_t$ can be computed from the hidden state: $\mathbf{y}_t = \mathbf{W}_{hy} \mathbf{h}_t + \mathbf{b}_y$.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=1.5cm,
+    hidden/.style={circle, draw=tudelftblue, fill=tudelftblue!20, thick, minimum size=1cm, font=\small},
+    input/.style={circle, draw=tudelftcyan, fill=tudelftcyan!10, thick, minimum size=0.8cm, font=\small},
+    output/.style={circle, draw=red!70!black, fill=red!10, thick, minimum size=0.8cm, font=\small},
+    arrow/.style={->, thick},
+    weight/.style={font=\footnotesize, text=gray}
+]
+    % Folded representation (left)
+    \node[font=\bfseries] at (-2, 2) {Folded View};
+    \node[hidden] (h) at (-2, 0) {$\mathbf{h}$};
+    \node[input] (x) at (-2, -2) {$\mathbf{x}$};
+    \node[output] (y) at (-2, 2) {};
+    \draw[arrow] (x) -- node[right, weight] {$\mathbf{W}_{xh}$} (h);
+    \draw[arrow, tudelftblue, thick] (h.east) .. controls +(1, 0.5) and +(1, -0.5) .. node[right, weight] {$\mathbf{W}_{hh}$} (h.east);
+    
+    % Arrow between
+    \draw[->, very thick, gray] (0, 0) -- (2, 0) node[midway, above, font=\small] {Unroll};
+    
+    % Unfolded representation (right)
+    \node[font=\bfseries] at (8, 2.8) {Unfolded View (through time)};
+    
+    % Time step t-1
+    \node[hidden] (h0) at (4, 0) {$\mathbf{h}_{t-1}$};
+    \node[input] (x0) at (4, -2) {$\mathbf{x}_{t-1}$};
+    \node[output] (y0) at (4, 2) {$\mathbf{y}_{t-1}$};
+    \draw[arrow] (x0) -- (h0);
+    \draw[arrow] (h0) -- (y0);
+    
+    % Time step t
+    \node[hidden] (h1) at (8, 0) {$\mathbf{h}_t$};
+    \node[input] (x1) at (8, -2) {$\mathbf{x}_t$};
+    \node[output] (y1) at (8, 2) {$\mathbf{y}_t$};
+    \draw[arrow] (x1) -- (h1);
+    \draw[arrow] (h1) -- (y1);
+    \draw[arrow, tudelftblue] (h0) -- node[above, weight] {$\mathbf{W}_{hh}$} (h1);
+    
+    % Time step t+1
+    \node[hidden] (h2) at (12, 0) {$\mathbf{h}_{t+1}$};
+    \node[input] (x2) at (12, -2) {$\mathbf{x}_{t+1}$};
+    \node[output] (y2) at (12, 2) {$\mathbf{y}_{t+1}$};
+    \draw[arrow] (x2) -- (h2);
+    \draw[arrow] (h2) -- (y2);
+    \draw[arrow, tudelftblue] (h1) -- node[above, weight] {$\mathbf{W}_{hh}$} (h2);
+    
+    % Dots
+    \node at (2.5, 0) {$\cdots$};
+    \node at (13.5, 0) {$\cdots$};
+    
+    % Shared weights annotation
+    \draw[dashed, gray, thick] (3.5, -2.8) rectangle (12.8, 2.5);
+    \node[font=\footnotesize, text=gray, align=center] at (8, -3.3) {Same weights $\mathbf{W}_{xh}, \mathbf{W}_{hh}, \mathbf{W}_{hy}$ at every step};
+\end{tikzpicture}
+\caption{\textbf{Left:} The folded (compact) view of an RNN, showing the self-loop on the hidden state. \textbf{Right:} The unfolded view, showing the network replicated across time steps. Crucially, all copies \textbf{share the same weights}, allowing the network to handle sequences of any length.}
+\label{fig:rnn_unrolled}
+\end{figure}
+
+\paragraph{Key Insight: Parameter Sharing.}
+Unlike a fully connected network where each position has separate weights, the RNN uses the \textbf{same} $\mathbf{W}_{xh}$ and $\mathbf{W}_{hh}$ at every time step. This:
+\begin{itemize}
+	\item Drastically reduces the number of parameters (independent of sequence length).
+	\item Allows generalization to sequences longer than those seen during training.
+	\item Encodes the prior that the ``rules'' of the sequence (e.g., grammar) are consistent across positions.
+\end{itemize}
+
+\subsection{Backpropagation Through Time (BPTT)}
+To train an RNN, we \textbf{unroll} the network across all time steps and apply standard backpropagation on this unrolled graph. This is called \textbf{Backpropagation Through Time (BPTT)}.
+
+Consider the gradient of the loss $L$ at time $T$ with respect to the hidden state at an earlier time $t$:
+\begin{equation}
+	\frac{\partial L_T}{\partial \mathbf{h}_t} = \frac{\partial L_T}{\partial \mathbf{h}_T} \cdot \prod_{k=t+1}^{T} \frac{\partial \mathbf{h}_k}{\partial \mathbf{h}_{k-1}}
+\end{equation}
+Each term $\frac{\partial \mathbf{h}_k}{\partial \mathbf{h}_{k-1}}$ is the Jacobian of the recurrence, which depends on $\mathbf{W}_{hh}$ and the derivative of $\tanh$. For long sequences, this becomes a product of $T - t$ matrices.
+
+\subsection{The Vanishing and Exploding Gradient Problem}
+The magnitude of gradients depends on the eigenvalues $\lambda$ of the effective weight matrix:
+\begin{itemize}
+	\item If $|\lambda| < 1$: The product of many terms $< 1$ shrinks exponentially $\to$ \textbf{Vanishing Gradients}. The network cannot learn long-range dependencies because gradients from distant past states are effectively zero.
+	\item If $|\lambda| > 1$: The product grows exponentially $\to$ \textbf{Exploding Gradients}. Weights receive enormous updates, causing training to diverge (NaNs).
+\end{itemize}
+
+\begin{figure}[H]
+\begin{pycode}
+# Visualizing Vanishing and Exploding Gradients
+T = 50
+t_steps = np.arange(T)
+
+# Simulate the effect of repeated multiplication w^t
+w_vanish = 0.9
+w_stable = 1.0
+w_explode = 1.1
+
+y_vanish = w_vanish ** t_steps
+y_stable = w_stable ** t_steps
+y_explode = w_explode ** t_steps
+
+fig, ax = plt.subplots(figsize=(10, 5))
+
+ax.plot(t_steps, y_vanish, '-', color=utils.COLORS['primary'], linewidth=2.5, label=r'Vanishing ($\lambda=0.9$)')
+ax.plot(t_steps, y_stable, '--', color='gray', linewidth=2, label=r'Stable ($\lambda=1.0$)')
+ax.plot(t_steps, y_explode, '-', color=utils.COLORS['red'], linewidth=2.5, label=r'Exploding ($\lambda=1.1$)')
+
+ax.set_title(r'Effect of Repeated Multiplication ($\lambda^t$) Over Time')
+ax.set_xlabel('Time Steps Back ($t$)')
+ax.set_ylabel(r'Gradient Magnitude ($\lambda^t$)')
+ax.legend()
+ax.grid(True, linestyle=':', alpha=0.6)
+ax.set_yscale('log')
+
+utils.save_and_include("gradient_stability.pdf", width=r"0.9\textwidth")
+\end{pycode}
+\caption{The vanishing and exploding gradient problem. Even a small deviation from 1.0 in the eigenvalue leads to exponential decay or growth of gradient magnitude. Learning long-range dependencies becomes impossible because gradients from 50 steps ago are either $\approx 0$ or $\to \infty$.}
+\label{fig:gradient_stability}
+\end{figure}
+
+\paragraph{Mitigation: Gradient Clipping.}
+For exploding gradients, a simple fix is \textbf{gradient clipping}: if the norm of the gradient exceeds a threshold, rescale it:
+\begin{equation}
+	\mathbf{g} \leftarrow \min\left(1, \frac{\text{threshold}}{\|\mathbf{g}\|}\right) \cdot \mathbf{g}
+\end{equation}
+This prevents catastrophic updates but does not fix vanishing gradients.
+
+\subsection{Gated Architectures: The Solution}
+The fundamental problem is that vanilla RNNs transform the hidden state at every step, making it hard to preserve information unchanged. \textbf{Gated architectures} solve this by introducing \textbf{gates}, which are learned, data-dependent switches (values in $[0, 1]$) that control information flow.
+
+The key idea: if a gate is ``open'' (value $\approx 1$), information (and gradients!) can flow through \textit{unchanged}. This creates a ``gradient highway'' that bypasses the vanishing gradient problem.
+
+\subsubsection{Gated Recurrent Unit (GRU)}
+The \textbf{GRU} uses two gates:
+
+\begin{tcolorbox}[colback=tudelftblue!5!white, colframe=tudelftblue, title=GRU Equations]
+\textbf{Reset Gate} (what to forget from the past):
+\begin{equation}
+	\mathbf{r}_t = \sigma(\mathbf{W}_{xr}\mathbf{x}_t + \mathbf{W}_{hr}\mathbf{h}_{t-1} + \mathbf{b}_r)
+\end{equation}
+\textbf{Update Gate} (how much of the past to keep):
+\begin{equation}
+	\mathbf{z}_t = \sigma(\mathbf{W}_{xz}\mathbf{x}_t + \mathbf{W}_{hz}\mathbf{h}_{t-1} + \mathbf{b}_z)
+\end{equation}
+\textbf{Candidate Hidden State} (new information):
+\begin{equation}
+	\tilde{\mathbf{h}}_t = \tanh(\mathbf{W}_{xh}\mathbf{x}_t + \mathbf{W}_{hh}(\mathbf{r}_t \odot \mathbf{h}_{t-1}) + \mathbf{b}_h)
+\end{equation}
+\textbf{Final Hidden State} (linear interpolation):
+\begin{equation}
+	\mathbf{h}_t = \mathbf{z}_t \odot \mathbf{h}_{t-1} + (1 - \mathbf{z}_t) \odot \tilde{\mathbf{h}}_t
+\end{equation}
+\end{tcolorbox}
+
+\begin{itemize}
+	\item If $\mathbf{z}_t \approx 1$: The new hidden state is almost the old one ($\mathbf{h}_t \approx \mathbf{h}_{t-1}$). Information is \textbf{preserved} across time, and gradients flow directly.
+	\item If $\mathbf{z}_t \approx 0$: The new hidden state is the candidate ($\mathbf{h}_t \approx \tilde{\mathbf{h}}_t$). The memory is \textbf{reset} with new information.
+	\item The reset gate $\mathbf{r}_t$ controls how much of $\mathbf{h}_{t-1}$ is used when computing the candidate.
+\end{itemize}
+
+\subsubsection{Long Short-Term Memory (LSTM)}
+The \textbf{LSTM} is an older but still widely-used architecture. It introduces a separate \textbf{Cell State} $\mathbf{c}_t$ that acts as a ``conveyor belt'' for information, plus three gates:
+
+\begin{tcolorbox}[colback=tudelftblue!5!white, colframe=tudelftblue, title=LSTM Equations]
+\textbf{Forget Gate} (what to erase from cell):
+\begin{equation}
+	\mathbf{f}_t = \sigma(\mathbf{W}_{xf}\mathbf{x}_t + \mathbf{W}_{hf}\mathbf{h}_{t-1} + \mathbf{b}_f)
+\end{equation}
+\textbf{Input Gate} (what new information to write):
+\begin{equation}
+	\mathbf{i}_t = \sigma(\mathbf{W}_{xi}\mathbf{x}_t + \mathbf{W}_{hi}\mathbf{h}_{t-1} + \mathbf{b}_i)
+\end{equation}
+\textbf{Output Gate} (what to output from cell):
+\begin{equation}
+	\mathbf{o}_t = \sigma(\mathbf{W}_{xo}\mathbf{x}_t + \mathbf{W}_{ho}\mathbf{h}_{t-1} + \mathbf{b}_o)
+\end{equation}
+\textbf{Candidate Cell State}:
+\begin{equation}
+	\tilde{\mathbf{c}}_t = \tanh(\mathbf{W}_{xc}\mathbf{x}_t + \mathbf{W}_{hc}\mathbf{h}_{t-1} + \mathbf{b}_c)
+\end{equation}
+\textbf{Cell State Update} (linear combination):
+\begin{equation}
+	\mathbf{c}_t = \mathbf{f}_t \odot \mathbf{c}_{t-1} + \mathbf{i}_t \odot \tilde{\mathbf{c}}_t
+\end{equation}
+\textbf{Hidden State Output}:
+\begin{equation}
+	\mathbf{h}_t = \mathbf{o}_t \odot \tanh(\mathbf{c}_t)
+\end{equation}
+\end{tcolorbox}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    scale=0.8,
+    gate/.style={rectangle, draw=tudelftblue, fill=tudelftblue!20, thick, minimum width=0.8cm, minimum height=0.6cm, font=\footnotesize},
+    op/.style={circle, draw=gray, fill=gray!10, thick, minimum size=0.5cm, font=\small},
+    cell/.style={rectangle, draw=tudelftcyan, fill=tudelftcyan!20, thick, rounded corners, minimum width=2cm, minimum height=0.6cm, font=\small},
+    arrow/.style={->, thick},
+    label/.style={font=\footnotesize}
+]
+    % Cell state conveyor belt
+    \draw[arrow, tudelftcyan, very thick] (-3, 3) -- node[above, label] {$\mathbf{c}_{t-1}$} (0, 3);
+    \node[op] (forget_mult) at (1.5, 3) {$\times$};
+    \node[op] (add) at (4, 3) {$+$};
+    \draw[arrow, tudelftcyan, very thick] (0, 3) -- (forget_mult);
+    \draw[arrow, tudelftcyan, very thick] (forget_mult) -- (add);
+    \draw[arrow, tudelftcyan, very thick] (add) -- (7, 3) node[right, label] {$\mathbf{c}_t$};
+    
+    % Forget gate
+    \node[gate] (f) at (1.5, 1) {$\mathbf{f}_t$};
+    \node[label, below=0.1cm of f] {Forget};
+    \draw[arrow] (f) -- (forget_mult);
+    
+    % Input gate and candidate
+    \node[gate] (i) at (3, 1) {$\mathbf{i}_t$};
+    \node[label, below=0.1cm of i] {Input};
+    \node[gate] (c_tilde) at (4.5, 1) {$\tilde{\mathbf{c}}_t$};
+    \node[label, below=0.1cm of c_tilde] {Candidate};
+    \node[op] (input_mult) at (3.75, 2) {$\times$};
+    \draw[arrow] (i.north) -- ++(0, 0.3) -| (input_mult);
+    \draw[arrow] (c_tilde.north) -- ++(0, 0.3) -| (input_mult);
+    \draw[arrow] (input_mult) -- (add);
+    
+    % Output gate
+    \node[gate] (o) at (6, 1) {$\mathbf{o}_t$};
+    \node[label, below=0.1cm of o] {Output};
+    \node[op] (tanh_out) at (5.5, 3) {\tiny$\tanh$};
+    \node[op] (out_mult) at (6, 2.2) {$\times$};
+    \draw[arrow] (5, 3) -- (tanh_out);
+    \draw[arrow] (tanh_out.south) -- ++(0, -0.3) -| (out_mult.north);
+    \draw[arrow] (o) -- (out_mult);
+    
+    % Hidden state
+    \draw[arrow] (out_mult.east) -- ++(0.5, 0) |- (7, 0) node[right, label] {$\mathbf{h}_t$};
+    
+    % Inputs
+    \draw[arrow] (-3, 0) node[left, label] {$\mathbf{h}_{t-1}$} -- (0, 0);
+    \draw[arrow] (-1, -1.5) node[below, label] {$\mathbf{x}_t$} -- (-1, 0);
+    
+    % Connections to gates (conceptual)
+    \draw[dashed, gray] (0, 0) -- (f.west);
+    \draw[dashed, gray] (0, 0) -- (i.west);
+    \draw[dashed, gray] (0, 0) -- (c_tilde.west);
+    \draw[dashed, gray] (0, 0) -- (o.west);
+    
+    % Title
+    \node[font=\bfseries, text=tudelftdarkblue] at (2, 4.5) {LSTM Cell};
+\end{tikzpicture}
+\caption{The LSTM architecture. The horizontal line at the top is the \textbf{Cell State} $\mathbf{c}_t$, a ``conveyor belt'' that can carry information unchanged across many time steps. Gates (forget, input, output) control what information is removed, added, or output at each step.}
+\label{fig:lstm_cell}
+\end{figure}
+
+\paragraph{Why LSTMs Solve Vanishing Gradients:}
+The cell state $\mathbf{c}_t$ is updated via \textbf{addition} (not multiplication):
+\begin{equation}
+	\mathbf{c}_t = \mathbf{f}_t \odot \mathbf{c}_{t-1} + \mathbf{i}_t \odot \tilde{\mathbf{c}}_t
+\end{equation}
+If $\mathbf{f}_t \approx 1$ and $\mathbf{i}_t \approx 0$, then $\mathbf{c}_t \approx \mathbf{c}_{t-1}$. The gradient $\frac{\partial \mathbf{c}_T}{\partial \mathbf{c}_t}$ involves products of forget gate values, not weight matrices. If forget gates are $\approx 1$, gradients flow through unchanged for hundreds of time steps.
+
+\subsection{Summary: RNN Architectures}
+
+\begin{table}[H]
+\centering
+\begin{tblr}{
+  colspec = {l l l X[l]},
+  row{1} = {font=\bfseries},
+  hline{1,2,Z} = {solid},
+}
+Architecture & Gates & Cell State & Key Feature \\
+Vanilla RNN & None & No & Simple but suffers from vanishing gradients \\
+GRU & Reset, Update & No (merged with $\mathbf{h}$) & Simpler, fewer parameters than LSTM \\
+LSTM & Forget, Input, Output & Yes ($\mathbf{c}_t$) & Gold standard, explicit memory cell \\
+\end{tblr}
+\caption{Comparison of RNN architectures. Gated architectures (GRU, LSTM) solve the vanishing gradient problem by allowing information to flow unchanged through time.}
+\label{tab:rnn_architectures}
+\end{table}
+
+
+\section{Self-Attention and Transformers}
+\label{sec:dl_transformers}
+
+RNNs suffer from two fundamental limitations:
+\begin{enumerate}
+	\item \textbf{Sequential Processing:} Each hidden state depends on the previous one, preventing parallelization across time steps. Training is slow.
+	\item \textbf{Vanishing Gradients:} Despite gating mechanisms, modeling very long-range dependencies remains challenging.
+\end{enumerate}
+
+The \textbf{Transformer} architecture (Vaswani et al., 2017, ``Attention Is All You Need'') revolutionized Deep Learning by discarding recurrence entirely. Instead, it uses \textbf{Self-Attention}, a mechanism where every token can directly attend to every other token in a single step, regardless of distance. This enables full parallelization and captures long-range dependencies effortlessly.
+
+\subsection{The Core Idea: Weighted Aggregation}
+Consider a sequence of word embeddings $\mathbf{x}_1, \mathbf{x}_2, \ldots, \mathbf{x}_n$. Self-attention produces new representations $\mathbf{y}_1, \ldots, \mathbf{y}_n$ where each $\mathbf{y}_i$ is a \textbf{weighted sum of all input embeddings}:
+\begin{equation}
+	\mathbf{y}_i = \sum_{j=1}^{n} w_{ij} \cdot \mathbf{x}_j
+\end{equation}
+The key question is: how do we determine the weights $w_{ij}$?
+
+\paragraph{Step 1: Compute Similarity.}
+We measure how ``relevant'' token $j$ is to token $i$ using a dot product (similarity):
+\begin{equation}
+	e_{ij} = \mathbf{x}_i^\top \mathbf{x}_j
+\end{equation}
+
+\paragraph{Step 2: Normalize with Softmax.}
+The raw scores $e_{ij}$ can be any real number. We convert them to proper probability-like weights using softmax:
+\begin{equation}
+	w_{ij} = \frac{\exp(e_{ij})}{\sum_{k=1}^{n} \exp(e_{ik})}
+\end{equation}
+This ensures $\sum_j w_{ij} = 1$ and $w_{ij} \geq 0$ for all $j$.
+
+\paragraph{Step 3: Weighted Aggregation.}
+Each output $\mathbf{y}_i$ is a convex combination of all input vectors, with weights determined by their similarity to $\mathbf{x}_i$.
+
+\subsection{Queries, Keys, and Values}
+The basic attention formula uses the same embedding $\mathbf{x}$ for two different purposes:
+\begin{enumerate}
+	\item \textbf{Determining relevance} (computing $e_{ij}$).
+	\item \textbf{Providing content} (being aggregated into $\mathbf{y}_i$).
+\end{enumerate}
+These are conceptually different tasks. Consider:
+\begin{quote}
+	``The \textit{student}, after reading the book, \textit{was} prepared.''
+\end{quote}
+When deciding how ``student'' influences ``was'', we care about grammatical features (singular noun $\to$ singular verb). But when aggregating content from ``student'' into ``was'', we might want semantic features (the concept of a person).
+
+The Transformer introduces three \textbf{learned linear projections} for each embedding:
+\begin{tcolorbox}[colback=tudelftblue!5!white, colframe=tudelftblue, 
+    title={Query $\mid$ Key $\mid$ Value}]
+For each input embedding $\mathbf{x}_i$:
+\begin{align}
+	\mathbf{q}_i &= \mathbf{W}_Q \mathbf{x}_i \quad \text{(Query: ``What am I looking for?'')} \\
+	\mathbf{k}_i &= \mathbf{W}_K \mathbf{x}_i \quad \text{(Key: ``What do I contain?'')} \\
+	\mathbf{v}_i &= \mathbf{W}_V \mathbf{x}_i \quad \text{(Value: ``What should I contribute?'')}
+\end{align}
+The attention weight from $i$ to $j$ is computed using queries and keys:
+\begin{equation}
+	e_{ij} = \mathbf{q}_i^\top \mathbf{k}_j
+\end{equation}
+The output uses values:
+\begin{equation}
+	\mathbf{y}_i = \sum_{j=1}^{n} w_{ij} \cdot \mathbf{v}_j
+\end{equation}
+\end{tcolorbox}
+
+The intuition:
+\begin{itemize}
+	\item A \textbf{verb} (``was'') emits a query looking for its subject's number (singular/plural).
+	\item A \textbf{noun} (``student'') advertises via its key that it is a singular noun.
+	\item The dot product $\mathbf{q}_{\text{was}}^\top \mathbf{k}_{\text{student}}$ is high $\to$ high attention weight.
+	\item ``student'''s \textbf{value} (perhaps encoding ``singular'') is then added to ``was'''s representation.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    scale=0.7,
+    embed/.style={rectangle, draw=tudelftblue, fill=tudelftblue!10, thick, minimum width=1cm, minimum height=0.6cm, font=\footnotesize},
+    proj/.style={rectangle, draw=tudelftcyan, fill=tudelftcyan!10, thick, minimum width=0.8cm, minimum height=0.5cm, font=\scriptsize},
+    score/.style={rectangle, draw=gray, fill=gray!10, thick, minimum width=0.6cm, minimum height=0.6cm, font=\scriptsize},
+    output/.style={rectangle, draw=red!70!black, fill=red!10, thick, minimum width=1cm, minimum height=0.6cm, font=\footnotesize},
+    arrow/.style={->, thick}
+]
+    % Input embeddings
+    \node[embed] (x1) at (0, 0) {$\mathbf{x}_1$};
+    \node[embed] (x2) at (2, 0) {$\mathbf{x}_2$};
+    \node[embed] (x3) at (4, 0) {$\mathbf{x}_3$};
+    \node[font=\footnotesize] at (6, 0) {$\cdots$};
+    
+    % Q, K, V projections for x2
+    \node[proj] (q2) at (2, 2) {$\mathbf{q}_2$};
+    \node[proj] (k1) at (0, 2) {$\mathbf{k}_1$};
+    \node[proj] (k2) at (2, 3.5) {$\mathbf{k}_2$};
+    \node[proj] (k3) at (4, 2) {$\mathbf{k}_3$};
+    \node[proj] (v1) at (0, 4.5) {$\mathbf{v}_1$};
+    \node[proj] (v2) at (2, 5.5) {$\mathbf{v}_2$};
+    \node[proj] (v3) at (4, 4.5) {$\mathbf{v}_3$};
+    
+    % Arrows from inputs to projections
+    \draw[arrow, gray] (x1) -- (k1);
+    \draw[arrow, gray] (x2) -- (q2);
+    \draw[arrow, gray] (x2) -- (k2);
+    \draw[arrow, gray] (x3) -- (k3);
+    \draw[arrow, gray] (x1) -- (v1);
+    \draw[arrow, gray] (x2) -- (v2);
+    \draw[arrow, gray] (x3) -- (v3);
+    
+    % Dot products (scores)
+    \draw[arrow, tudelftblue] (q2.west) -- +(-0.5, 0) |- node[left, font=\scriptsize] {$\mathbf{q}_2^\top \mathbf{k}_1$} (k1.east);
+    \draw[arrow, tudelftblue] (q2.north) -- node[right, font=\scriptsize] {$\mathbf{q}_2^\top \mathbf{k}_2$} (k2.south);
+    \draw[arrow, tudelftblue] (q2.east) -- +(0.5, 0) |- node[right, font=\scriptsize] {$\mathbf{q}_2^\top \mathbf{k}_3$} (k3.west);
+    
+    % Output
+    \node[output] (y2) at (2, 7) {$\mathbf{y}_2$};
+    
+    % Weighted sum arrows
+    \draw[arrow, red!70!black, dashed] (v1.north) -- ++(0, 0.5) -| (y2.south west);
+    \draw[arrow, red!70!black] (v2.north) -- (y2.south);
+    \draw[arrow, red!70!black, dashed] (v3.north) -- ++(0, 0.5) -| (y2.south east);
+    
+    % Annotations
+    \node[font=\scriptsize, text=gray] at (6, 2) {Dot products};
+    \node[font=\scriptsize, text=gray] at (6, 4.5) {softmax};
+    \node[font=\scriptsize, text=gray] at (6, 6) {weighted sum};
+\end{tikzpicture}
+\caption{Self-Attention for computing $\mathbf{y}_2$. The query $\mathbf{q}_2$ is compared to all keys via dot product. After softmax, the resulting weights multiply the values, which are summed to produce the output.}
+\label{fig:self_attention_mechanism}
+\end{figure}
+
+\subsection{Scaled Dot-Product Attention}
+In matrix form, for a sequence of $n$ tokens with embedding dimension $d$:
+\begin{equation}
+	\mathbf{Q} = \mathbf{X}\mathbf{W}_Q, \quad \mathbf{K} = \mathbf{X}\mathbf{W}_K, \quad \mathbf{V} = \mathbf{X}\mathbf{W}_V
+\end{equation}
+where $\mathbf{X} \in \mathbb{R}^{n \times d}$ and $\mathbf{W}_Q, \mathbf{W}_K, \mathbf{W}_V \in \mathbb{R}^{d \times d_k}$.
+
+The full attention formula is:
+\begin{equation}
+	\text{Attention}(\mathbf{Q}, \mathbf{K}, \mathbf{V}) = \text{softmax}\left( \frac{\mathbf{Q}\mathbf{K}^\top}{\sqrt{d_k}} \right) \mathbf{V}
+\end{equation}
+
+\paragraph{Why scale by $\sqrt{d_k}$?}
+The dot product $\mathbf{q}^\top \mathbf{k}$ has variance proportional to $d_k$ (each element of $\mathbf{q}$ and $\mathbf{k}$ contributes to the sum). For large $d_k$, some dot products become very large, pushing softmax into saturation (outputs close to 0 or 1) where gradients are tiny. Dividing by $\sqrt{d_k}$ normalizes the variance to $\approx 1$, keeping softmax in a well-behaved regime.
+
+\subsection{Multi-Head Attention}
+A single attention head learns one type of relationship (e.g., subject-verb agreement). But language has many simultaneous relationships (grammar, coreference, semantic roles). \textbf{Multi-Head Attention} runs $h$ attention heads in parallel, each with its own $\mathbf{W}_Q^{(r)}, \mathbf{W}_K^{(r)}, \mathbf{W}_V^{(r)}$:
+\begin{equation}
+	\text{head}_r = \text{Attention}(\mathbf{Q}^{(r)}, \mathbf{K}^{(r)}, \mathbf{V}^{(r)})
+\end{equation}
+The outputs are concatenated and projected:
+\begin{equation}
+	\text{MultiHead}(\mathbf{Q}, \mathbf{K}, \mathbf{V}) = \text{Concat}(\text{head}_1, \ldots, \text{head}_h) \mathbf{W}^O
+\end{equation}
+Typically, if the model dimension is $d = 512$ and we use $h = 8$ heads, each head operates on $d_k = d/h = 64$ dimensions.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    scale=0.65,
+    head/.style={rectangle, draw=tudelftblue, fill=tudelftblue!20, thick, rounded corners, minimum width=1.5cm, minimum height=0.8cm, font=\footnotesize},
+    proj/.style={rectangle, draw=tudelftcyan, fill=tudelftcyan!10, thick, minimum width=1.5cm, minimum height=0.6cm, font=\footnotesize},
+    concat/.style={rectangle, draw=gray, fill=gray!10, thick, minimum width=6cm, minimum height=0.6cm, font=\footnotesize},
+    arrow/.style={->, thick}
+]
+    % Input
+    \node (input) at (0, 0) {Input $\mathbf{X}$};
+    
+    % Heads
+    \node[head] (h1) at (-4, 2) {Head 1};
+    \node[head] (h2) at (-1.3, 2) {Head 2};
+    \node[font=\footnotesize] at (1.3, 2) {$\cdots$};
+    \node[head] (hh) at (4, 2) {Head $h$};
+    
+    % Arrows to heads
+    \draw[arrow] (input) -- ++(0, 0.8) -| (h1);
+    \draw[arrow] (input) -- ++(0, 0.8) -| (h2);
+    \draw[arrow] (input) -- ++(0, 0.8) -| (hh);
+    
+    % Concat
+    \node[concat] (concat) at (0, 4) {Concat};
+    
+    \draw[arrow] (h1) -- ++(0, 0.5) -| (-3, 3.7);
+    \draw[arrow] (h2) -- ++(0, 0.5) -| (-1, 3.7);
+    \draw[arrow] (hh) -- ++(0, 0.5) -| (3, 3.7);
+    
+    % Output projection
+    \node[proj] (wo) at (0, 5.5) {$\mathbf{W}^O$ Projection};
+    \draw[arrow] (concat) -- (wo);
+    
+    % Output
+    \node (output) at (0, 7) {Output};
+    \draw[arrow] (wo) -- (output);
+    
+    % Annotations inside heads
+    \node[font=\tiny, text=gray] at (-4, 1.3) {$\mathbf{W}_Q^{(1)}, \mathbf{W}_K^{(1)}, \mathbf{W}_V^{(1)}$};
+    \node[font=\tiny, text=gray] at (4, 1.3) {$\mathbf{W}_Q^{(h)}, \mathbf{W}_K^{(h)}, \mathbf{W}_V^{(h)}$};
+\end{tikzpicture}
+\caption{Multi-Head Attention. Each head has its own Q, K, V projections and computes attention independently. Outputs are concatenated and projected back to the model dimension.}
+\label{fig:multi_head_attention}
+\end{figure}
+
+\subsection{Positional Encodings}
+The self-attention formula is \textbf{permutation invariant}: if we shuffle the input tokens, the outputs are shuffled the same way, but the attention weights themselves don't change. The model has no notion of word order!
+
+To inject position information, we add \textbf{Positional Encodings} to the input embeddings:
+\begin{equation}
+	\mathbf{x}_t' = \mathbf{x}_t + \mathbf{p}_t
+\end{equation}
+The original Transformer uses fixed sinusoidal encodings:
+\begin{align}
+	\text{PE}_{(pos, 2i)} &= \sin\left(\frac{pos}{10000^{2i/d}}\right) \\
+	\text{PE}_{(pos, 2i+1)} &= \cos\left(\frac{pos}{10000^{2i/d}}\right)
+\end{align}
+where $pos$ is the position and $i$ is the dimension index. Different frequencies allow the model to learn to attend to relative positions.
+
+Modern models often use \textbf{learned positional embeddings} or more advanced schemes like Rotary Position Embedding (RoPE).
+
+\subsection{The Transformer Block}
+A complete Transformer layer combines Multi-Head Attention with a Feed-Forward Network (FFN), using residual connections and layer normalization:
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    scale=0.7,
+    block/.style={rectangle, draw=tudelftblue, fill=tudelftblue!10, thick, minimum width=3cm, minimum height=0.8cm, font=\small},
+    norm/.style={rectangle, draw=tudelftcyan, fill=tudelftcyan!10, thick, minimum width=3cm, minimum height=0.6cm, font=\small},
+    add/.style={circle, draw=gray, fill=gray!10, thick, minimum size=0.5cm, font=\small},
+    arrow/.style={->, thick}
+]
+    % Input
+    \node (input) at (0, 0) {Input};
+    
+    % Add + Norm 1
+    \node[add] (add1) at (0, 2) {$+$};
+    \node[norm] (norm1) at (0, 3.2) {Layer Norm};
+    
+    % Multi-Head Attention
+    \node[block] (mha) at (0, 5) {Multi-Head Attention};
+    
+    % Add + Norm 2
+    \node[add] (add2) at (0, 7) {$+$};
+    \node[norm] (norm2) at (0, 8.2) {Layer Norm};
+    
+    % FFN
+    \node[block] (ffn) at (0, 10) {Feed-Forward Network};
+    
+    % Output
+    \node (output) at (0, 11.5) {Output};
+    
+    % Main path
+    \draw[arrow] (input) -- (add1);
+    \draw[arrow] (add1) -- (norm1);
+    \draw[arrow] (norm1) -- (mha);
+    \draw[arrow] (mha) -- (add2);
+    \draw[arrow] (add2) -- (norm2);
+    \draw[arrow] (norm2) -- (ffn);
+    \draw[arrow] (ffn) -- (output);
+    
+    % Residual connections
+    \draw[arrow, tudelftcyan] (input.west) -- ++(-1.5, 0) |- (add1.west);
+    \draw[arrow, tudelftcyan] (norm1.west) -- ++(-1, 0) |- (add2.west);
+    
+    % Labels
+    \node[font=\footnotesize, text=tudelftcyan] at (-2.5, 1) {Residual};
+    \node[font=\footnotesize, text=tudelftcyan] at (-2, 5.5) {Residual};
+\end{tikzpicture}
+\caption{A Transformer Block (Post-Norm variant). Multi-Head Attention is followed by a Feed-Forward Network. Residual connections (skip connections) and Layer Normalization are applied after each sub-layer, enabling stable training of very deep models.}
+\label{fig:transformer_block}
+\end{figure}
+
+The Feed-Forward Network is a simple two-layer MLP applied position-wise:
+\begin{equation}
+	\text{FFN}(\mathbf{x}) = \max(0, \mathbf{x}\mathbf{W}_1 + \mathbf{b}_1)\mathbf{W}_2 + \mathbf{b}_2
+\end{equation}
+It expands the dimension (e.g., $512 \to 2048$), applies a non-linearity, and projects back.
+
+\subsection{Why Transformers Dominate}
+\begin{itemize}
+	\item \textbf{Parallelization:} All attention computations for all positions happen simultaneously. Training is highly efficient on modern GPUs.
+	\item \textbf{Long-Range Dependencies:} Any two tokens interact directly in a single attention layer, regardless of distance.
+	\item \textbf{Scalability:} The architecture scales to billions of parameters and trillions of tokens (foundation models like GPT, BERT, LLaMA).
+	\item \textbf{Flexibility:} The same architecture works for language, vision (ViT), audio, and multimodal tasks.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    scale=0.9,
+    cell/.style={minimum width=1.4cm, minimum height=1.4cm, font=\small},
+    label/.style={font=\small\bfseries}
+]
+    % Define attention weights (pre-computed from softmax)
+    % Row = Query, Col = Key
+    % Row 0: "The" -> weights [0.50, 0.13, 0.13, 0.13, 0.13]
+    % Row 1: "student" -> weights [0.41, 0.30, 0.10, 0.10, 0.10]
+    % Row 2: "reads" -> weights [0.05, 0.35, 0.10, 0.05, 0.45]
+    % Row 3: "a" -> weights [0.20, 0.20, 0.20, 0.20, 0.20]
+    % Row 4: "book" -> weights [0.10, 0.10, 0.10, 0.41, 0.30]
+    
+    % Column labels (Keys)
+    \node[label] at (1.4, 1.2) {The};
+    \node[label] at (2.8, 1.2) {student};
+    \node[label] at (4.2, 1.2) {reads};
+    \node[label] at (5.6, 1.2) {a};
+    \node[label] at (7.0, 1.2) {book};
+    
+    % Row labels (Queries)
+    \node[label, anchor=east] at (0.5, 0) {The};
+    \node[label, anchor=east] at (0.5, -1.4) {student};
+    \node[label, anchor=east] at (0.5, -2.8) {reads};
+    \node[label, anchor=east] at (0.5, -4.2) {a};
+    \node[label, anchor=east] at (0.5, -5.6) {book};
+    
+    % Row 0: The
+    \fill[tudelftblue!60] (0.7, -0.7) rectangle (2.1, 0.7);
+    \fill[tudelftblue!15] (2.1, -0.7) rectangle (3.5, 0.7);
+    \fill[tudelftblue!15] (3.5, -0.7) rectangle (4.9, 0.7);
+    \fill[tudelftblue!15] (4.9, -0.7) rectangle (6.3, 0.7);
+    \fill[tudelftblue!15] (6.3, -0.7) rectangle (7.7, 0.7);
+    \node[cell] at (1.4, 0) {0.50};
+    \node[cell] at (2.8, 0) {0.13};
+    \node[cell] at (4.2, 0) {0.13};
+    \node[cell] at (5.6, 0) {0.13};
+    \node[cell] at (7.0, 0) {0.13};
+    
+    % Row 1: student
+    \fill[tudelftblue!50] (0.7, -2.1) rectangle (2.1, -0.7);
+    \fill[tudelftblue!35] (2.1, -2.1) rectangle (3.5, -0.7);
+    \fill[tudelftblue!10] (3.5, -2.1) rectangle (4.9, -0.7);
+    \fill[tudelftblue!10] (4.9, -2.1) rectangle (6.3, -0.7);
+    \fill[tudelftblue!10] (6.3, -2.1) rectangle (7.7, -0.7);
+    \node[cell] at (1.4, -1.4) {0.41};
+    \node[cell] at (2.8, -1.4) {0.30};
+    \node[cell] at (4.2, -1.4) {0.10};
+    \node[cell] at (5.6, -1.4) {0.10};
+    \node[cell] at (7.0, -1.4) {0.10};
+    
+    % Row 2: reads (high attention to student and book)
+    \fill[tudelftblue!5] (0.7, -3.5) rectangle (2.1, -2.1);
+    \fill[tudelftblue!45] (2.1, -3.5) rectangle (3.5, -2.1);
+    \fill[tudelftblue!12] (3.5, -3.5) rectangle (4.9, -2.1);
+    \fill[tudelftblue!5] (4.9, -3.5) rectangle (6.3, -2.1);
+    \fill[tudelftblue!55] (6.3, -3.5) rectangle (7.7, -2.1);
+    \node[cell] at (1.4, -2.8) {0.05};
+    \node[cell] at (2.8, -2.8) {\textbf{0.35}};
+    \node[cell] at (4.2, -2.8) {0.10};
+    \node[cell] at (5.6, -2.8) {0.05};
+    \node[cell] at (7.0, -2.8) {\textbf{0.45}};
+    
+    % Row 3: a
+    \fill[tudelftblue!20] (0.7, -4.9) rectangle (2.1, -3.5);
+    \fill[tudelftblue!20] (2.1, -4.9) rectangle (3.5, -3.5);
+    \fill[tudelftblue!20] (3.5, -4.9) rectangle (4.9, -3.5);
+    \fill[tudelftblue!20] (4.9, -4.9) rectangle (6.3, -3.5);
+    \fill[tudelftblue!20] (6.3, -4.9) rectangle (7.7, -3.5);
+    \node[cell] at (1.4, -4.2) {0.20};
+    \node[cell] at (2.8, -4.2) {0.20};
+    \node[cell] at (4.2, -4.2) {0.20};
+    \node[cell] at (5.6, -4.2) {0.20};
+    \node[cell] at (7.0, -4.2) {0.20};
+    
+    % Row 4: book (high attention to a)
+    \fill[tudelftblue!10] (0.7, -6.3) rectangle (2.1, -4.9);
+    \fill[tudelftblue!10] (2.1, -6.3) rectangle (3.5, -4.9);
+    \fill[tudelftblue!10] (3.5, -6.3) rectangle (4.9, -4.9);
+    \fill[tudelftblue!50] (4.9, -6.3) rectangle (6.3, -4.9);
+    \fill[tudelftblue!35] (6.3, -6.3) rectangle (7.7, -4.9);
+    \node[cell] at (1.4, -5.6) {0.10};
+    \node[cell] at (2.8, -5.6) {0.10};
+    \node[cell] at (4.2, -5.6) {0.10};
+    \node[cell] at (5.6, -5.6) {0.41};
+    \node[cell] at (7.0, -5.6) {0.30};
+    
+    % Grid lines
+    \draw[gray] (0.7, 0.7) grid[step=1.4] (7.7, -6.3);
+    \draw[thick] (0.7, 0.7) rectangle (7.7, -6.3);
+    
+    % Axis labels
+    \node[font=\footnotesize, rotate=90] at (-0.5, -2.8) {Query (Token seeking info)};
+    \node[font=\footnotesize] at (4.2, 2) {Key (Source of Info)};
+    
+    % Title
+    \node[font=\bfseries] at (4.2, 2.8) {Self-Attention Weights};
+\end{tikzpicture}
+\caption{Heatmap of Attention Weights for ``The student reads a book.'' The verb ``reads'' (Query) assigns high attention to its subject ``student'' and object ``book'' (Keys), aggregating their information. Darker cells indicate higher attention weights.}
+\label{fig:attention_heatmap}
+\end{figure}
+
+
+\section{Unsupervised Learning and Generative Models}
+\label{sec:dl_unsupervised}
+
+In Supervised Learning, we have labeled examples $(\mathbf{x}, \mathbf{y})$ and learn a mapping $\mathbf{x} \to \mathbf{y}$. In \textbf{Unsupervised Learning}, we only have data $\mathbf{x}$ with no labels. The goal is to discover the underlying \textbf{structure} of the data distribution $p_{\text{data}}(\mathbf{x})$.
+
+\paragraph{Why Unsupervised Learning?}
+\begin{itemize}
+	\item \textbf{Labels are expensive:} Annotating millions of images or documents requires significant human effort.
+	\item \textbf{Compression:} Learning compact representations for efficient storage and transmission.
+	\item \textbf{Feature learning:} Pre-training representations that transfer to downstream tasks.
+	\item \textbf{Generation:} Creating new synthetic data (images, text, audio) that looks like the training data.
+\end{itemize}
+
+\subsection{Autoencoders}
+An \textbf{Autoencoder} learns to compress data into a lower-dimensional representation and then reconstruct it. It consists of two parts:
+\begin{itemize}
+	\item \textbf{Encoder} $f$: Maps input $\mathbf{x}$ to a latent code $\mathbf{h} = f(\mathbf{x})$.
+	\item \textbf{Decoder} $g$: Reconstructs the input from the code $\hat{\mathbf{x}} = g(\mathbf{h})$.
+\end{itemize}
+The training objective is to minimize reconstruction error:
+\begin{equation}
+	\mathcal{L} = \|\mathbf{x} - g(f(\mathbf{x}))\|^2
+\end{equation}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    scale=0.8,
+    layer/.style={rectangle, draw=tudelftblue, fill=tudelftblue!10, thick, minimum width=0.8cm, font=\footnotesize},
+    latent/.style={rectangle, draw=tudelftcyan, fill=tudelftcyan!20, thick, minimum width=0.6cm, font=\footnotesize},
+    arrow/.style={->, thick}
+]
+    % Input
+    \node[layer, minimum height=3cm] (input) at (0, 0) {};
+    \node[below=0.1cm of input, font=\footnotesize] {$\mathbf{x}$};
+    \node[above=0.1cm of input, font=\footnotesize] {Input};
+    
+    % Encoder hidden
+    \node[layer, minimum height=2cm] (enc1) at (2, 0) {};
+    
+    % Latent (bottleneck)
+    \node[latent, minimum height=1cm] (latent) at (4, 0) {};
+    \node[below=0.1cm of latent, font=\footnotesize] {$\mathbf{h}$};
+    \node[above=0.1cm of latent, font=\footnotesize, text=tudelftcyan] {Bottleneck};
+    
+    % Decoder hidden
+    \node[layer, minimum height=2cm] (dec1) at (6, 0) {};
+    
+    % Output
+    \node[layer, minimum height=3cm] (output) at (8, 0) {};
+    \node[below=0.1cm of output, font=\footnotesize] {$\hat{\mathbf{x}}$};
+    \node[above=0.1cm of output, font=\footnotesize] {Output};
+    
+    % Arrows
+    \draw[arrow] (input) -- (enc1);
+    \draw[arrow] (enc1) -- (latent);
+    \draw[arrow] (latent) -- (dec1);
+    \draw[arrow] (dec1) -- (output);
+    
+    % Labels
+    \draw[decorate, decoration={brace, amplitude=5pt, raise=5pt}] (0, 1.7) -- (4, 1.7) node[midway, above=8pt, font=\footnotesize] {Encoder $f$};
+    \draw[decorate, decoration={brace, amplitude=5pt, raise=5pt}] (4, 1.7) -- (8, 1.7) node[midway, above=8pt, font=\footnotesize] {Decoder $g$};
+\end{tikzpicture}
+\caption{Autoencoder architecture. The encoder compresses the input through progressively smaller layers until reaching the \textbf{bottleneck} (latent code $\mathbf{h}$). The decoder then expands it back to reconstruct the input.}
+\label{fig:autoencoder}
+\end{figure}
+
+\paragraph{Undercomplete vs. Overcomplete:}
+\begin{itemize}
+	\item \textbf{Undercomplete} ($\dim(\mathbf{h}) < \dim(\mathbf{x})$): The bottleneck forces compression. The network must learn the most important features to reconstruct $\mathbf{x}$ from $\mathbf{h}$. Similar to PCA but with non-linear mappings.
+	\item \textbf{Overcomplete} ($\dim(\mathbf{h}) \geq \dim(\mathbf{x})$): No compression needed, the network could simply copy the input. We need regularization to learn useful features.
+\end{itemize}
+
+\paragraph{Denoising Autoencoders (DAEs):}
+A powerful regularization strategy is to train the autoencoder to \textbf{denoise} corrupted inputs:
+\begin{equation}
+	\mathcal{L}_{\text{DAE}} = \|\mathbf{x} - g(f(\tilde{\mathbf{x}}))\|^2, \quad \tilde{\mathbf{x}} = \mathbf{x} + \epsilon, \quad \epsilon \sim \mathcal{N}(0, \sigma^2)
+\end{equation}
+The network receives a noisy version $\tilde{\mathbf{x}}$ but must output the clean $\mathbf{x}$. This forces it to learn the \textbf{data manifold},the low-dimensional structure underlying high-dimensional data.
+
+\subsection{Generative Models: The Core Idea}
+Generative models aim to \textbf{sample new data} from $p_{\text{data}}(\mathbf{x})$. Since this distribution is complex and unknown, we can't sample directly. The key insight:
+\begin{center}
+	\textit{Transform samples from a simple distribution (e.g., $\mathbf{z} \sim \mathcal{N}(0, \mathbf{I})$) into the complex data distribution.}
+\end{center}
+All major generative models (VAE, GAN, Diffusion) follow this principle but differ in how they learn the transformation.
+
+\subsection{Variational Autoencoders (VAEs)}
+A standard autoencoder maps each input to a single point in latent space. This makes generation difficult, because we don't know what points in latent space correspond to valid data. \textbf{VAEs} solve this by making the latent space probabilistic.
+
+\begin{tcolorbox}[colback=tudelftblue!5!white, colframe=tudelftblue, title=VAE Architecture]
+\textbf{Encoder:} Maps $\mathbf{x}$ to the \textit{parameters} of a distribution, not a single point:
+\begin{equation}
+	q_\phi(\mathbf{z} | \mathbf{x}) = \mathcal{N}(\boldsymbol{\mu}_\phi(\mathbf{x}), \boldsymbol{\sigma}_\phi^2(\mathbf{x}))
+\end{equation}
+\textbf{Decoder:} Samples $\mathbf{z}$ from this distribution and reconstructs:
+\begin{equation}
+	p_\theta(\mathbf{x} | \mathbf{z})
+\end{equation}
+\end{tcolorbox}
+
+\paragraph{The Reparameterization Trick:}
+We can't backpropagate through random sampling. The trick: express the randomness \textit{externally}:
+\begin{equation}
+	\mathbf{z} = \boldsymbol{\mu} + \boldsymbol{\sigma} \odot \boldsymbol{\epsilon}, \quad \boldsymbol{\epsilon} \sim \mathcal{N}(0, \mathbf{I})
+\end{equation}
+Now $\mathbf{z}$ is a deterministic function of $\boldsymbol{\mu}$, $\boldsymbol{\sigma}$, and $\boldsymbol{\epsilon}$, so gradients flow through.
+
+\paragraph{The ELBO Loss:}
+VAEs maximize the \textbf{Evidence Lower Bound} (ELBO):
+\begin{equation}
+	\mathcal{L}_{\text{ELBO}} = \underbrace{\mathbb{E}_{q_\phi(\mathbf{z}|\mathbf{x})}[\log p_\theta(\mathbf{x}|\mathbf{z})]}_{\text{Reconstruction}} - \underbrace{D_{\text{KL}}(q_\phi(\mathbf{z}|\mathbf{x}) \| p(\mathbf{z}))}_{\text{Regularization}}
+\end{equation}
+\begin{itemize}
+	\item \textbf{Reconstruction term:} The decoder should reconstruct $\mathbf{x}$ from $\mathbf{z}$.
+	\item \textbf{KL term:} The encoder distribution $q_\phi(\mathbf{z}|\mathbf{x})$ should be close to a standard Normal $p(\mathbf{z}) = \mathcal{N}(0, \mathbf{I})$. This regularizes the latent space to be smooth and continuous.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    scale=0.7,
+    block/.style={rectangle, draw=tudelftblue, fill=tudelftblue!10, thick, minimum width=1.5cm, minimum height=0.8cm, font=\footnotesize},
+    param/.style={rectangle, draw=tudelftcyan, fill=tudelftcyan!10, thick, minimum width=0.8cm, minimum height=0.6cm, font=\footnotesize},
+    sample/.style={circle, draw=red!70!black, fill=red!10, thick, minimum size=0.6cm, font=\footnotesize},
+    arrow/.style={->, thick}
+]
+    % Input
+    \node (x) at (0, 0) {$\mathbf{x}$};
+    
+    % Encoder
+    \node[block] (enc) at (2.5, 0) {Encoder $\phi$};
+    
+    % Mu and Sigma
+    \node[param] (mu) at (5, 0.8) {$\boldsymbol{\mu}$};
+    \node[param] (sigma) at (5, -0.8) {$\boldsymbol{\sigma}$};
+    
+    % Epsilon
+    \node[sample] (eps) at (7, -1.5) {$\boldsymbol{\epsilon}$};
+    \node[font=\scriptsize, below=0.1cm of eps] {$\sim \mathcal{N}(0, \mathbf{I})$};
+    
+    % Z
+    \node[sample] (z) at (8, 0) {$\mathbf{z}$};
+    
+    % Decoder
+    \node[block] (dec) at (11, 0) {Decoder $\theta$};
+    
+    % Output
+    \node (xhat) at (13.5, 0) {$\hat{\mathbf{x}}$};
+    
+    % Arrows
+    \draw[arrow] (x) -- (enc);
+    \draw[arrow] (enc) -- ++(1, 0) |- (mu);
+    \draw[arrow] (enc) -- ++(1, 0) |- (sigma);
+    \draw[arrow] (mu) -- ++(1.5, 0) |- (z);
+    \draw[arrow] (sigma) -- ++(1, 0) |- (z);
+    \draw[arrow, dashed] (eps) -- (z);
+    \draw[arrow] (z) -- (dec);
+    \draw[arrow] (dec) -- (xhat);
+    
+    % Reparameterization annotation
+    \node[font=\scriptsize, text=gray] at (7, 0.8) {$\mathbf{z} = \boldsymbol{\mu} + \boldsymbol{\sigma} \odot \boldsymbol{\epsilon}$};
+\end{tikzpicture}
+\caption{VAE architecture with the reparameterization trick. The encoder outputs $\boldsymbol{\mu}$ and $\boldsymbol{\sigma}$. Sampling is done by $\mathbf{z} = \boldsymbol{\mu} + \boldsymbol{\sigma} \odot \boldsymbol{\epsilon}$, where $\boldsymbol{\epsilon}$ is external noise. This allows gradients to flow through $\boldsymbol{\mu}$ and $\boldsymbol{\sigma}$.}
+\label{fig:vae}
+\end{figure}
+
+\subsection{Generative Adversarial Networks (GANs)}
+GANs take a completely different approach: a \textbf{game} between two networks.
+\begin{itemize}
+	\item \textbf{Generator $G$:} Takes noise $\mathbf{z} \sim \mathcal{N}(0, \mathbf{I})$ and produces fake data $G(\mathbf{z})$. Its goal is to fool the discriminator.
+	\item \textbf{Discriminator $D$:} Takes data (real or fake) and outputs the probability it's real. Its goal is to correctly classify real vs. fake.
+\end{itemize}
+
+\paragraph{The Minimax Objective:}
+\begin{equation}
+	\min_G \max_D \underbrace{\mathbb{E}_{\mathbf{x} \sim p_{\text{data}}}[\log D(\mathbf{x})]}_{\text{D wants this high (real $\to$ 1)}} + \underbrace{\mathbb{E}_{\mathbf{z} \sim p_z}[\log(1 - D(G(\mathbf{z})))]}_{\text{D wants this high (fake $\to$ 0), G wants it low}}
+\end{equation}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    scale=0.7,
+    block/.style={rectangle, draw=tudelftblue, fill=tudelftblue!10, thick, minimum width=2cm, minimum height=0.8cm, font=\small},
+    arrow/.style={->, thick}
+]
+    % Noise
+    \node (z) at (0, 0) {$\mathbf{z} \sim \mathcal{N}(0, \mathbf{I})$};
+    
+    % Generator
+    \node[block] (G) at (3.5, 0) {Generator $G$};
+    
+    % Fake image
+    \node (fake) at (7, 0) {Fake $G(\mathbf{z})$};
+    
+    % Real image
+    \node (real) at (7, 2) {Real $\mathbf{x}$};
+    
+    % Discriminator
+    \node[block] (D) at (10.5, 1) {Discriminator $D$};
+    
+    % Output
+    \node (out) at (14, 1) {Real/Fake?};
+    
+    % Arrows
+    \draw[arrow] (z) -- (G);
+    \draw[arrow] (G) -- (fake);
+    \draw[arrow] (fake) -- (D);
+    \draw[arrow] (real) -- (D);
+    \draw[arrow] (D) -- (out);
+    
+    % Feedback arrows
+    \draw[arrow, red!70!black, dashed] (out.south) -- ++(0, -1.5) -| node[pos=0.25, below, font=\scriptsize] {Update $G$ to fool $D$} (G.south);
+    \draw[arrow, tudelftcyan, dashed] (out.north) -- ++(0, 0.8) -| node[pos=0.25, above, font=\scriptsize] {Update $D$ to catch fakes} (D.north);
+\end{tikzpicture}
+\caption{GAN architecture. The generator transforms noise into fake data. The discriminator tries to distinguish real from fake. Training alternates between updating $D$ (to improve detection) and updating $G$ (to better fool $D$).}
+\label{fig:gan}
+\end{figure}
+
+\paragraph{Training Challenges:}
+\begin{itemize}
+	\item \textbf{Mode collapse:} $G$ learns to produce only a few modes of the data distribution.
+	\item \textbf{Unstable training:} Requires careful hyperparameter tuning.
+	\item \textbf{No density estimation:} GANs don't give $p(\mathbf{x})$, only samples.
+\end{itemize}
+Despite challenges, GANs produce extremely \textbf{sharp, realistic images}.
+
+\subsection{Diffusion Models}
+Diffusion models (2020--present) are now state-of-the-art for image generation (DALL-E 2, Stable Diffusion, Midjourney). The idea: learn to \textbf{reverse a gradual noising process}.
+
+\paragraph{Forward Process (Noising):}
+Starting from data $\mathbf{x}_0$, gradually add Gaussian noise over $T$ steps:
+\begin{equation}
+	\mathbf{x}_t = \sqrt{1 - \beta_t} \cdot \mathbf{x}_{t-1} + \sqrt{\beta_t} \cdot \boldsymbol{\epsilon}, \quad \boldsymbol{\epsilon} \sim \mathcal{N}(0, \mathbf{I})
+\end{equation}
+After many steps, $\mathbf{x}_T \approx \mathcal{N}(0, \mathbf{I})$---pure noise.
+
+\paragraph{Reverse Process (Denoising):}
+A neural network learns to predict the noise added at each step:
+\begin{equation}
+	\mathbf{x}_{t-1} = \frac{1}{\sqrt{1 - \beta_t}} \left( \mathbf{x}_t - \frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \boldsymbol{\epsilon}_\theta(\mathbf{x}_t, t) \right) + \sigma_t \mathbf{z}
+\end{equation}
+where $\boldsymbol{\epsilon}_\theta$ is the learned noise predictor (often a U-Net). To generate, start with pure noise and iteratively denoise.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    scale=0.6,
+    img/.style={rectangle, draw=gray, thick, minimum width=1.2cm, minimum height=1.2cm, font=\footnotesize},
+    arrow/.style={->, thick}
+]
+    % Forward process
+    \node[font=\bfseries] at (6, 2) {Forward Process (add noise)};
+    
+    \node[img, fill=tudelftblue!30] (x0) at (0, 0) {$\mathbf{x}_0$};
+    \node[img, fill=tudelftblue!20] (x1) at (3, 0) {$\mathbf{x}_1$};
+    \node[img, fill=gray!20] (x2) at (6, 0) {$\mathbf{x}_2$};
+    \node[font=\footnotesize] at (8.5, 0) {$\cdots$};
+    \node[img, fill=gray!50] (xT) at (11, 0) {$\mathbf{x}_T$};
+    
+    \draw[arrow] (x0) -- node[above, font=\scriptsize] {$+\epsilon$} (x1);
+    \draw[arrow] (x1) -- node[above, font=\scriptsize] {$+\epsilon$} (x2);
+    \draw[arrow] (x2) -- (8, 0);
+    \draw[arrow] (9, 0) -- (xT);
+    
+    \node[font=\scriptsize, below=0.2cm of x0] {Data};
+    \node[font=\scriptsize, below=0.2cm of xT] {Noise};
+    
+    % Reverse process
+    \node[font=\bfseries] at (6, -3) {Reverse Process (denoise)};
+    
+    \node[img, fill=gray!50] (xT2) at (11, -5) {$\mathbf{x}_T$};
+    \node[font=\footnotesize] at (8.5, -5) {$\cdots$};
+    \node[img, fill=gray!20] (x22) at (6, -5) {$\mathbf{x}_2$};
+    \node[img, fill=tudelftblue!20] (x12) at (3, -5) {$\mathbf{x}_1$};
+    \node[img, fill=tudelftblue!30] (x02) at (0, -5) {$\mathbf{x}_0$};
+    
+    \draw[arrow, red!70!black] (xT2) -- (9, -5);
+    \draw[arrow, red!70!black] (8, -5) -- node[above, font=\scriptsize] {$-\epsilon_\theta$} (x22);
+    \draw[arrow, red!70!black] (x22) -- node[above, font=\scriptsize] {$-\epsilon_\theta$} (x12);
+    \draw[arrow, red!70!black] (x12) -- node[above, font=\scriptsize] {$-\epsilon_\theta$} (x02);
+    
+    \node[font=\scriptsize, below=0.2cm of xT2] {Sample noise};
+    \node[font=\scriptsize, below=0.2cm of x02] {Generated!};
+\end{tikzpicture}
+\caption{Diffusion models. \textbf{Forward:} Gradually add noise until data becomes pure Gaussian noise. \textbf{Reverse:} A neural network learns to predict and remove noise at each step, transforming noise back into data.}
+\label{fig:diffusion}
+\end{figure}
+
+\paragraph{Why Diffusion Works:}
+\begin{itemize}
+	\item The network is essentially a \textbf{denoising autoencoder} trained at all noise levels.
+	\item Training is stable (simple MSE loss on predicted noise).
+	\item Produces high-quality, diverse samples without mode collapse.
+\end{itemize}
+
+\subsection{Comparison of Generative Models}
+\begin{table}[H]
+\centering
+\begin{tblr}{
+  colspec = {l l l l},
+  row{1} = {font=\bfseries},
+  hline{1,2,Z} = {solid},
+}
+Model & Training & Sample Quality & Density? \\
+VAE & Stable (ELBO) & Blurry & Yes (approx) \\
+GAN & Unstable (adversarial) & Sharp & No \\
+Diffusion & Stable (denoising) & State-of-the-art & Yes (approx) \\
+\end{tblr}
+\caption{Comparison of major generative model families.}
+\label{tab:generative_models}
+\end{table}
+
+
+\section{Foundation Models and Transfer Learning}
+\label{sec:dl_foundation}
+
+The Deep Learning revolution has culminated in the era of \textbf{Foundation Models}, which are large-scale models trained on vast, diverse datasets that can be \textbf{adapted} to a wide range of downstream tasks. This represents a fundamental paradigm shift:
+\begin{center}
+	\textit{From ``training a model \textbf{for} a task'' to ``adapting a general model \textbf{to} a task.''}
+\end{center}
+
+\subsection{The Rise of Foundation Models}
+A foundation model is defined by three properties:
+\begin{enumerate}
+	\item \textbf{Scale:} Trained on internet-scale data (billions of tokens/images).
+	\item \textbf{Generality:} Learns representations applicable to many tasks.
+	\item \textbf{Adaptability:} Can be fine-tuned or prompted for specific applications.
+\end{enumerate}
+
+\paragraph{Emergence and Homogenization:}
+Two striking phenomena characterize foundation models:
+\begin{itemize}
+	\item \textbf{Emergence:} Capabilities arise that were not explicitly trained for. GPT-3 can do arithmetic, write poetry, and translate languages, none of which were direct training objectives.
+	\item \textbf{Homogenization:} The same Transformer architecture now dominates language, vision, audio, and multimodal tasks. This consolidation simplifies research but concentrates power in few large models.
+\end{itemize}
+
+\subsection{Vision Transformers (ViT)}
+CNNs encode the inductive bias that nearby pixels are related (locality). Transformers have no such bias, they learn relationships globally from data. To apply Transformers to images:
+
+\begin{tcolorbox}[colback=tudelftblue!5!white, colframe=tudelftblue, title=ViT Pipeline]
+\begin{enumerate}
+	\item \textbf{Patchify:} Split the image into non-overlapping patches (e.g., $16 \times 16$ pixels).
+	\item \textbf{Flatten \& Project:} Each patch is flattened into a vector and linearly projected to the model dimension.
+	\item \textbf{Add Position:} Add learnable positional embeddings (so the model knows spatial arrangement).
+	\item \textbf{Prepend [CLS]:} A special classification token aggregates global information.
+	\item \textbf{Transformer Encoder:} Process the sequence of patch embeddings with standard self-attention.
+	\item \textbf{Classify:} Use the final [CLS] embedding for prediction.
+\end{enumerate}
+\end{tcolorbox}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    scale=0.6,
+    patch/.style={rectangle, draw=gray, thick, minimum size=0.5cm},
+    embed/.style={rectangle, draw=tudelftblue, fill=tudelftblue!20, thick, minimum width=0.4cm, minimum height=1cm, font=\scriptsize},
+    block/.style={rectangle, draw=tudelftcyan, fill=tudelftcyan!10, thick, minimum width=6cm, minimum height=0.8cm, font=\small},
+    arrow/.style={->, thick}
+]
+    % Image
+    \node[font=\bfseries] at (2, 2) {Image};
+    \foreach \i in {0,...,3} {
+        \foreach \j in {0,...,3} {
+            \fill[tudelftblue!\the\numexpr20+10*\i+5*\j\relax] (\i*0.8, -\j*0.8) rectangle (\i*0.8+0.7, -\j*0.8-0.7);
+            \draw[gray] (\i*0.8, -\j*0.8) rectangle (\i*0.8+0.7, -\j*0.8-0.7);
+        }
+    }
+    
+    % Arrow
+    \draw[arrow] (4, -1.2) -- (5.5, -1.2) node[midway, above, font=\scriptsize] {Patchify};
+    
+    % Patches as sequence
+    \node[font=\bfseries] at (9, 2) {Patch Embeddings};
+    \node[embed, fill=red!30] (cls) at (6, 0) {\rotatebox{90}{[CLS]}};
+    \node[embed] (p1) at (7, 0) {};
+    \node[embed] (p2) at (8, 0) {};
+    \node[embed] (p3) at (9, 0) {};
+    \node[font=\scriptsize] at (10, 0) {$\cdots$};
+    \node[embed] (pn) at (11, 0) {};
+    
+    % Position embeddings
+    \node[font=\scriptsize, text=tudelftcyan] at (6, -1.5) {$+\mathbf{p}_0$};
+    \node[font=\scriptsize, text=tudelftcyan] at (7, -1.5) {$+\mathbf{p}_1$};
+    \node[font=\scriptsize, text=tudelftcyan] at (8, -1.5) {$+\mathbf{p}_2$};
+    
+    % Arrow down
+    \draw[arrow] (8.5, -2.2) -- (8.5, -3.2);
+    
+    % Transformer
+    \node[block] (trans) at (8.5, -4) {Transformer Encoder ($L$ layers)};
+    
+    % Arrow down
+    \draw[arrow] (8.5, -4.8) -- (8.5, -5.8);
+    
+    % Output
+    \node[embed, fill=red!30] (out) at (6, -6.5) {\rotatebox{90}{[CLS]}};
+    \node[font=\scriptsize] at (9, -6.5) {$\cdots$};
+    
+    % Classification
+    \draw[arrow] (out.south) -- (6, -7.5) node[below, font=\scriptsize] {MLP Head $\to$ Class};
+\end{tikzpicture}
+\caption{Vision Transformer (ViT) architecture. The image is split into patches, each becomes a token. A [CLS] token aggregates global information through self-attention across all patches. Unlike CNNs, ViT has a global receptive field from layer 1.}
+\label{fig:vit}
+\end{figure}
+
+\paragraph{ViT vs. CNN:}
+\begin{itemize}
+	\item \textbf{Inductive Bias:} CNNs assume locality (nearby pixels matter most). ViT has no such assumption, it must learn spatial relationships from data, requiring more training samples.
+	\item \textbf{Scalability:} ViT scales better with data and compute. Given enough data, ViT outperforms CNNs.
+	\item \textbf{Global Context:} ViT can attend to any patch from the first layer; CNNs need many layers to build large receptive fields.
+\end{itemize}
+
+\subsection{Self-Supervised Pre-Training}
+The key to foundation models is \textbf{self-supervised learning}, which means defining training objectives that don't require human labels. The data provides its own supervision.
+
+\begin{table}[H]
+\centering
+\begin{tblr}{
+  colspec = {l l X[l]},
+  row{1} = {font=\bfseries},
+  hline{1,2,Z} = {solid},
+}
+Modality & Method & Pretext Task \\
+Text & GPT (Autoregressive) & Predict the next token: ``The cat sat on the [?]'' \\
+Text & BERT (Masked LM) & Fill in masked tokens: ``The [MASK] sat on the mat.'' \\
+Images & MAE & Reconstruct 75\% masked image patches \\
+Multimodal & CLIP & Match images and captions via contrastive loss \\
+\end{tblr}
+\caption{Self-supervised pre-training paradigms. Each defines a task where labels come from the data itself.}
+\label{tab:ssl}
+\end{table}
+
+\paragraph{CLIP (Contrastive Language-Image Pre-training):}
+Given $N$ (image, caption) pairs, CLIP learns to maximize the cosine similarity of matching pairs while minimizing it for the $N^2 - N$ non-matching pairs:
+\begin{equation}
+	\mathcal{L} = -\frac{1}{N} \sum_{i=1}^{N} \log \frac{\exp(\text{sim}(\mathbf{v}_i, \mathbf{t}_i) / \tau)}{\sum_{j=1}^{N} \exp(\text{sim}(\mathbf{v}_i, \mathbf{t}_j) / \tau)}
+\end{equation}
+where $\mathbf{v}_i$ and $\mathbf{t}_i$ are the image and text embeddings. This enables zero-shot classification: to classify an image, compute similarity to text prompts like ``a photo of a dog'' and pick the highest.
+
+\subsection{Parameter-Efficient Fine-Tuning (PEFT)}
+Fine-tuning a model with billions of parameters is computationally expensive and risks catastrophic forgetting. \textbf{PEFT} methods update only a tiny fraction of parameters while matching full fine-tuning performance.
+
+\begin{tcolorbox}[colback=tudelftblue!5!white, colframe=tudelftblue, title=PEFT Strategies]
+\textbf{1. Selective Fine-Tuning:} Freeze most layers, only train the last few layers or the classification head.
+
+\textbf{2. Adapters:} Inject small trainable modules (bottleneck MLPs) into each layer:
+\begin{equation}
+	\text{Adapter}(\mathbf{x}) = \mathbf{W}_{\text{up}} \cdot \sigma(\mathbf{W}_{\text{down}} \cdot \mathbf{x}) + \mathbf{x}
+\end{equation}
+Typically $< 5\%$ additional parameters.
+
+\textbf{3. Prompt Tuning:} Prepend learnable ``soft prompts'' (continuous vectors) to the input. The model parameters are frozen; only the prompts are trained.
+
+\textbf{4. LoRA (Low-Rank Adaptation):} Add low-rank matrices that modify weight matrices without changing them:
+\begin{equation}
+	\mathbf{h} = \mathbf{W}_0 \mathbf{x} + \Delta\mathbf{W} \cdot \mathbf{x} = \mathbf{W}_0 \mathbf{x} + \mathbf{B}\mathbf{A}\mathbf{x}
+\end{equation}
+where $\mathbf{W}_0$ is frozen, $\mathbf{B} \in \mathbb{R}^{d \times r}$, $\mathbf{A} \in \mathbb{R}^{r \times k}$, and $r \ll \min(d, k)$.
+\end{tcolorbox}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    scale=0.7,
+    block/.style={rectangle, draw=tudelftblue, fill=tudelftblue!10, thick, minimum width=2cm, minimum height=0.8cm, font=\small},
+    frozen/.style={rectangle, draw=gray, fill=gray!20, thick, minimum width=2cm, minimum height=0.8cm, font=\small},
+    lora/.style={rectangle, draw=red!70!black, fill=red!10, thick, minimum width=0.8cm, minimum height=0.6cm, font=\scriptsize},
+    arrow/.style={->, thick}
+]
+    % Standard forward pass (frozen)
+    \node (x) at (0, 0) {$\mathbf{x}$};
+    \node[frozen] (W) at (3, 0) {$\mathbf{W}_0$ (Frozen)};
+    \draw[arrow] (x) -- (W);
+    
+    % LoRA branch
+    \node[lora] (A) at (3, -2) {$\mathbf{A}$};
+    \node[lora] (B) at (5.5, -2) {$\mathbf{B}$};
+    \draw[arrow, red!70!black] (x.south) -- ++(0, -0.5) -| (A.west);
+    \draw[arrow, red!70!black] (A) -- node[above, font=\tiny] {$r$} (B);
+    
+    % Addition
+    \node[circle, draw, fill=white, minimum size=0.4cm] (plus) at (6, 0) {$+$};
+    \draw[arrow] (W) -- (plus);
+    \draw[arrow, red!70!black] (B.east) -| (plus.south);
+    
+    % Output
+    \node (h) at (8, 0) {$\mathbf{h}$};
+    \draw[arrow] (plus) -- (h);
+    
+    % Annotations
+    \node[font=\scriptsize, text=gray] at (3, 0.7) {Original path};
+    \node[font=\scriptsize, text=red!70!black] at (4.3, -3) {LoRA: $\Delta\mathbf{W} = \mathbf{B}\mathbf{A}$};
+    \node[font=\scriptsize, text=red!70!black] at (4.3, -3.5) {(rank $r \ll d$, trainable)};
+\end{tikzpicture}
+\caption{LoRA (Low-Rank Adaptation). The original weights $\mathbf{W}_0$ are frozen. A low-rank decomposition $\mathbf{B}\mathbf{A}$ is added in parallel and trained. This can reduce trainable parameters by 10,000$\times$ while matching full fine-tuning.}
+\label{fig:lora}
+\end{figure}
 
 \end{document}
