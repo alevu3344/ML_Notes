@@ -3081,6 +3081,14 @@ Adam & Both first and second moments & Combines benefits of Momentum and RMSprop
 \label{tab:optimizer_comparison}
 \end{table}
 
+\paragraph{Practical Note: Learning Rate Sensitivity.}
+Different optimizers require different learning rates to converge effectively. SGD typically needs careful tuning (often $0.01$--$0.1$), while Adam is more forgiving due to its adaptive per-parameter rates (default $\eta = 0.001$ works well in many cases). When switching optimizers, always re-tune the learning rate.
+
+\paragraph{Weight Decay and L2 Regularization.}
+In frameworks like PyTorch, the \texttt{weight\_decay} parameter in optimizers is simply L2 regularization implemented within the update rule. Setting \texttt{weight\_decay=0.01} is equivalent to adding $\frac{0.01}{2}\|\boldsymbol{\theta}\|^2$ to the loss. This penalizes large weights and encourages simpler models.
+
+\paragraph{Early Stopping.}
+Rather than training for a fixed number of epochs, we can halt training when the model begins to overfit. We monitor the validation loss (or accuracy) and stop when it fails to improve for a set number of epochs (called \textbf{patience}). This acts as a form of regularization: the model is prevented from memorizing the training set. In practice, we save the best model checkpoint and restore it after training ends.
 \section{Normalization Techniques}
 \label{sec:dl_normalization}
 
@@ -3398,6 +3406,9 @@ A key property of convolution is \textbf{translation equivariance}. Let $T$ be a
 If the input shifts, the output shifts by the same amount. This means the network can detect a feature (e.g., an edge) regardless of where it appears in the image, without needing to learn separate detectors for each position.
 
 Note that \textbf{equivariance} is not the same as \textbf{invariance}. Equivariance preserves the transformation (output shifts with input), while invariance ignores it (output stays the same). Pooling introduces partial invariance; the final classification layer introduces full invariance by discarding spatial information.
+
+\paragraph{Data Augmentation.}
+While CNNs have built-in translation equivariance, they are not inherently invariant to other transformations like rotations, flips, or changes in brightness. \textbf{Data augmentation} addresses this by artificially expanding the training set with transformed copies of the data. Common augmentations include random cropping, horizontal flips, rotations, color jitter, and affine transformations. This is one of the most effective regularization techniques: it forces the model to learn transformation-invariant features rather than memorizing specific pixel patterns.
 
 \subsection{Receptive Field}
 The \textbf{receptive field} of a unit is the region of the input image that can influence its activation. A single $3 \times 3$ conv has a receptive field of 3. But as we stack layers, receptive fields grow:
