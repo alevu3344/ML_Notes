@@ -3929,56 +3929,82 @@ The intuition:
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[
-    scale=0.7,
-    embed/.style={rectangle, draw=tudelftblue, fill=tudelftblue!10, thick, minimum width=1cm, minimum height=0.6cm, font=\footnotesize},
-    proj/.style={rectangle, draw=tudelftcyan, fill=tudelftcyan!10, thick, minimum width=0.8cm, minimum height=0.5cm, font=\scriptsize},
-    score/.style={rectangle, draw=gray, fill=gray!10, thick, minimum width=0.6cm, minimum height=0.6cm, font=\scriptsize},
-    output/.style={rectangle, draw=red!70!black, fill=red!10, thick, minimum width=1cm, minimum height=0.6cm, font=\footnotesize},
+    scale=1.0,
+    embed/.style={rectangle, draw=tudelftblue, fill=tudelftblue!10, thick, minimum width=1.2cm, minimum height=0.7cm, font=\footnotesize},
+    proj/.style={rectangle, draw=tudelftcyan, fill=tudelftcyan!10, thick, minimum width=1cm, minimum height=0.6cm, font=\footnotesize},
+    score/.style={circle, draw=codepurple, fill=codepurple!10, thick, minimum size=0.8cm, font=\scriptsize},
+    output/.style={rectangle, draw=red!70!black, fill=red!10, thick, minimum width=1.2cm, minimum height=0.7cm, font=\footnotesize},
     arrow/.style={->, thick}
 ]
-    % Input embeddings
-    \node[embed] (x1) at (0, 0) {$\mathbf{x}_1$};
-    \node[embed] (x2) at (2, 0) {$\mathbf{x}_2$};
-    \node[embed] (x3) at (4, 0) {$\mathbf{x}_3$};
-    \node[font=\footnotesize] at (6, 0) {$\cdots$};
-    
-    % Q, K, V projections for x2
-    \node[proj] (q2) at (2, 2) {$\mathbf{q}_2$};
-    \node[proj] (k1) at (0, 2) {$\mathbf{k}_1$};
-    \node[proj] (k2) at (2, 3.5) {$\mathbf{k}_2$};
-    \node[proj] (k3) at (4, 2) {$\mathbf{k}_3$};
-    \node[proj] (v1) at (0, 4.5) {$\mathbf{v}_1$};
-    \node[proj] (v2) at (2, 5.5) {$\mathbf{v}_2$};
-    \node[proj] (v3) at (4, 4.5) {$\mathbf{v}_3$};
-    
-    % Arrows from inputs to projections
-    \draw[arrow, gray] (x1) -- (k1);
-    \draw[arrow, gray] (x2) -- (q2);
-    \draw[arrow, gray] (x2) -- (k2);
-    \draw[arrow, gray] (x3) -- (k3);
-    \draw[arrow, gray] (x1) -- (v1);
-    \draw[arrow, gray] (x2) -- (v2);
-    \draw[arrow, gray] (x3) -- (v3);
-    
-    % Dot products (scores)
-    \draw[arrow, tudelftblue] (q2.west) -- +(-0.5, 0) |- node[left, font=\scriptsize] {$\mathbf{q}_2^\top \mathbf{k}_1$} (k1.east);
-    \draw[arrow, tudelftblue] (q2.north) -- node[right, font=\scriptsize] {$\mathbf{q}_2^\top \mathbf{k}_2$} (k2.south);
-    \draw[arrow, tudelftblue] (q2.east) -- +(0.5, 0) |- node[right, font=\scriptsize] {$\mathbf{q}_2^\top \mathbf{k}_3$} (k3.west);
-    
-    % Output
-    \node[output] (y2) at (2, 7) {$\mathbf{y}_2$};
-    
-    % Weighted sum arrows
-    \draw[arrow, red!70!black, dashed] (v1.north) -- ++(0, 0.5) -| (y2.south west);
-    \draw[arrow, red!70!black] (v2.north) -- (y2.south);
-    \draw[arrow, red!70!black, dashed] (v3.north) -- ++(0, 0.5) -| (y2.south east);
-    
-    % Annotations
-    \node[font=\scriptsize, text=gray] at (6, 2) {Dot products};
-    \node[font=\scriptsize, text=gray] at (6, 4.5) {softmax};
-    \node[font=\scriptsize, text=gray] at (6, 6) {weighted sum};
+
+% Input embeddings (bottom row)
+\node[embed] (x1) at (0, 0) {$\mathbf{x}_1$};
+\node[embed] (x2) at (3, 0) {$\mathbf{x}_2$};
+\node[embed] (x3) at (6, 0) {$\mathbf{x}_3$};
+
+% Keys (second row)
+\node[proj, above=1.5cm of x1] (k1) {$\mathbf{k}_1$};
+\node[proj, above=1.5cm of x2] (k2) {$\mathbf{k}_2$};
+\node[proj, above=1.5cm of x3] (k3) {$\mathbf{k}_3$};
+
+% Query (middle, slightly offset)
+\node[proj, right=0.5cm of k2] (q2) {$\mathbf{q}_2$};
+
+% Scores (third row)
+\node[score, above=1.5cm of k1] (s1) {$\alpha_1$};
+\node[score, above=1.5cm of k2] (s2) {$\alpha_2$};
+\node[score, above=1.5cm of k3] (s3) {$\alpha_3$};
+
+% Values (fourth row)
+\node[proj, above=1.5cm of s1] (v1) {$\mathbf{v}_1$};
+\node[proj, above=1.5cm of s2] (v2) {$\mathbf{v}_2$};
+\node[proj, above=1.5cm of s3] (v3) {$\mathbf{v}_3$};
+
+% Output (top)
+\node[output, above=1.5cm of v2] (y2) {$\mathbf{y}_2$};
+
+% Arrows: inputs to keys
+\draw[arrow] (x1) -- (k1);
+\draw[arrow] (x2) -- (k2);
+\draw[arrow] (x3) -- (k3);
+
+% Arrow: x2 to query
+\draw[arrow] (x2) -| (q2);
+
+% Arrows: query to scores (dot product)
+\draw[arrow, tudelftblue] (q2.north) |- (s1.east);
+\draw[arrow, tudelftblue] (q2.north) -- (s2.south);
+\draw[arrow, tudelftblue] (q2.north) |- (s3.west);
+
+% Arrows: keys to scores
+\draw[arrow] (k1) -- (s1);
+\draw[arrow] (k2) -- (s2);
+\draw[arrow] (k3) -- (s3);
+
+% Arrows: inputs to values
+\draw[arrow, gray, dashed] (x1) -- (v1);
+\draw[arrow, gray, dashed] (x2) -- (v2);
+\draw[arrow, gray, dashed] (x3) -- (v3);
+
+% Arrows: scores weight values
+\draw[arrow, red!70!black] (s1) -- (v1);
+\draw[arrow, red!70!black] (s2) -- (v2);
+\draw[arrow, red!70!black] (s3) -- (v3);
+
+% Arrows: weighted values to output
+\draw[arrow, thick, red!70!black] (v1) -- (y2);
+\draw[arrow, thick, red!70!black] (v2) -- (y2);
+\draw[arrow, thick, red!70!black] (v3) -- (y2);
+
+% Labels
+\node[font=\scriptsize, text=gray, left=0.2cm of k1] {Keys};
+\node[font=\scriptsize, text=gray, left=0.2cm of v1] {Values};
+\node[font=\scriptsize, text=tudelftblue] at (8, 4.5) {$\mathbf{q}_2^\top \mathbf{k}_i$};
+\node[font=\scriptsize, text=codepurple] at (8, 6) {softmax};
+\node[font=\scriptsize, text=red!70!black] at (8, 8.5) {$\sum \alpha_i \mathbf{v}_i$};
+
 \end{tikzpicture}
-\caption{Self-Attention for computing $\mathbf{y}_2$. The query $\mathbf{q}_2$ is compared to all keys via dot product. After softmax, the resulting weights multiply the values, which are summed to produce the output.}
+\caption{Self-Attention mechanism for computing $\mathbf{y}_2$. The query $\mathbf{q}_2$ (from $\mathbf{x}_2$) computes dot products with all keys to get attention scores $\alpha_i$ (after softmax). These scores weight the values, which are summed to produce the output.}
 \label{fig:self_attention_mechanism}
 \end{figure}
 
@@ -4017,43 +4043,42 @@ Typically, if the model dimension is $d = 512$ and we use $h = 8$ heads, each he
     concat/.style={rectangle, draw=gray, fill=gray!10, thick, minimum width=6cm, minimum height=0.6cm, font=\footnotesize},
     arrow/.style={->, thick}
 ]
-    % Input
-    \node (input) at (0, 0) {Input $\mathbf{X}$};
-    
-    % Heads
-    \node[head] (h1) at (-4, 2) {Head 1};
-    \node[head] (h2) at (-1.3, 2) {Head 2};
-    \node[font=\footnotesize] at (1.3, 2) {$\cdots$};
-    \node[head] (hh) at (4, 2) {Head $h$};
-    
-    % Arrows to heads
-    \draw[arrow] (input) -- ++(0, 0.8) -| (h1);
-    \draw[arrow] (input) -- ++(0, 0.8) -| (h2);
-    \draw[arrow] (input) -- ++(0, 0.8) -| (hh);
-    
-    % Concat
-    \node[concat] (concat) at (0, 4) {Concat};
-    
-    \draw[arrow] (h1) -- ++(0, 0.5) -| (-3, 3.7);
-    \draw[arrow] (h2) -- ++(0, 0.5) -| (-1, 3.7);
-    \draw[arrow] (hh) -- ++(0, 0.5) -| (3, 3.7);
-    
-    % Output projection
-    \node[proj] (wo) at (0, 5.5) {$\mathbf{W}^O$ Projection};
-    \draw[arrow] (concat) -- (wo);
-    
-    % Output
-    \node (output) at (0, 7) {Output};
-    \draw[arrow] (wo) -- (output);
-    
-    % Annotations inside heads
-    \node[font=\tiny, text=gray] at (-4, 1.3) {$\mathbf{W}_Q^{(1)}, \mathbf{W}_K^{(1)}, \mathbf{W}_V^{(1)}$};
-    \node[font=\tiny, text=gray] at (4, 1.3) {$\mathbf{W}_Q^{(h)}, \mathbf{W}_K^{(h)}, \mathbf{W}_V^{(h)}$};
-\end{tikzpicture}
-\caption{Multi-Head Attention. Each head has its own Q, K, V projections and computes attention independently. Outputs are concatenated and projected back to the model dimension.}
-\label{fig:multi_head_attention}
-\end{figure}
+% Input
+\node (input) at (0, 0) {Input $\mathbf{X}$};
 
+% Heads
+\node[head] (h1) at (-4, 2.5) {Head 1};
+\node[head] (h2) at (-1.3, 2.5) {Head 2};
+\node[font=\footnotesize] at (1.3, 2.5) {$\cdots$};
+\node[head] (hh) at (4, 2.5) {Head $h$};
+
+% Arrows to heads
+\draw[arrow] (input) -- ++(0, 1) -| (h1);
+\draw[arrow] (input) -- ++(0, 1) -| (h2);
+\draw[arrow] (input) -- ++(0, 1) -| (hh);
+
+% Annotations beside arrows
+\node[font=\tiny, text=gray, right] at (-3.5, 1.2) {$\mathbf{W}_Q^{(1)}, \mathbf{W}_K^{(1)}, \mathbf{W}_V^{(1)}$};
+\node[font=\tiny, text=gray, left] at (3.5, 1.2) {$\mathbf{W}_Q^{(h)}, \mathbf{W}_K^{(h)}, \mathbf{W}_V^{(h)}$};
+
+% Concat
+\node[concat] (concat) at (0, 4.5) {Concat};
+\draw[arrow] (h1) -- (concat.south -| h1);
+\draw[arrow] (h2) -- (concat.south -| h2);
+\draw[arrow] (hh) -- (concat.south -| hh);
+
+% Output projection
+\node[proj] (wo) at (0, 6) {$\mathbf{W}^O$ Projection};
+\draw[arrow] (concat) -- (wo);
+
+% Output
+\node (output) at (0, 7.5) {Output};
+\draw[arrow] (wo) -- (output);
+
+\end{tikzpicture}
+\caption{Multi-Head Attention architecture with $h$ parallel attention heads, each with its own learned projection matrices, followed by concatenation and a final output projection.}
+\label{fig:multihead_attention}
+\end{figure}
 \subsection{Positional Encodings}
 The self-attention formula is \textbf{permutation invariant}: if we shuffle the input tokens, the outputs are shuffled the same way, but the attention weights themselves don't change. The model has no notion of word order!
 
@@ -4144,53 +4169,41 @@ It expands the dimension (e.g., $512 \to 2048$), applies a non-linearity, and pr
     cell/.style={minimum width=1.4cm, minimum height=1.4cm, font=\small},
     label/.style={font=\small\bfseries}
 ]
-    % Define attention weights (pre-computed from softmax)
-    % Row = Query, Col = Key
-    % Row 0: "The" -> weights [0.50, 0.13, 0.13, 0.13, 0.13]
-    % Row 1: "student" -> weights [0.41, 0.30, 0.10, 0.10, 0.10]
-    % Row 2: "reads" -> weights [0.05, 0.35, 0.10, 0.05, 0.45]
-    % Row 3: "a" -> weights [0.20, 0.20, 0.20, 0.20, 0.20]
-    % Row 4: "book" -> weights [0.10, 0.10, 0.10, 0.41, 0.30]
-    
-    % Column labels (Keys)
+    % --- Column labels (Keys) ---
     \node[label] at (1.4, 1.2) {The};
     \node[label] at (2.8, 1.2) {student};
     \node[label] at (4.2, 1.2) {reads};
     \node[label] at (5.6, 1.2) {a};
     \node[label] at (7.0, 1.2) {book};
     
-    % Row labels (Queries)
+    % --- Row labels (Queries) ---
     \node[label, anchor=east] at (0.5, 0) {The};
     \node[label, anchor=east] at (0.5, -1.4) {student};
     \node[label, anchor=east] at (0.5, -2.8) {reads};
     \node[label, anchor=east] at (0.5, -4.2) {a};
     \node[label, anchor=east] at (0.5, -5.6) {book};
     
-    % Row 0: The
+    % --- Data Rows (Heatmap squares and Text) ---
+    % Row 0
     \fill[tudelftblue!60] (0.7, -0.7) rectangle (2.1, 0.7);
-    \fill[tudelftblue!15] (2.1, -0.7) rectangle (3.5, 0.7);
-    \fill[tudelftblue!15] (3.5, -0.7) rectangle (4.9, 0.7);
-    \fill[tudelftblue!15] (4.9, -0.7) rectangle (6.3, 0.7);
-    \fill[tudelftblue!15] (6.3, -0.7) rectangle (7.7, 0.7);
+    \fill[tudelftblue!15] (2.1, -0.7) rectangle (7.7, 0.7);
     \node[cell] at (1.4, 0) {0.50};
     \node[cell] at (2.8, 0) {0.13};
     \node[cell] at (4.2, 0) {0.13};
     \node[cell] at (5.6, 0) {0.13};
     \node[cell] at (7.0, 0) {0.13};
     
-    % Row 1: student
+    % Row 1
     \fill[tudelftblue!50] (0.7, -2.1) rectangle (2.1, -0.7);
     \fill[tudelftblue!35] (2.1, -2.1) rectangle (3.5, -0.7);
-    \fill[tudelftblue!10] (3.5, -2.1) rectangle (4.9, -0.7);
-    \fill[tudelftblue!10] (4.9, -2.1) rectangle (6.3, -0.7);
-    \fill[tudelftblue!10] (6.3, -2.1) rectangle (7.7, -0.7);
+    \fill[tudelftblue!10] (3.5, -2.1) rectangle (7.7, -0.7);
     \node[cell] at (1.4, -1.4) {0.41};
     \node[cell] at (2.8, -1.4) {0.30};
     \node[cell] at (4.2, -1.4) {0.10};
     \node[cell] at (5.6, -1.4) {0.10};
     \node[cell] at (7.0, -1.4) {0.10};
     
-    % Row 2: reads (high attention to student and book)
+    % Row 2
     \fill[tudelftblue!5] (0.7, -3.5) rectangle (2.1, -2.1);
     \fill[tudelftblue!45] (2.1, -3.5) rectangle (3.5, -2.1);
     \fill[tudelftblue!12] (3.5, -3.5) rectangle (4.9, -2.1);
@@ -4202,22 +4215,16 @@ It expands the dimension (e.g., $512 \to 2048$), applies a non-linearity, and pr
     \node[cell] at (5.6, -2.8) {0.05};
     \node[cell] at (7.0, -2.8) {\textbf{0.45}};
     
-    % Row 3: a
-    \fill[tudelftblue!20] (0.7, -4.9) rectangle (2.1, -3.5);
-    \fill[tudelftblue!20] (2.1, -4.9) rectangle (3.5, -3.5);
-    \fill[tudelftblue!20] (3.5, -4.9) rectangle (4.9, -3.5);
-    \fill[tudelftblue!20] (4.9, -4.9) rectangle (6.3, -3.5);
-    \fill[tudelftblue!20] (6.3, -4.9) rectangle (7.7, -3.5);
+    % Row 3
+    \fill[tudelftblue!20] (0.7, -4.9) rectangle (7.7, -3.5);
     \node[cell] at (1.4, -4.2) {0.20};
     \node[cell] at (2.8, -4.2) {0.20};
     \node[cell] at (4.2, -4.2) {0.20};
     \node[cell] at (5.6, -4.2) {0.20};
     \node[cell] at (7.0, -4.2) {0.20};
     
-    % Row 4: book (high attention to a)
-    \fill[tudelftblue!10] (0.7, -6.3) rectangle (2.1, -4.9);
-    \fill[tudelftblue!10] (2.1, -6.3) rectangle (3.5, -4.9);
-    \fill[tudelftblue!10] (3.5, -6.3) rectangle (4.9, -4.9);
+    % Row 4
+    \fill[tudelftblue!10] (0.7, -6.3) rectangle (4.9, -4.9);
     \fill[tudelftblue!50] (4.9, -6.3) rectangle (6.3, -4.9);
     \fill[tudelftblue!35] (6.3, -6.3) rectangle (7.7, -4.9);
     \node[cell] at (1.4, -5.6) {0.10};
@@ -4226,18 +4233,26 @@ It expands the dimension (e.g., $512 \to 2048$), applies a non-linearity, and pr
     \node[cell] at (5.6, -5.6) {0.41};
     \node[cell] at (7.0, -5.6) {0.30};
     
-    % Grid lines
-    \draw[gray] (0.7, 0.7) grid[step=1.4] (7.7, -6.3);
+    % --- Fixed Grid Lines ---
+    % Horizontal lines
+    \foreach \y in {0.7, -0.7, -2.1, -3.5, -4.9, -6.3}
+        \draw[gray] (0.7, \y) -- (7.7, \y);
+        
+    % Vertical lines
+    \foreach \x in {0.7, 2.1, 3.5, 4.9, 6.3, 7.7}
+        \draw[gray] (\x, 0.7) -- (\x, -6.3);
+
+    % Thick outer border
     \draw[thick] (0.7, 0.7) rectangle (7.7, -6.3);
     
     % Axis labels
-    \node[font=\footnotesize, rotate=90] at (-0.5, -2.8) {Query (Token seeking info)};
+    \node[font=\footnotesize, rotate=90] at (-1.3, -2.8) {Query (Token seeking info)};
     \node[font=\footnotesize] at (4.2, 2) {Key (Source of Info)};
     
     % Title
     \node[font=\bfseries] at (4.2, 2.8) {Self-Attention Weights};
 \end{tikzpicture}
-\caption{Heatmap of Attention Weights for ``The student reads a book.'' The verb ``reads'' (Query) assigns high attention to its subject ``student'' and object ``book'' (Keys), aggregating their information. Darker cells indicate higher attention weights.}
+\caption{Heatmap of Attention Weights for ``The student reads a book.''}
 \label{fig:attention_heatmap}
 \end{figure}
 
