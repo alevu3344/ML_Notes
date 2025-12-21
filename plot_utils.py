@@ -100,7 +100,8 @@ def plot_gaussian_ellipse(ax, mean, cov, color, n_std=1.0):
     scale_y = np.sqrt(cov[1, 1]) * n_std
     
     if np.isclose(cov[0, 0], cov[1, 1]):
-        angle = 45.0
+        # When variances are equal, ellipse tilts at ±45° depending on covariance sign
+        angle = 45.0 if cov[0, 1] >= 0 else -45.0
     else:
         angle = np.degrees(0.5 * np.arctan(2 * cov[0, 1] / (cov[0, 0] - cov[1, 1])))
         if cov[0, 0] < cov[1, 1]: angle += 90
