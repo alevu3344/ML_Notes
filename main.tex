@@ -3588,12 +3588,13 @@ An optional output $\mathbf{y}_t$ can be computed from the hidden state: $\mathb
     weight/.style={font=\footnotesize, text=gray}
 ]
     % Folded representation (left)
-    \node[font=\bfseries] at (-2, 2) {Folded View};
+    \node[font=\bfseries] at (-2, 2.8) {Folded View};
     \node[hidden] (h) at (-2, 0) {$\mathbf{h}$};
     \node[input] (x) at (-2, -2) {$\mathbf{x}$};
-    \node[output] (y) at (-2, 2) {};
+    \node[output] (y) at (-2, 2) {$\mathbf{y}$};
     \draw[arrow] (x) -- node[right, weight] {$\mathbf{W}_{xh}$} (h);
     \draw[arrow, tudelftblue, thick] (h.east) .. controls +(1, 0.5) and +(1, -0.5) .. node[right, weight] {$\mathbf{W}_{hh}$} (h.east);
+    \draw[arrow] (h) -- node[right, weight] {$\mathbf{W}_{hy} \mathbf{h_t} + \mathbf{b}_y$} (y);
     
     % Arrow between
     \draw[->, very thick, gray] (0, 0) -- (2, 0) node[midway, above, font=\small] {Unroll};
