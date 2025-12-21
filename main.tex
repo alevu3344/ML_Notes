@@ -3768,60 +3768,60 @@ The \textbf{LSTM} is an older but still widely-used architecture. It introduces 
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[
-    scale=0.8,
-    gate/.style={rectangle, draw=tudelftblue, fill=tudelftblue!20, thick, minimum width=0.8cm, minimum height=0.6cm, font=\footnotesize},
-    op/.style={circle, draw=gray, fill=gray!10, thick, minimum size=0.5cm, font=\small},
+    scale=1.0,
+    gate/.style={rectangle, draw=tudelftblue, fill=tudelftblue!20, thick, minimum width=1cm, minimum height=0.7cm, font=\footnotesize},
+    op/.style={circle, draw=gray, fill=gray!10, thick, minimum size=0.6cm, font=\small},
     cell/.style={rectangle, draw=tudelftcyan, fill=tudelftcyan!20, thick, rounded corners, minimum width=2cm, minimum height=0.6cm, font=\small},
     arrow/.style={->, thick},
     label/.style={font=\footnotesize}
 ]
-    % Cell state conveyor belt
-    \draw[arrow, tudelftcyan, very thick] (-3, 3) -- node[above, label] {$\mathbf{c}_{t-1}$} (0, 3);
-    \node[op] (forget_mult) at (1.5, 3) {$\times$};
-    \node[op] (add) at (4, 3) {$+$};
-    \draw[arrow, tudelftcyan, very thick] (0, 3) -- (forget_mult);
-    \draw[arrow, tudelftcyan, very thick] (forget_mult) -- (add);
-    \draw[arrow, tudelftcyan, very thick] (add) -- (7, 3) node[right, label] {$\mathbf{c}_t$};
-    
-    % Forget gate
-    \node[gate] (f) at (1.5, 1) {$\mathbf{f}_t$};
-    \node[label, below=0.1cm of f] {Forget};
-    \draw[arrow] (f) -- (forget_mult);
-    
-    % Input gate and candidate
-    \node[gate] (i) at (3, 1) {$\mathbf{i}_t$};
-    \node[label, below=0.1cm of i] {Input};
-    \node[gate] (c_tilde) at (4.5, 1) {$\tilde{\mathbf{c}}_t$};
-    \node[label, below=0.1cm of c_tilde] {Candidate};
-    \node[op] (input_mult) at (3.75, 2) {$\times$};
-    \draw[arrow] (i.north) -- ++(0, 0.3) -| (input_mult);
-    \draw[arrow] (c_tilde.north) -- ++(0, 0.3) -| (input_mult);
-    \draw[arrow] (input_mult) -- (add);
-    
-    % Output gate
-    \node[gate] (o) at (6, 1) {$\mathbf{o}_t$};
-    \node[label, below=0.1cm of o] {Output};
-    \node[op] (tanh_out) at (5.5, 3) {\tiny$\tanh$};
-    \node[op] (out_mult) at (6, 2.2) {$\times$};
-    \draw[arrow] (5, 3) -- (tanh_out);
-    \draw[arrow] (tanh_out.south) -- ++(0, -0.3) -| (out_mult.north);
-    \draw[arrow] (o) -- (out_mult);
-    
-    % Hidden state
-    \draw[arrow] (out_mult.east) -- ++(0.5, 0) |- (7, 0) node[right, label] {$\mathbf{h}_t$};
-    
-    % Inputs
-    \draw[arrow] (-3, 0) node[left, label] {$\mathbf{h}_{t-1}$} -- (0, 0);
-    \draw[arrow] (-1, -1.5) node[below, label] {$\mathbf{x}_t$} -- (-1, 0);
-    
-    % Connections to gates (conceptual)
-    \draw[dashed, gray] (0, 0) -- (f.west);
-    \draw[dashed, gray] (0, 0) -- (i.west);
-    \draw[dashed, gray] (0, 0) -- (c_tilde.west);
-    \draw[dashed, gray] (0, 0) -- (o.west);
-    
-    % Title
-    \node[font=\bfseries, text=tudelftdarkblue] at (2, 4.5) {LSTM Cell};
+% Cell state conveyor belt
+\draw[arrow, tudelftcyan, very thick] (-4, 4) -- node[above, label] {$\mathbf{c}_{t-1}$} (0, 4);
+\node[op] (forget_mult) at (2, 4) {$\times$};
+\node[op] (add) at (5.5, 4) {$+$};
+\draw[arrow, tudelftcyan, very thick] (0, 4) -- (forget_mult);
+\draw[arrow, tudelftcyan, very thick] (forget_mult) -- (add);
+\draw[arrow, tudelftcyan, very thick] (add) -- (9, 4) node[right, label] {$\mathbf{c}_t$};
+
+% Forget gate
+\node[gate] (f) at (2, 1) {$\mathbf{f}_t$};
+\node[label, below=0.2cm of f] {Forget};
+\draw[arrow] (f) -- (forget_mult);
+
+% Input gate and candidate
+\node[gate] (i) at (4, 1) {$\mathbf{i}_t$};
+\node[label, below=0.2cm of i] {Input};
+\node[gate] (c_tilde) at (6.5, 1) {$\tilde{\mathbf{c}}_t$};
+\node[label, below=0.2cm of c_tilde] {Candidate};
+\node[op] (input_mult) at (5.25, 2.5) {$\times$};
+\draw[arrow] (i.north) -- ++(0, 0.5) -| (input_mult);
+\draw[arrow] (c_tilde.north) -- ++(0, 0.5) -| (input_mult);
+\draw[arrow] (input_mult) -- (add);
+
+% Output gate
+\node[gate] (o) at (8, 1) {$\mathbf{o}_t$};
+\node[label, below=0.2cm of o] {Output};
+\node[op] (tanh_out) at (7, 4) {\small$\tanh$};
+\node[op] (out_mult) at (8, 2.5) {$\times$};
+\draw[arrow] (6.5, 4) -- (tanh_out);
+\draw[arrow] (tanh_out.south) -- ++(0, -0.5) -| (out_mult.north);
+\draw[arrow] (o) -- (out_mult);
+
+% Hidden state
+\draw[arrow] (out_mult.east) -- ++(0.5, 0) |- (9, 0) node[right, label] {$\mathbf{h}_t$};
+
+% Inputs
+\draw[arrow] (-4, 0) node[left, label] {$\mathbf{h}_{t-1}$} -- (0, 0);
+\draw[arrow] (-1.5, -1.5) node[below, label] {$\mathbf{x}_t$} -- (-1.5, 0);
+
+% Connections to gates (conceptual)
+\draw[dashed, gray] (0, 0) -- (f.west);
+\draw[dashed, gray] (0, 0) -- (i.west);
+\draw[dashed, gray] (0, 0) -- (c_tilde.west);
+\draw[dashed, gray] (0, 0) -- (o.west);
+
+% Title
+\node[font=\bfseries, text=tudelftdarkblue] at (2.5, 5.5) {LSTM Cell};
 \end{tikzpicture}
 \caption{The LSTM architecture. The horizontal line at the top is the \textbf{Cell State} $\mathbf{c}_t$, a ``conveyor belt'' that can carry information unchanged across many time steps. Gates (forget, input, output) control what information is removed, added, or output at each step.}
 \label{fig:lstm_cell}
