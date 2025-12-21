@@ -2038,16 +2038,16 @@ The terminology for this architecture is as follows:
     \node[neuron] (h14) at (2.5, -1.8) {$h_4^{(1)}$};
     \node[layer label, above=0.5cm of h11] {Hidden 1};
     
-    % Hidden Layer 2
-    \node[neuron] (h21) at (5, 0.9) {$h_1^{(2)}$};
-    \node[neuron] (h22) at (5, -0.3) {$h_2^{(2)}$};
-    \node[neuron] (h23) at (5, -1.5) {$h_3^{(2)}$};
-    \node[layer label, above=1.4cm of h21] {Hidden 2};
+    % Hidden Layer 2 (centered at y=0)
+    \node[neuron] (h21) at (5, 1.2) {$h_1^{(2)}$};
+    \node[neuron] (h22) at (5, 0) {$h_2^{(2)}$};
+    \node[neuron] (h23) at (5, -1.2) {$h_3^{(2)}$};
+    \node[layer label, above=0.5cm of h21] {Hidden 2};
     
-    % Output Layer
-    \node[output neuron] (y1) at (7.5, 0.3) {$y_1$};
-    \node[output neuron] (y2) at (7.5, -0.9) {$y_2$};
-    \node[layer label, above=1.6cm of y1] {Output};
+    % Output Layer (centered at y=0)
+    \node[output neuron] (y1) at (7.5, 0.6) {$y_1$};
+    \node[output neuron] (y2) at (7.5, -0.6) {$y_2$};
+    \node[layer label, above=0.5cm of y1] {Output};
     
     % Connections: Input -> Hidden 1
     \foreach \i in {1,2,3} {
@@ -2071,7 +2071,7 @@ The terminology for this architecture is as follows:
     }
     
     % Annotations
-    \draw [decorate, decoration={brace, amplitude=8pt, raise=5pt}, thick, tudelftdarkblue] (7.8, 1) -- (7.8, -1.2) node [midway, right, xshift=12pt, align=left, font=\footnotesize] {2 outputs\\(e.g., classes)};
+    \draw [decorate, decoration={brace, amplitude=8pt, raise=5pt}, thick, tudelftdarkblue] (7.8, 0.9) -- (7.8, -0.9) node [midway, right, xshift=12pt, align=left, font=\footnotesize] {2 outputs\\(e.g., classes)};
     \draw [decorate, decoration={brace, amplitude=8pt, raise=5pt, mirror}, thick, tudelftdarkblue] (-0.3, 1.5) -- (-0.3, -1.5) node [midway, left, xshift=-12pt, align=right, font=\footnotesize] {3 input\\features};
 \end{tikzpicture}
 \caption{Architecture of a feedforward neural network with two hidden layers. Arrows represent weighted connections. Each unit in a hidden layer computes a weighted sum of its inputs, adds a bias, and applies a non-linear activation function. This network has depth 4 (input + 2 hidden + output) and varying widths per layer.}
@@ -2323,24 +2323,31 @@ axes[1].contourf(hh1, hh2, Y_h_space, alpha=0.5, levels=[-3, 0.5, 3],
 # Linear decision boundary in hidden space: w^T h = 0.5 => h1 - 2*h2 = 0.5 => h2 = (h1 - 0.5)/2
 axes[1].contour(hh1, hh2, Y_h_space, levels=[0.5], colors=utils.COLORS['dark'], linewidths=2)
 
-for i in range(4):
-    # Small offset for overlapping points
-    offset = [0, 0]
-    if i == 1: offset = [0.05, 0.03]  # (0,1)
-    if i == 2: offset = [-0.05, -0.03] # (1,0)
-    axes[1].scatter(H_xor[i, 0] + offset[0], H_xor[i, 1] + offset[1], c=colors[i], marker=markers[i], s=150, edgecolors='k', linewidths=1.5, zorder=10)
+# Plot hidden space points - handle collision at (1,0) where both (0,1) and (1,0) map
+# Point 0: (0,0) -> (0,0) - blue circle (class 0)
+axes[1].scatter(H_xor[0, 0], H_xor[0, 1], c=utils.COLORS['primary'], marker='o', s=150, edgecolors='k', linewidths=1.5, zorder=10)
 
-# Annotations for the hidden space points
-axes[1].annotate(r'$(0,0) \to (0,0)$', xy=(0, 0), xytext=(-0.15, 0.3), fontsize=8, color=utils.COLORS['dark'])
-axes[1].annotate(r'$(0,1), (1,0) \to (1,0)$', xy=(1, 0), xytext=(1.1, 0.35), fontsize=8, color=utils.COLORS['dark'])
-axes[1].annotate(r'$(1,1) \to (2,1)$', xy=(2, 1), xytext=(1.5, 1.3), fontsize=8, color=utils.COLORS['dark'])
+# Points 1 and 2: (0,1) and (1,0) both -> (1,0) - plot ONE red square with double ring to show collision
+axes[1].scatter(1, 0, c=utils.COLORS['red'], marker='s', s=200, edgecolors='k', linewidths=2.5, zorder=10)
+axes[1].scatter(1, 0, c='none', marker='s', s=350, edgecolors=utils.COLORS['red'], linewidths=2, zorder=9)  # outer ring
+
+# Point 3: (1,1) -> (2,1) - blue circle (class 0)
+axes[1].scatter(H_xor[3, 0], H_xor[3, 1], c=utils.COLORS['primary'], marker='o', s=150, edgecolors='k', linewidths=1.5, zorder=10)
+
+# Annotations for the hidden space points - with arrows for clarity
+axes[1].annotate(r'$(0,0) \to (0,0)$', xy=(0, 0), xytext=(0.3, 0.5), fontsize=8, color=utils.COLORS['dark'],
+                 arrowprops=dict(arrowstyle='->', color=utils.COLORS['dark'], lw=0.8))
+axes[1].annotate(r'$(0,1), (1,0) \to (1,0)$', xy=(1, 0), xytext=(1.15, 0.5), fontsize=8, color=utils.COLORS['dark'],
+                 arrowprops=dict(arrowstyle='->', color=utils.COLORS['dark'], lw=0.8))
+axes[1].annotate(r'$(1,1) \to (2,1)$', xy=(2, 1), xytext=(1.6, 0.55), fontsize=8, color=utils.COLORS['dark'],
+                 arrowprops=dict(arrowstyle='->', color=utils.COLORS['dark'], lw=0.8))
 
 
 axes[1].set_title(r'Hidden Space $(h_1, h_2)$' + '\n(Linear Decision Boundary!)', fontsize=11)
 axes[1].set_xlabel(r'$h_1 = \max(0, x_1+x_2)$')
 axes[1].set_ylabel(r'$h_2 = \max(0, x_1+x_2-1)$')
-axes[1].set_xlim(-0.3, 2.3)
-axes[1].set_ylim(-0.3, 1.5)
+axes[1].set_xlim(-0.3, 2.5)
+axes[1].set_ylim(-0.3, 1.3)
 axes[1].set_aspect('equal')
 
 utils.save_and_include("xor_solution_enhanced.pdf", width=r"1.0\textwidth")
@@ -2528,7 +2535,7 @@ The solution is the \textbf{Sigmoid} (or logistic) function, which smoothly squa
 \begin{tikzpicture}[scale=1.0]
     % Axes
     \draw[->] (-5, 0) -- (5.5, 0) node[right] {$z$ (logit)};
-    \draw[->] (0, -0.3) -- (0, 1.5) node[above] {$\sigma(z)$};
+    \draw[->] (0, -0.3) -- (0, 1.8) node[above] {$\sigma(z)$};
     
     % Grid lines
     \draw[gray!30, thin] (-5, 0.5) -- (5, 0.5);
@@ -2538,7 +2545,6 @@ The solution is the \textbf{Sigmoid} (or logistic) function, which smoothly squa
     \draw[tudelftblue, very thick, domain=-5:5, samples=100] plot (\x, {1/(1+exp(-\x))});
     
     % Asymptotes
-    \draw[dashed, gray] (-5, 0) -- (-5, 0.01);
     \draw[dashed, gray] (-5, 1) -- (5, 1);
     \draw[dashed, gray] (-5, 0) -- (5, 0);
     
@@ -2548,13 +2554,13 @@ The solution is the \textbf{Sigmoid} (or logistic) function, which smoothly squa
     \node[below] at (0, -0.1) {$0$};
     
     % Saturation regions
-    \fill[red!20, opacity=0.5] (-5, 0) rectangle (-2.5, 1.3);
-    \fill[red!20, opacity=0.5] (2.5, 0) rectangle (5, 1.3);
+    \fill[red!20, opacity=0.5] (-5, 0) rectangle (-2.5, 1);
+    \fill[red!20, opacity=0.5] (2.5, 0) rectangle (5, 1);
     
-    % Annotations
-    \node[align=center, font=\footnotesize, text=red!70!black] at (-3.75, 1.15) {Saturation:\\$\sigma'(z) \approx 0$};
-    \node[align=center, font=\footnotesize, text=red!70!black] at (3.75, 1.15) {Saturation:\\$\sigma'(z) \approx 0$};
-    \node[align=center, font=\footnotesize, text=tudelftdarkblue] at (0, 0.75) {Linear\\region};
+    % Annotations - positioned above the plot to avoid overlap
+    \node[font=\footnotesize, text=red!70!black] at (-3.75, 1.5) {Saturation: $\sigma'(z) \approx 0$};
+    \node[font=\footnotesize, text=red!70!black] at (3.75, 1.5) {Saturation: $\sigma'(z) \approx 0$};
+    \node[font=\footnotesize, text=tudelftdarkblue] at (0, 1.5) {Linear region};
     
     % Key point
     \fill[tudelftblue] (0, 0.5) circle (2pt);
@@ -2771,6 +2777,7 @@ To systematically apply the chain rule, we represent the network as a \textbf{co
     param/.style={circle, draw=tudelftcyan, fill=tudelftcyan!20, thick, minimum size=1cm, font=\small},
     loss/.style={circle, draw=red!70!black, fill=red!20, thick, minimum size=1cm, font=\small},
     op/.style={rectangle, draw=gray, fill=gray!10, thick, minimum size=0.6cm, font=\footnotesize},
+    opwide/.style={rectangle, draw=gray, fill=gray!10, thick, minimum width=1.8cm, minimum height=0.6cm, font=\footnotesize},
     arrow/.style={->, thick}
 ]
     % Input and parameters
@@ -2788,11 +2795,11 @@ To systematically apply the chain rule, we represent the network as a \textbf{co
     \node[op] (sig) at (4.25, 0) {$\sigma$};
     
     % t (target)
-    \node[var] (t) at (5.5, -2) {$t$};
+    \node[var] (t) at (7, -2) {$t$};
     
-    % Loss
-    \node[loss] (L) at (8, 0) {$L$};
-    \node[op] (lossfn) at (6.75, -0.5) {$\frac{1}{2}(\cdot - \cdot)^2$};
+    % Loss - spread out more
+    \node[loss] (L) at (10, 0) {$L$};
+    \node[opwide] (lossfn) at (7.5, 0) {$\tfrac{1}{2}(y - t)^2$};
     
     % Forward arrows
     \draw[arrow] (x) -- (mult);
