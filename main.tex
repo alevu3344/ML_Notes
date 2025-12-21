@@ -28,8 +28,6 @@
 \setlength\parindent{0pt}
 \setlength{\parskip}{1em}
 
-\usepackage{pythontex}
-
 
 
 % === Section Formatting ===
@@ -138,21 +136,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
 
-\begin{pycode}
-import sys
-import os
-import numpy as np
-import matplotlib.pyplot as plt
-
-# Ensure pythontex looks in the current directory for plot_utils.py
-sys.path.append(os.getcwd())
-
-# Import our custom module
-import plot_utils as utils
-
-# Apply the global style immediately
-utils.set_style()
-\end{pycode}
 
 % === Custom Title Page ===
 \begin{titlepage}
@@ -346,34 +329,9 @@ The decision boundary $g_i(\mathbf{x}) - g_j(\mathbf{x}) = 0$ is therefore defin
 Crucially, in QDA, we assume each class has its own covariance matrix, so $\boldsymbol{\Sigma_i} \neq \boldsymbol{\Sigma_j}$. This means the matrix $\mathbf{A}_i - \mathbf{A}_j$ (which is $-\frac{1}{2}(\boldsymbol{\Sigma_i}^{-1} - \boldsymbol{\Sigma_j}^{-1})$) is \textbf{not zero}. The presence of this $\mathbf{x}^T \dots \mathbf{x}$ term makes the equation, and thus the decision boundary, a \textbf{quadratic function} (a conic section, which can be an ellipse, parabola, or hyperbola).
 
 \begin{figure}[H]
-\begin{pycode}
-from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
-
-# Generate Data
-np.random.seed(42)
-X = np.vstack([
-	np.random.multivariate_normal([0, 0], [[2, 0.8], [0.8, 1]], 50),
-	np.random.multivariate_normal([4, 5], [[1.5, -0.6], [-0.6, 3]], 50)
-])
-y = np.hstack([np.zeros(50), np.ones(50)])
-
-# Fit
-clf = QuadraticDiscriminantAnalysis(store_covariance=True).fit(X, y)
-
-# Plot
-fig, ax = plt.subplots()
-
-
-# call the helper from utils
-utils.plot_decision_regions(ax, clf, X, y)
-
-# Access colors via utils.COLORS
-utils.plot_gaussian_ellipse(ax, clf.means_[0], clf.covariance_[0], utils.COLORS['primary'])
-utils.plot_gaussian_ellipse(ax, clf.means_[1], clf.covariance_[1], utils.COLORS['red'])
-
-# ax.set_title("QDA Example")
-utils.save_and_include("qda_example.pdf")
-\end{pycode}
+\begin{center}
+\includegraphics[width=0.8\textwidth]{generated_plots/qda_example.pdf}
+\end{center}
 
 
 \caption{Quadratic Discriminant Analysis (QDA) Example. The decision boundary is quadratic (curved) because the two classes have different covariance matrices, as illustrated by the different shapes and orientations of the confidence ellipses.}
@@ -466,84 +424,9 @@ This is the "Nearest Mean" classifier. The decision rule is simple: calculate th
 The decision boundary between two classes $i$ and $j$ is the set of points equidistant from their means: $\|\mathbf{x} - \boldsymbol{\mu_i}\| = \|\mathbf{x} - \boldsymbol{\mu_j}\|$. This defines a hyperplane that perpendicularly bisects the line segment connecting $\boldsymbol{\mu_i}$ and $\boldsymbol{\mu_j}$. While this model is extremely simple and fast, it is often too rigid for real-world problems.
 
 \begin{figure}[H]
-\begin{pycode}
-from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis, LinearDiscriminantAnalysis
-from sklearn.neighbors import NearestCentroid
-
-# === 1. Data Generation ===
-# Use 2 classes with strongly elongated, non-spherical covariances
-# This makes the difference between LDA and NMC much more visible
-np.random.seed(42)
-n_samples = 120
-
-# Class 0: Elongated along a diagonal
-mean0, cov0 = [0, 0], [[3.0, 2.0], [2.0, 2.0]]
-X0 = np.random.multivariate_normal(mean0, cov0, n_samples)
-y0 = np.zeros(n_samples)
-
-# Class 1: Elongated along a different diagonal, with different spread
-mean1, cov1 = [4, 3], [[2.5, -1.5], [-1.5, 2.5]]
-X1 = np.random.multivariate_normal(mean1, cov1, n_samples)
-y1 = np.ones(n_samples)
-
-X = np.vstack((X0, X1))
-y = np.hstack((y0, y1))
-
-# Compute pooled covariance for LDA visualization
-pooled_cov = (n_samples * np.array(cov0) + n_samples * np.array(cov1)) / (2 * n_samples)
-
-# === 2. Model Definitions ===
-classifiers = [
-    (QuadraticDiscriminantAnalysis(store_covariance=True), "QDA: Unique $\\Sigma_i$"),
-    (LinearDiscriminantAnalysis(store_covariance=True), "LDA: Shared $\\Sigma$"),
-    (NearestCentroid(), "NMC: $\\Sigma = \\sigma^2 I$")
-]
-
-# Define consistent marker for class means
-mean_marker_style = dict(marker='o', s=120, c='white', edgecolors='black', linewidth=2, zorder=10)
-
-# === 3. Plotting ===
-fig, axes = plt.subplots(1, 3, figsize=(13, 4.5), sharey=True, sharex=True)
-
-for ax, (clf, name) in zip(axes, classifiers):
-    clf.fit(X, y)
-    
-    # Plot decision regions
-    utils.plot_decision_regions(ax, clf, X, y)
-    
-    # Plot class means for all classifiers
-    if hasattr(clf, 'means_'):
-        means = clf.means_
-    elif hasattr(clf, 'centroids_'):
-        means = clf.centroids_
-    ax.scatter(means[:, 0], means[:, 1], **mean_marker_style, label='Class Means')
-    
-    # Add covariance ellipses based on classifier type
-    if "QDA" in name:
-        # QDA: Individual covariances
-        utils.plot_gaussian_ellipse(ax, clf.means_[0], clf.covariance_[0], utils.COLORS['primary'])
-        utils.plot_gaussian_ellipse(ax, clf.means_[1], clf.covariance_[1], utils.COLORS['red'])
-    elif "LDA" in name:
-        # LDA: Pooled (shared) covariance for both classes
-        utils.plot_gaussian_ellipse(ax, clf.means_[0], clf.covariance_, utils.COLORS['primary'])
-        utils.plot_gaussian_ellipse(ax, clf.means_[1], clf.covariance_, utils.COLORS['red'])
-    elif "NMC" in name:
-        # NMC: Spherical assumption - draw circles (identity covariance scaled)
-        # Use the average variance as the radius
-        avg_var = np.var(X)
-        identity_cov = avg_var * np.eye(2)
-        utils.plot_gaussian_ellipse(ax, means[0], identity_cov, utils.COLORS['primary'])
-        utils.plot_gaussian_ellipse(ax, means[1], identity_cov, utils.COLORS['red'])
-        
-
-    ax.set_title(name)
-    ax.set_xlabel(r'$x_1$')
-
-axes[0].set_ylabel(r'$x_2$')
-axes[0].legend(loc='lower right')
-
-utils.save_and_include("generative_comparison.pdf", width=r"1.0\textwidth")
-\end{pycode}
+\begin{center}
+\includegraphics[width=1.0\textwidth]{generated_plots/generative_comparison.pdf}
+\end{center}
 
 \caption{Comparison of Generative Classifiers. \textbf{QDA} (left) uses unique covariance ellipses per class, yielding curved boundaries. \textbf{LDA} (center) uses a shared pooled covariance (dashed ellipses), producing linear boundaries that account for the data's correlation structure. \textbf{NMC} (right) assumes spherical covariance (dotted circles), creating perpendicular bisector boundaries that ignore the elongated class shapes.}
 \label{fig:generative_comparison}
@@ -601,61 +484,9 @@ Choosing the optimal bandwidth is a crucial step and is often done via cross-val
 
 
 \begin{figure}[H]
-\begin{pycode}
-from sklearn.neighbors import KernelDensity
-
-# === 1. Data Generation (Bimodal Distribution) ===
-np.random.seed(42)
-N = 200
-X = np.concatenate((
-    np.random.normal(0, 0.8, int(N * 0.6)),
-    np.random.normal(4, 1.2, int(N * 0.4))
-))[:, np.newaxis]
-
-X_plot = np.linspace(-4, 8, 1000)[:, np.newaxis]
-
-# === 2. Plotting ===
-# Create 3 stacked subplots
-fig, axes = plt.subplots(3, 1, figsize=(8, 8), sharex=True)
-
-# A. High Bias Histogram (Large bin width)
-h_wide = 2.5
-bins_wide = np.arange(X.min(), X.max() + h_wide, h_wide)
-axes[0].hist(X.ravel(), bins=bins_wide, density=True, 
-             edgecolor='white', color=utils.COLORS['primary'], alpha=0.7)
-axes[0].set_title(f'Histogram ($h={h_wide}$): Overly Smooth (High Bias)')
-
-# B. High Variance Histogram (Small bin width)
-h_small = 0.15
-bins_small = np.arange(X.min(), X.max() + h_small, h_small)
-axes[1].hist(X.ravel(), bins=bins_small, density=True, 
-             edgecolor='none', color=utils.COLORS['cyan'], alpha=0.8)
-axes[1].set_title(f'Histogram ($h={h_small}$): Noisy (High Variance)')
-
-# C. Kernel Density Estimation (KDE)
-h_kde = 0.5
-kde = KernelDensity(kernel='gaussian', bandwidth=h_kde).fit(X)
-log_dens = kde.score_samples(X_plot)
-
-axes[2].plot(X_plot.ravel(), np.exp(log_dens), 
-             color=utils.COLORS['red'], linewidth=2, label='KDE Estimate')
-axes[2].fill_between(X_plot.ravel(), np.exp(log_dens), 
-                     color=utils.COLORS['red'], alpha=0.2)
-axes[2].set_title(f'Kernel Density Estimation ($h={h_kde}$): Smooth \& Flexible')
-
-# === 3. Common Styling ===
-for ax in axes:
-    # Add "Rug Plot" (small ticks at bottom representing data points)
-    ax.plot(X.ravel(), np.full_like(X, -0.01), '|', 
-            color=utils.COLORS['dark'], markeredgewidth=1, label='Data Points')
-    ax.set_ylabel('Density')
-
-
-axes[2].set_xlabel('Feature Value ($x$)')
-axes[2].legend(loc='upper left')
-
-utils.save_and_include("density_estimation.pdf")
-\end{pycode}
+\begin{center}
+\includegraphics[width=0.8\textwidth]{generated_plots/density_estimation.pdf}
+\end{center}
 
 \caption{Non-Parametric Density Estimation. Top: Large bin width obscures structure. Middle: Small bin width fits noise. Bottom: KDE with an appropriate bandwidth recovers the bimodal density.}
 \label{fig:density_estimation}
@@ -682,50 +513,9 @@ Interestingly, this simple majority vote rule can be shown to be a direct conseq
 The optimal value for $k$ is typically found using cross-validation.
 
 \begin{figure}[H]
-\begin{pycode}
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.preprocessing import StandardScaler
-
-# === 1. Data Generation ===
-# We use the same data structure as previous plots for consistency
-np.random.seed(42)
-n_samples = 150
-
-# Generate 3 classes with different covariances
-X = np.vstack([
-    np.random.multivariate_normal([0, 0], [[2, 0.8], [0.8, 1]], n_samples),
-    np.random.multivariate_normal([4, 5], [[1.5, -0.6], [-0.6, 3]], n_samples),
-    np.random.multivariate_normal([0, 6], [[0.5, 0], [0, 0.5]], n_samples)
-])
-y = np.hstack([np.zeros(n_samples), np.ones(n_samples), 2*np.ones(n_samples)])
-
-# === 2. Preprocessing ===
-# k-NN is distance-based, so scaling is essential
-scaler = StandardScaler()
-X_scaled = scaler.fit_transform(X)
-
-# === 3. Modeling & Plotting ===
-# We compare Overfitting (k=1) vs Underfitting/Smoothing (k=15)
-models = [
-    (1, r"k-NN ($k=1$) - High Variance"),
-    (15, r"k-NN ($k=15$) - High Bias")
-]
-
-fig, axes = plt.subplots(1, 2, figsize=(12, 5), sharey=True, sharex=True)
-
-for ax, (k, title) in zip(axes, models):
-    clf = KNeighborsClassifier(n_neighbors=k).fit(X_scaled, y)
-    
-    # The helper automatically handles the complex meshgrid generation
-    utils.plot_decision_regions(ax, clf, X_scaled, y)
-    
-    ax.set_title(title)
-    ax.set_xlabel(r'Scaled $x_1$')
-
-axes[0].set_ylabel(r'Scaled $x_2$')
-
-utils.save_and_include("knn_boundaries.pdf", width=r"1.0\textwidth")
-\end{pycode}
+\begin{center}
+\includegraphics[width=1.0\textwidth]{generated_plots/knn_boundaries.pdf}
+\end{center}
 
 \caption{The effect of $k$ on decision boundaries. \textbf{Left:} With $k=1$, the model captures noise (overfitting). \textbf{Right:} With $k=15$, the boundary is smoother but may miss local details.}
 \label{fig:knn_boundaries}
@@ -754,45 +544,9 @@ To maintain the same data density as the dimensionality increases, the required 
 \end{itemize}
 
 \begin{figure}[H]
-\begin{pycode}
-from scipy.special import gamma
-
-# === 1. Data Calculation ===
-dims = np.arange(1, 21)
-
-# Volume of Hypersphere (r=1) vs Hypercube (L=2)
-# Formula: V_sphere = (pi^(d/2)) / gamma(d/2 + 1) * r^d
-vol_sphere = (np.pi**(dims / 2.0)) / gamma(dims / 2.0 + 1)
-vol_cube = 2.0**dims
-ratios = vol_sphere / vol_cube
-
-# === 2. Plotting ===
-fig, ax = plt.subplots(figsize=(10, 5))
-
-ax.plot(dims, ratios, 'o-', color=utils.COLORS['primary'], 
-        linewidth=2, markersize=6, label=r'Ratio: $V_{sphere} / V_{cube}$')
-
-# Annotation for d=10
-ratio_d10 = ratios[9] # Index 9 is d=10
-ax.annotate(
-    rf'Ratio at $d=10$ is {ratio_d10:.2e}',
-    xy=(10, ratio_d10),
-    xytext=(10, 0.1),
-    arrowprops=dict(facecolor=utils.COLORS['dark'], shrink=0.05, width=1.5, headwidth=8),
-    ha='center', fontsize=10, color=utils.COLORS['dark']
-)
-
-# === 3. Styling ===
-ax.set_yscale('log')
-ax.set_xlabel(r'Number of Dimensions ($d$)')
-ax.set_ylabel(r'Volume Ratio (Log Scale)')
-# ax.set_title(r'The Curse of Dimensionality: Volume Ratio')
-ax.set_xticks(dims[::2])
-ax.grid(True, which="both", linestyle='--', alpha=0.4)
-ax.legend()
-
-utils.save_and_include("curse_dimensionality.pdf")
-\end{pycode}
+\begin{center}
+\includegraphics[width=0.8\textwidth]{generated_plots/curse_dimensionality.pdf}
+\end{center}
 
 \caption{The Curse of Dimensionality. As dimensionality increases, the volume of the inscribed hypersphere vanishes relative to the enclosing hypercube, indicating that data becomes sparse and concentrates in the "corners" of the space.}
 \label{fig:curse_dimensionality}
@@ -956,80 +710,9 @@ The update rule in Equation \ref{eq:perceptron_update} has a clear geometric int
 \end{itemize}
 
 \begin{figure}[H]
-\begin{pycode}
-# === 1. Data and Perceptron Update ===
-w_old = np.array([2, 0.5])  # Initial weight vector
-x_i = np.array([-1.5, 2.5]) # Misclassified positive sample
-dot_product = np.dot(w_old, x_i)
-
-# Perform the Perceptron update
-w_new = w_old + x_i
-
-# === 2. Plotting Setup ===
-fig, ax = plt.subplots(figsize=(8, 8))
-
-# === 3. Plot Vectors ===
-# Old weight vector
-ax.arrow(0, 0, w_old[0], w_old[1], 
-         head_width=0.2, head_length=0.3, fc=utils.COLORS['primary'], ec=utils.COLORS['primary'], 
-         label=r'Old weight $\mathbf{w}_{old}$', linewidth=2)
-
-# Misclassified sample vector
-ax.arrow(0, 0, x_i[0], x_i[1], 
-         head_width=0.2, head_length=0.3, fc=utils.COLORS['green'], ec=utils.COLORS['green'], 
-         label=r'Misclassified sample $\mathbf{x}_i$', linewidth=2)
-
-# New weight vector
-ax.arrow(0, 0, w_new[0], w_new[1], 
-         head_width=0.2, head_length=0.3, fc=utils.COLORS['red'], ec=utils.COLORS['red'], 
-         label=r'New weight $\mathbf{w}_{new} = \mathbf{w}_{old} + \mathbf{x}_i$', linewidth=2)
-
-# Plot the sample point explicitly
-ax.plot(x_i[0], x_i[1], 'o', markersize=8, color=utils.COLORS['green'], 
-        markeredgecolor=utils.COLORS['dark'], zorder=5)
-
-# === 4. Plot Decision Boundaries (Perpendicular to weight vectors) ===
-x_vals = np.linspace(-4, 4, 100)
-
-# Old decision boundary (w_old * x = 0)
-if w_old[1] != 0:
-    y_vals_old = - (w_old[0] / w_old[1]) * x_vals
-    ax.plot(x_vals, y_vals_old, '--', color=utils.COLORS['primary'], 
-            label=r'Old boundary $(\mathbf{w}_{old} \cdot \mathbf{x} = 0)$')
-
-# New decision boundary (w_new * x = 0)
-if w_new[1] != 0:
-    y_vals_new = - (w_new[0] / w_new[1]) * x_vals
-    ax.plot(x_vals, y_vals_new, '--', color=utils.COLORS['red'], 
-            label=r'New boundary $(\mathbf{w}_{new} \cdot \mathbf{x} = 0)$')
-
-# === 5. Annotations ===
-ax.text(x_i[0], x_i[1] + 0.5, r'$\mathbf{x}_i$', color=utils.COLORS['green'], ha='center', fontsize=12)
-ax.text(w_old[0] + 0.2, w_old[1], r'$\mathbf{w}_{old}$', color=utils.COLORS['primary'], ha='left', fontsize=12)
-ax.text(w_new[0] + 0.2, w_new[1], r'$\mathbf{w}_{new}$', color=utils.COLORS['red'], ha='left', fontsize=12)
-
-# FIXED LINE BELOW: Changed \le to \leq
-ax.annotate(r'Misclassified for $\mathbf{w}_{old}$' + '\n' + r'($\mathbf{w}_{old} \cdot \mathbf{x}_i = ' + f'{dot_product:.2f} \leq 0$)', 
-            xy=(x_i[0], x_i[1]), xytext=(-3.5, 2.5),
-            arrowprops=dict(facecolor=utils.COLORS['dark'], shrink=0.05, width=1, headwidth=6), 
-            fontsize=9, color=utils.COLORS['dark'], ha='left')
-
-ax.text(3.5, 3.5, 'Positive Side', color=utils.COLORS['primary'], ha='right', va='top', fontsize=10)
-ax.text(-3.5, -3.5, 'Negative Side', color=utils.COLORS['primary'], ha='left', va='bottom', fontsize=10)
-
-# === 6. Final Styling ===
-ax.set_xlim(-4, 4)
-ax.set_ylim(-4, 4)
-ax.axhline(0, color='gray', lw=0.5, linestyle=':')
-ax.axvline(0, color='gray', lw=0.5, linestyle=':')
-ax.set_xlabel(r'Feature $x_1$')
-ax.set_ylabel(r'Feature $x_2$')
-# ax.set_title('Geometric Intuition of the Perceptron Update Rule')
-ax.legend(loc='upper left')
-ax.grid(True, linestyle=':', alpha=0.6)
-
-utils.save_and_include("perceptron_update.pdf")
-\end{pycode}
+\begin{center}
+\includegraphics[width=0.8\textwidth]{generated_plots/perceptron_update.pdf}
+\end{center}
 
 \caption{The Perceptron Update Rule. A misclassified positive sample $\mathbf{x}_i$ (green) is added to the old weight vector $\mathbf{w}_{old}$ (blue) to create a new weight vector $\mathbf{w}_{new}$ (red). This rotates the decision boundary to correctly classify $\mathbf{x}_i$.}
 \label{fig:perceptron_update}
@@ -1064,80 +747,9 @@ By taking the derivative of $J_F(\mathbf{w})$ with respect to $\mathbf{w}$ and s
 \end{equation}
 
 \begin{figure}[H]
-\begin{pycode}
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-
-# === 1. Data Generation ===
-np.random.seed(42)
-n_samples = 100
-
-# Class 0 (Lower left)
-X0 = np.random.multivariate_normal([2, 3], [[1, 0.8], [0.8, 1]], n_samples)
-# Class 1 (Upper right)
-X1 = np.random.multivariate_normal([5, 6], [[1, -0.6], [-0.6, 1]], n_samples)
-
-X = np.vstack((X0, X1))
-y = np.hstack((np.zeros(n_samples), np.ones(n_samples)))
-
-# === 2. Fit FLD (LDA) ===
-lda = LinearDiscriminantAnalysis().fit(X, y)
-w = lda.scalings_[:, 0] # The optimal projection vector
-
-# === 3. Plotting ===
-fig, axes = plt.subplots(2, 1, figsize=(8, 10), gridspec_kw={'height_ratios': [1, 1]})
-colors = [utils.COLORS['primary'], utils.COLORS['red']]
-
-# === Panel 1: Naive Projection (onto x1 axis) ===
-ax1 = axes[0]
-proj_bad = X[:, 0] 
-
-for i, c in enumerate(colors):
-    # Scatter
-    ax1.scatter(X[y == i, 0], X[y == i, 1], alpha=0.5, c=c, label=f'Class {i}')
-    # Histogram on axis
-    ax1.hist(proj_bad[y == i], bins=20, density=True, alpha=0.6, color=c, 
-             range=(0, 8), label='_nolegend_')
-
-ax1.axhline(0, color='black', linewidth=1) 
-ax1.set_title(r'Naive Projection (onto $x_1$-axis)')
-ax1.set_xlabel(r'$x_1$ (Projection Axis)')
-ax1.set_ylabel(r'$x_2$')
-ax1.legend()
-
-# === Panel 2: FLD Projection (Optimal) ===
-ax2 = axes[1]
-proj_good = X @ w
-
-# Draw the projection line
-x_vals = np.linspace(0, 8, 100)
-# Line equation passing through mean with slope w[1]/w[0]
-center = X.mean(axis=0)
-y_vals = (w[1] / w[0]) * (x_vals - center[0]) + center[1]
-ax2.plot(x_vals, y_vals, '--', color=utils.COLORS['dark'], 
-         linewidth=2, label=r'FLD Axis $\mathbf{w}$')
-
-for i, c in enumerate(colors):
-    ax2.scatter(X[y == i, 0], X[y == i, 1], alpha=0.5, c=c, label=f'Class {i}')
-
-# Inset Histogram for FLD
-ax_hist = ax2.inset_axes([0.6, 0.1, 0.35, 0.25])
-for i, c in enumerate(colors):
-    ax_hist.hist(proj_good[y == i], bins=20, density=True, alpha=0.7, color=c)
-ax_hist.set_title('Projected Data', fontsize=8)
-ax_hist.set_yticks([])
-ax_hist.set_xticks([])
-
-ax2.set_title(r'Fisher Linear Discriminant (FLD) Projection')
-ax2.set_xlabel(r'$x_1$')
-ax2.set_ylabel(r'$x_2$')
-ax2.legend(loc='upper left')
-
-# Sync axis limits
-ax2.set_xlim(ax1.get_xlim())
-ax2.set_ylim(ax1.get_ylim())
-
-utils.save_and_include("fld_projection.pdf")
-\end{pycode}
+\begin{center}
+\includegraphics[width=0.8\textwidth]{generated_plots/fld_projection.pdf}
+\end{center}
 
 \caption{Comparison of projections. \textbf{Top:} A naive projection onto the $x_1$ axis results in significant class overlap. \textbf{Bottom:} FLD finds the optimal projection direction $\mathbf{w}$ that maximizes class separation (ratio of between-class to within-class variance).}
 \label{fig:fld_projection}
@@ -1175,83 +787,9 @@ Here, $\mathbf{X}$ is the $N \times d$ data matrix (where each row is a sample $
 While simple and efficient, the least squares approach has a significant drawback for classification. The squared error metric penalizes correctly classified points that are far from the decision boundary. For example, a point that is "very confidently correct" will produce a large error term, which can undesirably skew the position of the decision boundary. This makes the method sensitive to outliers and often suboptimal compared to methods designed specifically for classification.
 
 \begin{figure}[H]
-\begin{pycode}
-from sklearn.linear_model import LinearRegression, LogisticRegression
-
-# === 1. Data Generation ===
-np.random.seed(1)
-n = 50
-
-# Clean Data (Separable clusters)
-X0 = np.random.multivariate_normal([1, 2], [[1, 0.5], [0.5, 1]], n) # Class 0
-X1 = np.random.multivariate_normal([5, 6], [[1, 0.5], [0.5, 1]], n) # Class 1
-X_clean = np.vstack((X0, X1))
-y_clean = np.hstack((np.zeros(n), np.ones(n)))
-
-# Noisy Data (Add one outlier to Class 0, far away)
-X_outlier = np.array([[10, 4]])
-y_outlier = np.array([0])
-X_noisy = np.vstack((X_clean, X_outlier))
-y_noisy = np.hstack((y_clean, y_outlier))
-
-# === 2. Plotting Setup ===
-fig, axes = plt.subplots(1, 2, figsize=(12, 5), sharey=True)
-
-datasets = [
-    ("Clean Dataset", X_clean, y_clean), 
-    ("With Outlier", X_noisy, y_noisy)
-]
-
-# Common meshgrid for plotting lines
-x_min, x_max = -2, 12
-y_min, y_max = -2, 10
-xx, yy = np.meshgrid(np.linspace(x_min, x_max, 200), np.linspace(y_min, y_max, 200))
-grid = np.c_[xx.ravel(), yy.ravel()]
-
-# === 3. Loop over Datasets ===
-for ax, (title, X, y) in zip(axes, datasets):
-    # Fit Models
-    ls = LinearRegression().fit(X, y)
-    lr = LogisticRegression().fit(X, y)
-    
-    # Scatter Points
-    ax.scatter(X[y==0, 0], X[y==0, 1], c=utils.COLORS['primary'], 
-               edgecolor='k', s=40, label='Class 0')
-    ax.scatter(X[y==1, 0], X[y==1, 1], c=utils.COLORS['red'], 
-               edgecolor='k', s=40, label='Class 1')
-
-    # Highlight outlier if present
-    if "Outlier" in title:
-        ax.scatter(X_outlier[:, 0], X_outlier[:, 1], marker='X', s=150,
-                   c=utils.COLORS['primary'], edgecolors='k', label='Outlier', zorder=10)
-
-    # === Draw Boundaries ===
-    
-    # Least Squares (Blue Dashed): Decision is predicted value = 0.5
-    Z_ls = ls.predict(grid).reshape(xx.shape)
-    ax.contour(xx, yy, Z_ls, levels=[0.5], colors=utils.COLORS['primary'], 
-               linestyles='--', linewidths=2)
-    
-    # Logistic Regression (Red Solid): Decision is probability = 0.5
-    Z_lr = lr.predict_proba(grid)[:, 1].reshape(xx.shape)
-    ax.contour(xx, yy, Z_lr, levels=[0.5], colors=utils.COLORS['red'], 
-               linestyles='-', linewidths=2)
-    
-    # Dummy lines for legend
-    ax.plot([], [], c=utils.COLORS['primary'], ls='--', lw=2, label='Least Squares')
-    ax.plot([], [], c=utils.COLORS['red'], ls='-', lw=2, label='Logistic Regression')
-
-    ax.set_title(title)
-    ax.set_xlabel(r'$x_1$')
-    ax.set_xlim(x_min, x_max)
-    ax.set_ylim(y_min, y_max)
-    ax.grid(True, linestyle=':', alpha=0.6)
-
-axes[0].set_ylabel(r'$x_2$')
-axes[1].legend(loc='upper left')
-
-utils.save_and_include("ls_vs_logistic.pdf", width=r"1.0\textwidth")
-\end{pycode}
+\begin{center}
+\includegraphics[width=1.0\textwidth]{generated_plots/ls_vs_logistic.pdf}
+\end{center}
 
 \caption{Sensitivity to outliers. \textbf{Left:} Both models perform well on clean data. \textbf{Right:} An outlier (Blue X) heavily skews the Least Squares boundary (blue dashed) because the squared error penalty grows quadratically with distance. Logistic Regression (red solid) is robust because the sigmoid loss saturates.}
 \label{fig:ls_vs_logistic}
@@ -1273,52 +811,9 @@ By solving this equation for $p(y=1|\mathbf{x})$, we get the \textbf{logistic fu
 This S-shaped function takes the output of our linear model (which can be any real number) and elegantly squashes it into the range $[0, 1]$, allowing the output to be interpreted as a true probability. A new sample is classified as class 1 if this probability is $> 0.5$, which occurs when $\mathbf{w}^T\mathbf{x} + w_0 > 0$.
 
 \begin{figure}[H]
-\begin{pycode}
-# === 1. Data Generation ===
-z = np.linspace(-10, 10, 400)
-p = 1.0 / (1.0 + np.exp(-z))
-
-# === 2. Plotting ===
-fig, ax = plt.subplots(figsize=(10, 6))
-
-# The Sigmoid Curve
-ax.plot(z, p, color=utils.COLORS['primary'], linewidth=3, label='Sigmoid Function')
-
-# === 3. Thresholds and Asymptotes ===
-# Decision Threshold (p=0.5)
-ax.axhline(0.5, color=utils.COLORS['dark'], linestyle='--', linewidth=1, 
-           label=r'Decision Threshold ($p=0.5$)')
-
-# Decision Boundary (z=0)
-ax.axvline(0, color=utils.COLORS['dark'], linestyle='--', linewidth=1,
-           label=r'Decision Boundary ($z=0$)')
-
-# Asymptotes (0 and 1)
-ax.axhline(1.0, color='gray', linestyle=':', alpha=0.5)
-ax.axhline(0.0, color='gray', linestyle=':', alpha=0.5)
-
-# === 4. Annotations ===
-# Class 1 Annotation
-ax.annotate(r'Class 1 ($p > 0.5$)', xy=(5, 0.9), xytext=(7, 0.7),
-            arrowprops=dict(facecolor=utils.COLORS['dark'], shrink=0.05, width=1, headwidth=8),
-            fontsize=12, color=utils.COLORS['primary'], ha='center')
-
-# Class 0 Annotation
-ax.annotate(r'Class 0 ($p < 0.5$)', xy=(-5, 0.1), xytext=(-7, 0.3),
-            arrowprops=dict(facecolor=utils.COLORS['dark'], shrink=0.05, width=1, headwidth=8),
-            fontsize=12, color=utils.COLORS['red'], ha='center')
-
-# === 5. Labels and Styling ===
-ax.set_xlabel(r'Linear Output ($z = \mathbf{w}^T\mathbf{x} + w_0$)')
-ax.set_ylabel(r'Posterior Probability ($\hat{p}(y=1|\mathbf{x})$)')
-# ax.set_title(r'The Logistic (Sigmoid) Function')
-ax.set_xlim(-10, 10)
-ax.set_ylim(-0.05, 1.05)
-ax.legend(loc='upper left')
-ax.grid(True, linestyle=':', alpha=0.6)
-
-utils.save_and_include("sigmoid_function.pdf")
-\end{pycode}
+\begin{center}
+\includegraphics[width=0.8\textwidth]{generated_plots/sigmoid_function.pdf}
+\end{center}
 
 \caption{The Sigmoid Function. It maps any real-valued number $z$ into the probabilistic range $[0, 1]$. The decision boundary lies at $z=0$, corresponding to $p=0.5$.}
 \label{fig:sigmoid_function}
@@ -1370,45 +865,9 @@ There is a fundamental tradeoff between bias and variance.
 The ultimate goal in model selection is to find a sweet spot that balances bias and variance, minimizing the total expected error. Increasing model complexity will decrease bias but increase variance. The challenge is to find the optimal level of complexity for the amount of data available.
 
 \begin{figure}[H]
-\begin{pycode}
-# Bias-Variance Tradeoff
-complexity = np.linspace(0.05, 0.95, 100)
-bias_sq = (1 - complexity)**2
-variance = 0.05 + complexity**2 * 0.4
-irreducible_error = np.full_like(complexity, 0.1)
-total_error = bias_sq + variance + irreducible_error
-optimal_idx = np.argmin(total_error)
-optimal_complexity = complexity[optimal_idx]
-
-fig, ax = plt.subplots(figsize=(8, 5))
-
-ax.plot(complexity, bias_sq, '--', color=utils.COLORS['primary'], linewidth=2, 
-         label=r'Bias$^2$')
-ax.plot(complexity, variance, '-.', color=utils.COLORS['red'], linewidth=2, 
-         label='Variance')
-ax.plot(complexity, total_error, '-', color=utils.COLORS['green'], linewidth=3, 
-         label='Total Expected Error')
-ax.plot(complexity, irreducible_error, ':', color='black', linewidth=2, 
-         label=r'Irreducible Error ($\sigma^2$)')
-
-ax.axvline(optimal_complexity, color='black', linestyle='--',
-            label=f'Optimal Complexity')
-
-ax.text(0.2, 0.8, 'High Bias\n(Underfitting)', 
-         horizontalalignment='center', fontsize=10, color=utils.COLORS['primary'])
-ax.text(0.8, 0.5, 'High Variance\n(Overfitting)', 
-         horizontalalignment='center', fontsize=10, color=utils.COLORS['red'])
-
-ax.set_xlabel('Model Complexity')
-ax.set_ylabel('Expected Error')
-# ax.set_title('The Bias-Variance Tradeoff')
-ax.legend()
-ax.grid(True, linestyle='--', alpha=0.6)
-ax.set_ylim(0, 1.5)
-ax.set_xlim(0, 1)
-
-utils.save_and_include("bias_variance_tradeoff.pdf")
-\end{pycode}
+\begin{center}
+\includegraphics[width=0.8\textwidth]{generated_plots/bias_variance_tradeoff.pdf}
+\end{center}
 
 	\caption{The Bias-Variance Tradeoff. As model complexity increases, bias (blue) decreases as the model fits the data better. However, variance (red) increases as the model becomes too flexible and fits the noise. The total expected error (green) is a sum of these terms (plus irreducible error) and is minimal at an "optimal" complexity that balances the two.}
 	\label{fig:bias_variance_tradeoff}
@@ -1436,54 +895,9 @@ To make this model more flexible, we can define a feature map $\phi(\mathbf{x}) 
 This model is still \textit{linear in the weights $\mathbf{w}$}, so we can train it with the same linear methods. However, the resulting decision boundary $g(\mathbf{x})=0$ is now a quadratic function in the original $(x_1, x_2)$ space. We are not limited to polynomials; any non-linear function like $\sin(x)$ or $\log(x)$ can be used.
 
 \begin{figure}[H]
-\begin{pycode}
-from sklearn.datasets import make_circles
-from mpl_toolkits.mplot3d import Axes3D
-
-# Generate Data
-X, y = make_circles(n_samples=200, noise=0.05, factor=0.4, random_state=42)
-X_class0 = X[y == 0]
-X_class1 = X[y == 1]
-Z = X[:, 0]**2 + X[:, 1]**2
-
-fig = plt.figure(figsize=(12, 6))
-
-# 2D Plot
-ax1 = fig.add_subplot(1, 2, 1)
-ax1.scatter(X_class0[:, 0], X_class0[:, 1], c=utils.COLORS['primary'], 
-            edgecolor='k', label='Class 0')
-ax1.scatter(X_class1[:, 0], X_class1[:, 1], c=utils.COLORS['red'], 
-            edgecolor='k', label='Class 1')
-ax1.set_title('Original 2D Data (Not Linearly Separable)')
-ax1.set_xlabel('$x_1$')
-ax1.set_ylabel('$x_2$')
-ax1.grid(True, linestyle='--', alpha=0.6)
-ax1.legend()
-ax1.axhline(0, color='black', linewidth=0.5)
-ax1.axvline(0, color='black', linewidth=0.5)
-
-# 3D Plot
-ax2 = fig.add_subplot(1, 2, 2, projection='3d')
-ax2.scatter(X_class0[:, 0], X_class0[:, 1], Z[y == 0], 
-            c=utils.COLORS['primary'], edgecolor='k', label='Class 0')
-ax2.scatter(X_class1[:, 0], X_class1[:, 1], Z[y == 1], 
-            c=utils.COLORS['red'], edgecolor='k', label='Class 1')
-
-xx, yy = np.meshgrid(np.linspace(-1.5, 1.5, 10), 
-                     np.linspace(-1.5, 1.5, 10))
-zz = np.full_like(xx, 0.5) 
-
-ax2.plot_surface(xx, yy, zz, alpha=0.3, color='gray',
-                 label='Separating Plane ($z=0.5$)')
-
-ax2.set_title('Transformed 3D Data (Linearly Separable)')
-ax2.set_xlabel('$x_1$')
-ax2.set_ylabel('$x_2$')
-ax2.set_zlabel('$z = x_1^2 + x_2^2$')
-ax2.legend()
-
-utils.save_and_include("feature_map_plot.pdf", width=r"1.0\textwidth")
-\end{pycode}
+\begin{center}
+\includegraphics[width=1.0\textwidth]{generated_plots/feature_map_plot.pdf}
+\end{center}
 
 	\caption{An illustration of non-linearity through feature mapping.
 		\textbf{(Left)} A 2D dataset of concentric circles, which is not linearly separable.
@@ -1537,63 +951,9 @@ A special, very simple case of a decision tree is a \textbf{decision stump}, whi
 If a tree is grown to its maximum possible depth, it will "memorize" the training data, leading to overfitting. To combat this, a technique called \textbf{Pruning} is used. We can either stop the tree from growing early (\textbf{pre-pruning}) or, more commonly, grow the full tree and then remove branches that provide little discriminative power on a validation set (\textbf{post-pruning}).
 
 \begin{figure}[H]
-\begin{pycode}
-from sklearn.datasets import load_iris
-from sklearn.tree import DecisionTreeClassifier, plot_tree
-
-# Load Data
-iris = load_iris()
-X = iris.data[iris.target != 0, 2:] # Features 2 & 3
-y = iris.target[iris.target != 0]   # Classes 1 & 2
-
-feature_names = [iris.feature_names[2], iris.feature_names[3]]
-class_names = [iris.target_names[1], iris.target_names[2]]
-clf = DecisionTreeClassifier(max_depth=3, random_state=42)
-clf.fit(X, y)
-
-fig, axes = plt.subplots(1, 2, figsize=(14, 6))
-
-# Plot Decision Boundary
-ax = axes[0]
-x_min, x_max = X[:, 0].min() - 0.5, X[:, 0].max() + 0.5
-y_min, y_max = X[:, 1].min() - 0.5, X[:, 1].max() + 0.5
-xx, yy = np.meshgrid(np.linspace(x_min, x_max, 100),
-                     np.linspace(y_min, y_max, 100))
-
-Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
-Z = Z.reshape(xx.shape)
-
-colors_region = [utils.COLORS['light_bg'][2], utils.COLORS['light_bg'][0]] 
-ax.contourf(xx, yy, Z, colors=colors_region, alpha=0.8)
-
-colors_data = [utils.COLORS['green'], utils.COLORS['primary']]
-for i, color in enumerate(colors_data):
-    idx = (y == i + 1)
-    ax.scatter(X[idx, 0], X[idx, 1], c=color, s=40, 
-                edgecolor='k', label=class_names[i])
-
-ax.set_title('Decision Tree Boundary (max_depth=3)')
-ax.set_xlabel(feature_names[0])
-ax.set_ylabel(feature_names[1])
-ax.legend()
-ax.grid(True, linestyle='--', alpha=0.6)
-
-# Plot Tree Structure
-ax = axes[1]
-plot_tree(clf, 
-          ax=ax,
-          filled=True, 
-          rounded=True,
-          feature_names=feature_names,
-          class_names=class_names,
-          impurity=True,
-          proportion=True,
-          fontsize=8)
-
-ax.set_title('Learned Decision Tree Structure')
-
-utils.save_and_include("decision_tree_plot.pdf", width=r"1.0\textwidth")
-\end{pycode}
+\begin{center}
+\includegraphics[width=1.0\textwidth]{generated_plots/decision_tree_plot.pdf}
+\end{center}
 
 	\caption{A Decision Tree classifier.
 		\textbf{(Left)} The learned decision tree structure. Each node splits the data based on a feature and threshold, aiming to increase class purity.
@@ -2126,55 +1486,9 @@ The goal of training is to find the values of $\boldsymbol{\theta} = \{\mathbf{W
 The non-linear activation function $g(\cdot)$ is the key ingredient that gives neural networks their power. Without it, a multi-layer network would collapse into a single linear transformation, regardless of its depth. This section details the most common activation functions.
 
 \begin{figure}[H]
-\begin{pycode}
-z = np.linspace(-4, 4, 200)
-
-# Activation Functions
-relu = np.maximum(0, z)
-leaky_relu = np.where(z > 0, z, 0.1 * z)
-sigmoid = 1 / (1 + np.exp(-z))
-tanh = np.tanh(z)
-
-fig, axes = plt.subplots(1, 2, figsize=(12, 4.5))
-
-# === Left: Activation Functions ===
-axes[0].plot(z, relu, label=r'ReLU: $\max(0, z)$', color=utils.COLORS['primary'], linewidth=2.5)
-axes[0].plot(z, leaky_relu, label=r'Leaky ReLU: $\max(0.1z, z)$', color=utils.COLORS['cyan'], linewidth=2, linestyle='--')
-axes[0].plot(z, sigmoid, label=r'Sigmoid: $\sigma(z)$', color=utils.COLORS['red'], linewidth=2)
-axes[0].plot(z, tanh, label='Tanh', color=utils.COLORS['green'], linewidth=2)
-
-axes[0].axhline(0, color='gray', linewidth=0.5)
-axes[0].axvline(0, color='gray', linewidth=0.5)
-axes[0].set_title('Common Activation Functions')
-axes[0].set_xlabel('$z$ (pre-activation)')
-axes[0].set_ylabel('$g(z)$')
-axes[0].legend(loc='upper left')
-axes[0].set_ylim(-1.5, 4)
-axes[0].grid(True, linestyle=':', alpha=0.5)
-
-# === Right: Derivatives ===
-# Derivatives
-d_relu = np.where(z > 0, 1, 0).astype(float)
-d_leaky_relu = np.where(z > 0, 1, 0.1)
-d_sigmoid = sigmoid * (1 - sigmoid)
-d_tanh = 1 - tanh**2
-
-axes[1].plot(z, d_relu, label="ReLU'", color=utils.COLORS['primary'], linewidth=2.5)
-axes[1].plot(z, d_leaky_relu, label="Leaky ReLU'", color=utils.COLORS['cyan'], linewidth=2, linestyle='--')
-axes[1].plot(z, d_sigmoid, label="Sigmoid'", color=utils.COLORS['red'], linewidth=2)
-axes[1].plot(z, d_tanh, label="Tanh'", color=utils.COLORS['green'], linewidth=2)
-
-axes[1].axhline(0, color='gray', linewidth=0.5)
-axes[1].axvline(0, color='gray', linewidth=0.5)
-axes[1].set_title('Derivatives (Crucial for Backpropagation)')
-axes[1].set_xlabel('$z$ (pre-activation)')
-axes[1].set_ylabel("$g'(z)$")
-axes[1].legend(loc='upper right')
-axes[1].set_ylim(-0.1, 1.5)
-axes[1].grid(True, linestyle=':', alpha=0.5)
-
-utils.save_and_include("activation_functions.pdf", width=r"1.0\textwidth")
-\end{pycode}
+\begin{center}
+\includegraphics[width=1.0\textwidth]{generated_plots/activation_functions.pdf}
+\end{center}
 \caption{\textbf{Left:} Common activation functions. ReLU is the modern default due to its simplicity and favorable gradient properties. \textbf{Right:} The derivatives of these functions. Note how Sigmoid and Tanh derivatives saturate to near-zero for large $|z|$, which can cause vanishing gradients. ReLU's derivative is a constant 1 for positive inputs, ensuring healthy gradient flow.}
 \label{fig:activation_functions}
 \end{figure}
@@ -2274,103 +1588,9 @@ $[1, 1]^T$ & $[2, 1]^T$ & $[2, 1]^T$ & $1(2) - 2(1) = \mathbf{0}$ & 0 \\
 The network correctly computes the XOR function for all inputs. The key is looking at the hidden representation column: the hidden layer has mapped the four input points to only three distinct points in the hidden space. Crucially, the class-0 inputs $(0,0)$ and $(1,1)$ are now separated from the class-1 inputs.
 
 \begin{figure}[H]
-\begin{pycode}
-# Define our XOR Network Parameters manually to match the worked example
-W = np.array([[1, 1], [1, 1]])
-c = np.array([0, -1])
-w = np.array([1, -2])
-b = 0
-
-def relu(z):
-    return np.maximum(0, z)
-
-def forward(X):
-    z = X @ W + c
-    h = relu(z)
-    y = h @ w + b
-    return h, y
-
-# Generate Grid for Input Space
-resolution = 0.02
-x_min, x_max = -0.3, 1.3
-xx1, xx2 = np.meshgrid(np.arange(x_min, x_max, resolution),
-                       np.arange(x_min, x_max, resolution))
-X_grid = np.array([xx1.ravel(), xx2.ravel()]).T
-
-# Forward pass on grid
-H_grid, Y_grid = forward(X_grid)
-Y_grid_reshaped = Y_grid.reshape(xx1.shape)
-
-# XOR Data Points
-X_xor = np.array([[0,0], [0,1], [1,0], [1,1]])
-y_xor = np.array([0, 1, 1, 0])
-colors = [utils.COLORS['primary'] if y == 0 else utils.COLORS['red'] for y in y_xor]
-markers = ['o' if y==0 else 's' for y in y_xor]
-
-# === Plotting ===
-fig, axes = plt.subplots(1, 2, figsize=(11, 4.5))
-
-# 1. Input Space Decision Boundary
-axes[0].contourf(xx1, xx2, Y_grid_reshaped, alpha=0.5, levels=[-0.5, 0.5, 1.5],
-                 colors=[utils.COLORS['light_bg'][0], utils.COLORS['light_bg'][2]])
-# Draw the actual non-linear decision boundary (contour at y=0.5)
-axes[0].contour(xx1, xx2, Y_grid_reshaped, levels=[0.5], colors=utils.COLORS['dark'], linewidths=2)
-
-for i in range(4):
-    axes[0].scatter(X_xor[i, 0], X_xor[i, 1], c=colors[i], marker=markers[i], s=150, edgecolors='k', linewidths=1.5, zorder=10)
-
-axes[0].set_title('Input Space $(x_1, x_2)$\n(Non-linear Decision Boundary)', fontsize=11)
-axes[0].set_xlabel('$x_1$')
-axes[0].set_ylabel('$x_2$')
-axes[0].set_xlim(-0.3, 1.3)
-axes[0].set_ylim(-0.3, 1.3)
-axes[0].set_aspect('equal')
-
-# 2. Hidden Space Representation
-H_xor, _ = forward(X_xor)
-
-# Define h-space grid for background
-h_min, h_max = -0.3, 2.3
-hh1, hh2 = np.meshgrid(np.arange(h_min, h_max, resolution),
-                       np.arange(h_min, h_max, resolution))
-H_grid_manual = np.array([hh1.ravel(), hh2.ravel()]).T
-Y_h_space = H_grid_manual @ w + b
-Y_h_space = Y_h_space.reshape(hh1.shape)
-
-axes[1].contourf(hh1, hh2, Y_h_space, alpha=0.5, levels=[-3, 0.5, 3],
-                 colors=[utils.COLORS['light_bg'][0], utils.COLORS['light_bg'][2]])
-# Linear decision boundary in hidden space: w^T h = 0.5 => h1 - 2*h2 = 0.5 => h2 = (h1 - 0.5)/2
-axes[1].contour(hh1, hh2, Y_h_space, levels=[0.5], colors=utils.COLORS['dark'], linewidths=2)
-
-# Plot hidden space points - handle collision at (1,0) where both (0,1) and (1,0) map
-# Point 0: (0,0) -> (0,0) - blue circle (class 0)
-axes[1].scatter(H_xor[0, 0], H_xor[0, 1], c=utils.COLORS['primary'], marker='o', s=150, edgecolors='k', linewidths=1.5, zorder=10)
-
-# Points 1 and 2: (0,1) and (1,0) both -> (1,0) - plot ONE red square with double ring to show collision
-axes[1].scatter(1, 0, c=utils.COLORS['red'], marker='s', s=200, edgecolors='k', linewidths=2.5, zorder=10)
-axes[1].scatter(1, 0, c='none', marker='s', s=350, edgecolors=utils.COLORS['red'], linewidths=2, zorder=9)  # outer ring
-
-# Point 3: (1,1) -> (2,1) - blue circle (class 0)
-axes[1].scatter(H_xor[3, 0], H_xor[3, 1], c=utils.COLORS['primary'], marker='o', s=150, edgecolors='k', linewidths=1.5, zorder=10)
-
-# Annotations for the hidden space points - with arrows for clarity
-axes[1].annotate(r'$(0,0) \to (0,0)$', xy=(0, 0), xytext=(0.3, 0.5), fontsize=8, color=utils.COLORS['dark'],
-                 arrowprops=dict(arrowstyle='->', color=utils.COLORS['dark'], lw=0.8))
-axes[1].annotate(r'$(0,1), (1,0) \to (1,0)$', xy=(1, 0), xytext=(1.15, 0.5), fontsize=8, color=utils.COLORS['dark'],
-                 arrowprops=dict(arrowstyle='->', color=utils.COLORS['dark'], lw=0.8))
-axes[1].annotate(r'$(1,1) \to (2,1)$', xy=(2, 1), xytext=(1.6, 0.55), fontsize=8, color=utils.COLORS['dark'],
-                 arrowprops=dict(arrowstyle='->', color=utils.COLORS['dark'], lw=0.8))
-
-
-axes[1].set_title(r'Hidden Space $(h_1, h_2)$' + '\n(Linear Decision Boundary!)', fontsize=11)
-axes[1].set_xlabel(r'$h_1 = \max(0, x_1+x_2)$')
-axes[1].set_ylabel(r'$h_2 = \max(0, x_1+x_2-1)$')
-axes[1].set_xlim(-0.3, 2.5)
-axes[1].set_ylim(-0.3, 1.3)
-axes[1].set_aspect('equal')
-
-utils.save_and_include("xor_solution_enhanced.pdf", width=r"1.0\textwidth")
-\end{pycode}
+\begin{center}
+\includegraphics[width=1.0\textwidth]{generated_plots/xor_solution_enhanced.pdf}
+\end{center}
 \caption{Solving XOR with a hidden layer. \textbf{Left:} The learned decision boundary in the original input space is non-linear (a composition of two lines due to ReLU). \textbf{Right:} In the hidden representation space $(h_1, h_2)$, the four original points are mapped to only three locations, and these are now linearly separable. The network has learned a representation that makes the problem easy.}
 \label{fig:xor_solution}
 \end{figure}
@@ -2392,61 +1612,9 @@ Computing the gradient over the entire dataset (\textbf{Batch Gradient Descent})
 where $\mathcal{B}$ is the mini-batch. This introduces noise into the gradient estimate, but it allows for much faster updates and, surprisingly, the noise can even help escape shallow local minima.
 
 \begin{figure}[H]
-\begin{pycode}
-# Visualize Gradient Descent on a 2D loss surface (Rosenbrock-like function for visual appeal)
-from matplotlib.colors import LogNorm
-
-# Define a loss surface (simple quadratic for clarity)
-def loss_func(w1, w2):
-    # An elongated valley loss landscape
-    return 0.5 * (w1**2 + 10 * w2**2)
-
-# Generate grid for contour plot
-w1_range = np.linspace(-3, 3, 100)
-w2_range = np.linspace(-1.5, 1.5, 100)
-W1, W2 = np.meshgrid(w1_range, w2_range)
-L = loss_func(W1, W2)
-
-# Simulate Gradient Descent
-def gd_update(w, lr, grad_func):
-    g = grad_func(w)
-    return w - lr * g
-
-def grad_loss(w):
-    return np.array([w[0], 10 * w[1]])
-
-# Run GD
-np.random.seed(42)
-lr = 0.15
-w_init = np.array([-2.5, 1.2])
-trajectory = [w_init.copy()]
-w = w_init.copy()
-for _ in range(15):
-    w = gd_update(w, lr, grad_loss)
-    trajectory.append(w.copy())
-trajectory = np.array(trajectory)
-
-fig, ax = plt.subplots(figsize=(8, 5))
-
-# Contour plot
-contour = ax.contour(W1, W2, L, levels=15, cmap='Blues', linewidths=0.7)
-ax.contourf(W1, W2, L, levels=15, cmap='Blues', alpha=0.3)
-ax.clabel(contour, inline=True, fontsize=7, fmt='%.1f')
-
-# Plot trajectory
-ax.plot(trajectory[:, 0], trajectory[:, 1], 'o-', color=utils.COLORS['red'], markersize=6, linewidth=1.5, label='GD Path')
-ax.scatter(trajectory[0, 0], trajectory[0, 1], s=100, c=utils.COLORS['red'], marker='X', zorder=10, edgecolors='k', label='Start')
-ax.scatter(0, 0, s=150, c=utils.COLORS['green'], marker='*', zorder=10, edgecolors='k', label='Optimum')
-
-ax.set_xlabel('$w_1$')
-ax.set_ylabel('$w_2$')
-ax.set_title('Gradient Descent on a Loss Surface')
-ax.legend(loc='upper right')
-ax.set_xlim(-3, 3)
-ax.set_ylim(-1.5, 1.5)
-
-utils.save_and_include("gradient_descent_contour.pdf", width=r"0.8\textwidth")
-\end{pycode}
+\begin{center}
+\includegraphics[width=0.8\textwidth]{generated_plots/gradient_descent_contour.pdf}
+\end{center}
 \caption{Gradient descent visualized on a 2D loss contour. The red path shows the trajectory of the parameters as they are iteratively updated in the direction of steepest descent. The algorithm converges towards the global minimum (green star). Notice how the trajectory can oscillate in directions of high curvature (steep gradients).}
 \label{fig:gd_contour}
 \end{figure}
@@ -2616,48 +1784,9 @@ When we compute the gradient of the loss with respect to the logit $z$:
 With Squared Error, the gradient includes the term $\hat{y}(1-\hat{y})$. When the model is \textit{confidently wrong} (e.g., $y=1$ but $\hat{y} \approx 0$), this term is nearly zero, causing the \textbf{vanishing gradient problem}. Cross-Entropy's gradient is simply proportional to the error $(\hat{y} - y)$, which remains large when predictions are wrong.
 
 \begin{figure}[H]
-\begin{pycode}
-# Plot comparing gradients of SE vs CE for Sigmoid
-z = np.linspace(-10, 10, 400)
-y_pred = 1 / (1 + np.exp(-z))
-t = 1 # Target is class 1
-
-# Losses
-loss_ce = -np.log(y_pred + 1e-10)  # add eps for stability
-loss_se = 0.5 * (y_pred - t)**2
-
-# Gradients w.r.t z
-grad_ce = y_pred - t
-grad_se = (y_pred - t) * y_pred * (1 - y_pred)
-
-fig, axes = plt.subplots(1, 2, figsize=(12, 5))
-
-# Plot Losses
-axes[0].plot(z, loss_ce, label='Cross-Entropy', color=utils.COLORS['primary'], linewidth=2)
-axes[0].plot(z, loss_se, label='Squared Error', color=utils.COLORS['red'], linewidth=2)
-axes[0].set_title(r'Loss Value (Target $y=1$)')
-axes[0].set_xlabel(r'$z$ (Logit)')
-axes[0].set_ylabel('Loss')
-axes[0].legend()
-axes[0].set_ylim(0, 4)
-axes[0].grid(True, linestyle=':', alpha=0.6)
-
-# Plot Derivatives (Magnitude)
-axes[1].plot(z, np.abs(grad_ce), label=r'$|\nabla_z L_{CE}| = |\hat{y}-y|$', color=utils.COLORS['primary'], linewidth=2)
-axes[1].plot(z, np.abs(grad_se), label=r'$|\nabla_z L_{SE}| = |(\hat{y}-y)\hat{y}(1-\hat{y})|$', color=utils.COLORS['red'], linewidth=2)
-axes[1].set_title(r'Gradient Magnitude (Target $y=1$)')
-axes[1].set_xlabel(r'$z$ (Logit)')
-axes[1].set_ylabel('Gradient Magnitude')
-axes[1].legend()
-axes[1].grid(True, linestyle=':', alpha=0.6)
-
-# Annotation for vanishing gradient
-axes[1].annotate('Vanishing Gradient\n(SE)', xy=(-5, 0.02), xytext=(-5, 0.5),
-                 arrowprops=dict(facecolor=utils.COLORS['red'], shrink=0.05, width=1.5),
-                 ha='center', color=utils.COLORS['red'], fontsize=9)
-
-utils.save_and_include("loss_gradient_comparison.pdf", width=r"1.0\textwidth")
-\end{pycode}
+\begin{center}
+\includegraphics[width=1.0\textwidth]{generated_plots/loss_gradient_comparison.pdf}
+\end{center}
 \caption{Comparison of Cross-Entropy and Squared Error for a target $y=1$. \textbf{Left:} CE punishes confidently wrong predictions ($z \ll 0$) much more heavily than SE. \textbf{Right:} The gradient of SE vanishes when the model is saturated (large negative $z$), while CE maintains a strong, learning-friendly gradient.}
 \label{fig:loss_gradient_comparison}
 \end{figure}
@@ -2983,49 +2112,9 @@ where $g_t$ is the current gradient, $v_t$ is the smoothed average, and $\rho \i
 As $t \to \infty$, the correction factor $1 - \rho^t \to 1$, so it only matters at the start.
 
 \begin{figure}[H]
-\begin{pycode}
-# Exponential Weighted Moving Average (EWMA) Visualization
-np.random.seed(42)
-T = 100
-t_arr = np.arange(1, T + 1)
-# Generate noisy data: True signal is 1, plus noise
-true_signal = np.ones(T)
-noise = np.random.normal(0, 0.5, T)
-y = true_signal + noise
-
-# EWMA Calculation
-rho = 0.9
-v = np.zeros(T)
-v_corrected = np.zeros(T)
-current_v = 0
-
-for i in range(T):
-    current_v = rho * current_v + (1 - rho) * y[i]
-    v[i] = current_v
-    # Bias correction
-    v_corrected[i] = current_v / (1 - rho**(i + 1))
-
-fig, ax = plt.subplots(figsize=(10, 5))
-
-# Plot Raw Noisy Data
-ax.plot(t_arr, y, 'o', color=utils.COLORS['gray'], alpha=0.4, label=r'Noisy Gradients ($g_t$)', markersize=4)
-
-# Plot Uncorrected EWMA
-ax.plot(t_arr, v, '--', color=utils.COLORS['red'], linewidth=2, label=rf'EWMA ($\rho={rho}$, No Bias Corr.)')
-
-# Plot Corrected EWMA
-ax.plot(t_arr, v_corrected, '-', color=utils.COLORS['primary'], linewidth=2.5, label=rf'EWMA ($\rho={rho}$, Bias Corrected)')
-
-ax.axhline(1.0, color='black', linestyle=':', label='True Mean')
-
-ax.set_title('Smoothing Noisy Signals with EWMA')
-ax.set_xlabel('Iteration ($t$)')
-ax.set_ylabel('Value')
-ax.legend(loc='lower right')
-ax.grid(True, linestyle=':', alpha=0.6)
-
-utils.save_and_include("ewma_bias_correction.pdf", width=r"0.9\textwidth")
-\end{pycode}
+\begin{center}
+\includegraphics[width=0.9\textwidth]{generated_plots/ewma_bias_correction.pdf}
+\end{center}
 \caption{EWMA and Bias Correction. The noisy gradients (gray dots) are smoothed. Without bias correction (red dashed), the estimate starts near zero. With bias correction (blue solid), the estimate tracks the true mean from the beginning.}
 \label{fig:ewma_bias_correction}
 \end{figure}
@@ -3681,35 +2770,9 @@ The magnitude of gradients depends on the eigenvalues $\lambda$ of the effective
 \end{itemize}
 
 \begin{figure}[H]
-\begin{pycode}
-# Visualizing Vanishing and Exploding Gradients
-T = 50
-t_steps = np.arange(T)
-
-# Simulate the effect of repeated multiplication w^t
-w_vanish = 0.9
-w_stable = 1.0
-w_explode = 1.1
-
-y_vanish = w_vanish ** t_steps
-y_stable = w_stable ** t_steps
-y_explode = w_explode ** t_steps
-
-fig, ax = plt.subplots(figsize=(10, 5))
-
-ax.plot(t_steps, y_vanish, '-', color=utils.COLORS['primary'], linewidth=2.5, label=r'Vanishing ($\lambda=0.9$)')
-ax.plot(t_steps, y_stable, '--', color='gray', linewidth=2, label=r'Stable ($\lambda=1.0$)')
-ax.plot(t_steps, y_explode, '-', color=utils.COLORS['red'], linewidth=2.5, label=r'Exploding ($\lambda=1.1$)')
-
-ax.set_title(r'Effect of Repeated Multiplication ($\lambda^t$) Over Time')
-ax.set_xlabel('Time Steps Back ($t$)')
-ax.set_ylabel(r'Gradient Magnitude ($\lambda^t$)')
-ax.legend()
-ax.grid(True, linestyle=':', alpha=0.6)
-ax.set_yscale('log')
-
-utils.save_and_include("gradient_stability.pdf", width=r"0.9\textwidth")
-\end{pycode}
+\begin{center}
+\includegraphics[width=0.9\textwidth]{generated_plots/gradient_stability.pdf}
+\end{center}
 \caption{The vanishing and exploding gradient problem. Even a small deviation from 1.0 in the eigenvalue leads to exponential decay or growth of gradient magnitude. Learning long-range dependencies becomes impossible because gradients from 50 steps ago are either $\approx 0$ or $\to \infty$.}
 \label{fig:gradient_stability}
 \end{figure}

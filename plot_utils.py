@@ -41,8 +41,8 @@ def set_style():
 
 # --- 3. Helper Functions ---
 
-def save_and_include(filename, width=r"0.8\textwidth", tight=True):
-    """Saves figure and prints the LaTeX includegraphics command."""
+def save_figure(filename, tight=True):
+    """Saves figure to generated_plots/ directory."""
     output_dir = "generated_plots"
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
@@ -54,11 +54,10 @@ def save_and_include(filename, width=r"0.8\textwidth", tight=True):
     
     plt.savefig(filepath, bbox_inches='tight', pad_inches=0.1)
     plt.close()
-    
-    # This print statement is captured by PythonTeX to inject LaTeX
-    print(r'\begin{center}')
-    print(r'\includegraphics[width=' + width + ']{' + output_dir + '/' + filename + '}')
-    print(r'\end{center}')
+
+def save_and_include(filename, width=None, tight=True):
+    """Legacy wrapper for save_figure. The 'width' parameter is ignored."""
+    save_figure(filename, tight=tight)
 
 def plot_decision_regions(ax, clf, X, y, resolution=0.02):
     """Generic helper to plot decision regions."""

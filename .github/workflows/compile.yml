@@ -41,9 +41,12 @@ jobs:
           # Install dependencies into the virtual environment
           .venv/bin/pip install -r requirements.txt
 
+      - name: Generate Plots
+        run: |
+          .venv/bin/python scripts/generate_all_plots.py
+
       - name: Compile LaTeX document
         run: |
-          # latexmk will read .latexmkrc automatically
           latexmk -pdf main.tex
 
       - name: Upload PDF as artifact
