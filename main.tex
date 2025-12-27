@@ -15,7 +15,7 @@
 \usepackage{xcolor}
 \usepackage{tikz}
 \usepackage{tikzpagenodes}
-\usetikzlibrary{decorations.pathreplacing, shapes.geometric, positioning}
+\usetikzlibrary{shapes.geometric,arrows.meta,positioning,calc,matrix,decorations.pathreplacing,backgrounds,fit,shadows.blur}
 \usepackage{tcolorbox}
 \usepackage{tabularray}
 
@@ -3008,85 +3008,196 @@ The intuition:
 	\item ``student'''s \textbf{value} (perhaps encoding ``singular'') is then added to ``was'''s representation.
 \end{itemize}
 
+
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[
-    scale=1.0,
-    embed/.style={rectangle, draw=tudelftblue, fill=tudelftblue!10, thick, minimum width=1.2cm, minimum height=0.7cm, font=\footnotesize},
-    proj/.style={rectangle, draw=tudelftcyan, fill=tudelftcyan!10, thick, minimum width=1cm, minimum height=0.6cm, font=\footnotesize},
-    score/.style={circle, draw=codepurple, fill=codepurple!10, thick, minimum size=0.8cm, font=\scriptsize},
-    output/.style={rectangle, draw=red!70!black, fill=red!10, thick, minimum width=1.2cm, minimum height=0.7cm, font=\footnotesize},
-    arrow/.style={->, thick}
+    % Node styles
+    inputnode/.style={
+        rectangle, 
+        draw=blue!70!black, 
+        fill=blue!20, 
+        minimum width=1.2cm, 
+        minimum height=0.9cm, 
+        font=\bfseries\small,
+        rounded corners=3pt,
+        blur shadow={shadow blur steps=5}
+    },
+    weightmatrix/.style={
+        rectangle, 
+        draw=#1!70!black, 
+        fill=#1!25, 
+        minimum width=1.4cm, 
+        minimum height=1cm, 
+        font=\bfseries,
+        rounded corners=4pt,
+        blur shadow={shadow blur steps=5}
+    },
+    opnode/.style={
+        circle, 
+        draw=purple!70!black, 
+        fill=purple!20, 
+        minimum size=0.9cm, 
+        font=\bfseries,
+        blur shadow={shadow blur steps=5}
+    },
+    resultnode/.style={
+        rectangle, 
+        draw=teal!70!black, 
+        fill=teal!20, 
+        minimum width=1.2cm, 
+        minimum height=0.9cm, 
+        font=\bfseries\small,
+        rounded corners=3pt,
+        blur shadow={shadow blur steps=5}
+    },
+    matrixbox/.style={
+        rectangle,
+        draw=#1!70!black,
+        fill=#1!15,
+        minimum width=2.4cm,
+        minimum height=2cm,
+        rounded corners=5pt,
+        blur shadow={shadow blur steps=5}
+    },
+    attentionmatrix/.style={
+        rectangle,
+        draw=orange!70!black,
+        fill=orange!15,
+        minimum width=2.2cm,
+        minimum height=2.2cm,
+        rounded corners=5pt,
+        blur shadow={shadow blur steps=5}
+    },
+    arrow/.style={-{Stealth[length=2.5mm,width=1.8mm]}, thick, draw=gray!70!black},
+    thinarrow/.style={-{Stealth[length=2mm,width=1.5mm]}, draw=gray!60},
+    labeltext/.style={font=\scriptsize\itshape, text=gray!70!black},
+    scale=0.9, transform shape
 ]
 
-% Input embeddings (bottom row)
-\node[embed] (x1) at (0, 0) {$\mathbf{x}_1$};
-\node[embed] (x2) at (3, 0) {$\mathbf{x}_2$};
-\node[embed] (x3) at (6, 0) {$\mathbf{x}_3$};
+% ===== INPUT EMBEDDINGS =====
+\node[inputnode] (x1) at (0, 0) {$\mathbf{x}_1$};
+\node[inputnode] (x2) at (1.8, 0) {$\mathbf{x}_2$};
+\node[inputnode] (x3) at (3.6, 0) {$\mathbf{x}_3$};
 
-% Keys (second row)
-\node[proj, above=1.5cm of x1] (k1) {$\mathbf{k}_1$};
-\node[proj, above=1.5cm of x2] (k2) {$\mathbf{k}_2$};
-\node[proj, above=1.5cm of x3] (k3) {$\mathbf{k}_3$};
+\node[labeltext, above=0.2cm of x2] {Input Embeddings};
 
-% Query (middle, slightly offset)
-\node[proj, right=0.5cm of k2] (q2) {$\mathbf{q}_2$};
+% ===== WEIGHT MATRICES =====
+\node[weightmatrix=red] (Wq) at (0, -2.5) {$\mathbf{W}^Q$};
+\node[weightmatrix=green!70!black] (Wk) at (3.6, -2.5) {$\mathbf{W}^K$};
+\node[weightmatrix=blue] (Wv) at (7.2, -2.5) {$\mathbf{W}^V$};
 
-% Scores (third row)
-\node[score, above=1.5cm of k1] (s1) {$\alpha_1$};
-\node[score, above=1.5cm of k2] (s2) {$\alpha_2$};
-\node[score, above=1.5cm of k3] (s3) {$\alpha_3$};
+\node[labeltext, below=0.05cm of Wq] {\tiny Query Weights};
+\node[labeltext, below=0.05cm of Wk] {\tiny Key Weights};
+\node[labeltext, below=0.05cm of Wv] {\tiny Value Weights};
 
-% Values (fourth row)
-\node[proj, above=1.5cm of s1] (v1) {$\mathbf{v}_1$};
-\node[proj, above=1.5cm of s2] (v2) {$\mathbf{v}_2$};
-\node[proj, above=1.5cm of s3] (v3) {$\mathbf{v}_3$};
+% ===== ARROWS FROM INPUT TO WEIGHTS =====
+\foreach \i in {1,2,3} {
+    \draw[thinarrow, red!60] (x\i.south) -- ++(0,-0.4) -| (Wq.north);
+    \draw[thinarrow, green!60!black] (x\i.south) -- ++(0,-0.4) -| (Wk.north);
+    \draw[thinarrow, blue!60] (x\i.south) -- ++(0,-0.4) -| (Wv.north);
+}
 
-% Output (top)
-\node[output, above=1.5cm of v2] (y2) {$\mathbf{y}_2$};
+% ===== Q, K, V MATRICES =====
+\node[matrixbox=red] (Q) at (0, -5.5) {};
+\node at (Q) {$\mathbf{Q} = \begin{bmatrix} \mathbf{q}_1 \\ \mathbf{q}_2 \\ \mathbf{q}_3 \end{bmatrix}$};
 
-% Arrows: inputs to keys
-\draw[arrow] (x1) -- (k1);
-\draw[arrow] (x2) -- (k2);
-\draw[arrow] (x3) -- (k3);
+\node[matrixbox=green!70!black] (K) at (3.6, -5.5) {};
+\node at (K) {$\mathbf{K} = \begin{bmatrix} \mathbf{k}_1 \\ \mathbf{k}_2 \\ \mathbf{k}_3 \end{bmatrix}$};
 
-% Arrow: x2 to query
-\draw[arrow] (x2) -| (q2);
+\node[matrixbox=blue] (V) at (7.2, -5.5) {};
+\node at (V) {$\mathbf{V} = \begin{bmatrix} \mathbf{v}_1 \\ \mathbf{v}_2 \\ \mathbf{v}_3 \end{bmatrix}$};
 
-% Arrows: query to scores (dot product)
-\draw[arrow, tudelftblue] (q2.north) |- (s1.east);
-\draw[arrow, tudelftblue] (q2.north) -- (s2.south);
-\draw[arrow, tudelftblue] (q2.north) |- (s3.west);
+\node[labeltext, below=0.15cm of Q] {Queries};
+\node[labeltext, below=0.15cm of K] {Keys};
+\node[labeltext, below=0.15cm of V] {Values};
 
-% Arrows: keys to scores
-\draw[arrow] (k1) -- (s1);
-\draw[arrow] (k2) -- (s2);
-\draw[arrow] (k3) -- (s3);
+% Arrows from weights to Q, K, V
+\draw[arrow, red!70] (Wq.south) -- (Q.north);
+\draw[arrow, green!60!black] (Wk.south) -- (K.north);
+\draw[arrow, blue!70] (Wv.south) -- (V.north);
 
-% Arrows: inputs to values
-\draw[arrow, gray, dashed] (x1) -- (v1);
-\draw[arrow, gray, dashed] (x2) -- (v2);
-\draw[arrow, gray, dashed] (x3) -- (v3);
+% ===== ATTENTION SCORE COMPUTATION =====
+\node[opnode] (matmul1) at (1.8, -8.5) {$\times$};
+\node[labeltext, left=0.05cm of matmul1] {\tiny $QK^\top$};
 
-% Arrows: scores weight values
-\draw[arrow, red!70!black] (s1) -- (v1);
-\draw[arrow, red!70!black] (s2) -- (v2);
-\draw[arrow, red!70!black] (s3) -- (v3);
+\draw[arrow, red!70] (Q.south) |- (matmul1.west);
+\draw[arrow, green!60!black] (K.south) |- (matmul1.east);
 
-% Arrows: weighted values to output
-\draw[arrow, thick, red!70!black] (v1) -- (y2);
-\draw[arrow, thick, red!70!black] (v2) -- (y2);
-\draw[arrow, thick, red!70!black] (v3) -- (y2);
+% ===== SCALE =====
+\node[opnode] (scale) at (1.8, -10.2) {$\div$};
+\node[labeltext, right=0.15cm of scale] {\tiny $\sqrt{d_k}$};
 
-% Labels
-\node[font=\scriptsize, text=gray, left=0.2cm of k1] {Keys};
-\node[font=\scriptsize, text=gray, left=0.2cm of v1] {Values};
-\node[font=\scriptsize, text=tudelftblue] at (8, 4.5) {$\mathbf{q}_2^\top \mathbf{k}_i$};
-\node[font=\scriptsize, text=codepurple] at (8, 6) {softmax};
-\node[font=\scriptsize, text=red!70!black] at (8, 8.5) {$\sum \alpha_i \mathbf{v}_i$};
+\draw[arrow] (matmul1.south) -- (scale.north);
+
+% ===== SOFTMAX =====
+\node[rectangle, draw=magenta!70!black, fill=magenta!20, 
+      minimum width=1.6cm, minimum height=0.7cm, rounded corners=3pt,
+      blur shadow={shadow blur steps=5}, font=\small] (softmax) at (1.8, -11.9) {\textbf{Softmax}};
+
+\draw[arrow] (scale.south) -- (softmax.north);
+
+% ===== ATTENTION WEIGHTS =====
+\node[attentionmatrix] (attnweights) at (5.4, -10.2) {};
+\node at (attnweights) {\small
+    $\begin{bmatrix} 
+    \textcolor{red!70}{.7} & \textcolor{red!40}{.2} & \textcolor{red!20}{.1} \\[2pt]
+    \textcolor{red!40}{.2} & \textcolor{red!70}{.6} & \textcolor{red!40}{.2} \\[2pt]
+    \textcolor{red!20}{.1} & \textcolor{red!40}{.3} & \textcolor{red!70}{.6}
+    \end{bmatrix}$
+};
+
+\node[labeltext, above=0.1cm of attnweights] {Attention Weights};
+\node[labeltext, below=0.15cm of attnweights] {\tiny (rows sum to 1)};
+
+\draw[arrow, magenta!70] (softmax.east) -- ++(0.8,0) |- (attnweights.west);
+
+% ===== SECOND MATMUL WITH V =====
+\node[opnode] (matmul2) at (5.4, -13.2) {$\times$};
+
+\draw[arrow, orange!70] (attnweights.south) -- (matmul2.north);
+\draw[arrow, blue!70] (V.south) |- ++(0,-1) -| (7.2,-13.2) -- (matmul2.east);
+
+% ===== OUTPUT =====
+\node[resultnode] (o1) at (3.6, -15) {$\mathbf{z}_1$};
+\node[resultnode] (o2) at (5.4, -15) {$\mathbf{z}_2$};
+\node[resultnode] (o3) at (7.2, -15) {$\mathbf{z}_3$};
+
+\draw[arrow, teal!70] (matmul2.south) -- ++(0,-0.4) -| (o1.north);
+\draw[arrow, teal!70] (matmul2.south) -- (o2.north);
+\draw[arrow, teal!70] (matmul2.south) -- ++(0,-0.4) -| (o3.north);
+
+\node[labeltext, below=0.2cm of o2] {Output Embeddings};
+
+% ===== BACKGROUND BOXES =====
+\begin{scope}[on background layer]
+    % Input section
+    \node[fit=(x1)(x2)(x3), draw=gray!40, fill=gray!5, 
+          rounded corners=8pt, inner sep=8pt] {};
+    
+    % Output section  
+    \node[fit=(o1)(o2)(o3), draw=teal!40, fill=teal!5,
+          rounded corners=8pt, inner sep=8pt] {};
+\end{scope}
+
+% ===== DECORATIVE BRACES =====
+\draw[decoration={brace,amplitude=6pt,mirror}, decorate, thick, gray!50]
+    (-1.5,-4.3) -- (-1.5,-6.7) node[midway, left=8pt, font=\tiny, text width=1.2cm, align=right] {Linear\\Projections};
+
+\draw[decoration={brace,amplitude=6pt,mirror}, decorate, thick, gray!50]
+    (-1.5,-7.8) -- (-1.5,-12.5) node[midway, left=8pt, font=\tiny, text width=1.2cm, align=right] {Scaled\\Dot-Product\\Attention};
+
+% Key insight annotation
+\node[draw=yellow!70!orange, fill=yellow!20, rounded corners=3pt, 
+      font=\tiny, text width=3.2cm, align=center, 
+      blur shadow={shadow blur steps=3}] at (0.0, -14.5) {
+    Each output $\mathbf{z}_i$ is a weighted
+    sum of all values $\mathbf{v}_j$,
+    weighted by attention scores
+};
 
 \end{tikzpicture}
-\caption{Self-Attention mechanism for computing $\mathbf{y}_2$. The query $\mathbf{q}_2$ (from $\mathbf{x}_2$) computes dot products with all keys to get attention scores $\alpha_i$ (after softmax). These scores weight the values, which are summed to produce the output.}
+\caption{Self-Attention mechanism showing how Query, Key, and Value projections interact. Each query $\mathbf{q}_i$ computes dot products with all keys to obtain attention scores. After softmax normalization, these scores weight the values, which are summed to produce context-aware output embeddings.}
 \label{fig:self_attention_mechanism}
 \end{figure}
 
