@@ -66,7 +66,12 @@
 \definecolor{tudelftdarkblue}{RGB}{12,35,64}
 \definecolor{tudelftcyan}{RGB}{0,166,214}
 \definecolor{tudelftblue}{RGB}{0,118,194}
-
+\definecolor{encblue}{RGB}{0, 110, 180}   % Darker blue for lines/text
+\definecolor{encfill}{RGB}{180, 220, 245} % Lighter blue for fills
+\definecolor{decblue}{RGB}{0, 160, 180}   % Cyan-ish for decoder
+\definecolor{decfill}{RGB}{190, 235, 240}
+\definecolor{latentred}{RGB}{200, 50, 50}
+\definecolor{noiseorange}{RGB}{230, 140, 50}
 % === Code Listing Colors ===
 \definecolor{darkgreen}{rgb}{0.0, 0.4, 0.0}
 \definecolor{codegreen}{rgb}{0,0.5,0.1}
@@ -3733,49 +3738,183 @@ VAEs maximize the \textbf{Evidence Lower Bound} (ELBO):
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[
-    scale=0.7,
-    block/.style={rectangle, draw=tudelftblue, fill=tudelftblue!10, thick, minimum width=1.5cm, minimum height=0.8cm, font=\footnotesize},
-    param/.style={rectangle, draw=tudelftcyan, fill=tudelftcyan!10, thick, minimum width=0.8cm, minimum height=0.6cm, font=\footnotesize},
-    sample/.style={circle, draw=red!70!black, fill=red!10, thick, minimum size=0.6cm, font=\footnotesize},
-    arrow/.style={->, thick}
+    scale=0.8,
+    transform shape,
+    font=\sffamily,
+    % Node styles
+    mainblock/.style={
+        rectangle, 
+        rounded corners=6pt,
+        draw=#1!80!black, 
+        top color=#1!10,
+        bottom color=#1!30,
+        thick,
+        minimum width=2.4cm, 
+        minimum height=1.4cm,
+        font=\bfseries,
+        align=center,
+        drop shadow={opacity=0.3, shadow xshift=1mm, shadow yshift=-1mm}
+    },
+    paramblock/.style={
+        rectangle,
+        rounded corners=5pt,
+        draw=encblue,
+        top color=encfill!20,
+        bottom color=encfill!50,
+        thick,
+        minimum width=1.2cm,
+        minimum height=0.9cm,
+        font=\large,
+        drop shadow={opacity=0.2}
+    },
+    latentnode/.style={
+        circle,
+        draw=latentred,
+        line width=2pt,
+        top color=red!15,
+        bottom color=red!40,
+        minimum size=1.4cm,
+        font=\large\bfseries,
+        drop shadow={opacity=0.3}
+    },
+    noisenode/.style={
+        circle,
+        draw=noiseorange,
+        line width=1pt,
+        fill=orange!10,
+        minimum size=1.1cm,
+        font=\large\bfseries
+    },
+    imagenode/.style={
+        rectangle,
+        rounded corners=3pt,
+        draw=gray!40,
+        line width=1pt,
+        minimum width=1.6cm,
+        minimum height=1.6cm,
+        fill=gray!5,
+        font=\Large\bfseries,
+        text=gray!70!black
+    },
+    link/.style={
+        -{Stealth[length=3mm, width=2mm]},
+        line width=1.2pt,
+        draw=gray!60
+    },
+    labeltext/.style={
+        font=\scriptsize\bfseries,
+        text=gray!60
+    }
 ]
-    % Input
-    \node (x) at (0, 0) {$\mathbf{x}$};
+
+% === 1. Nodes ===
+
+% Input X
+\node[imagenode] (x) at (0, 0) {x};
+\node[below=0.2cm of x, labeltext, align=center] {Input\\Data};
+
+% Encoder Block
+\node[mainblock=encblue, right=1.5cm of x] (enc) {Encoder\\[2pt]{\small\color{encblue}$q_\phi(\mathbf{z}|\mathbf{x})$}};
+
+% Parameters (Mu and Sigma)
+\node[paramblock] (mu) at (6, 1.3) {$\boldsymbol{\mu}$};
+\node[paramblock] (sigma) at (6, -1.3) {$\boldsymbol{\sigma}$};
+
+% Latent Space Z
+\node[latentnode] (z) at (9, 0) {z};
+
+% === IMPROVED GAUSSIAN VISUALIZATION ===
+\begin{scope}[on background layer]
+    % Outer glow / probability density visualization
+    % Multiple ellipses with gradient-like effect (outermost to innermost)
+    \fill[red!8] (z.center) ellipse (2.2cm and 1.6cm);
+    \fill[red!12] (z.center) ellipse (1.8cm and 1.3cm);
+    \fill[red!18] (z.center) ellipse (1.4cm and 1.0cm);
+    \fill[red!25] (z.center) ellipse (1.0cm and 0.75cm);
     
-    % Encoder
-    \node[block] (enc) at (2.5, 0) {Encoder $\phi$};
+    % Contour lines (like topographic lines for probability)
+    \draw[red!40, line width=0.6pt, densely dashed] (z.center) ellipse (2.2cm and 1.6cm);
+    \draw[red!50, line width=0.8pt, densely dashed] (z.center) ellipse (1.8cm and 1.3cm);
+    \draw[red!60, line width=1pt] (z.center) ellipse (1.4cm and 1.0cm);
+    \draw[red!70, line width=1.2pt] (z.center) ellipse (1.0cm and 0.75cm);
+\end{scope}
+
+% Sigma labels on contours
+\node[font=\tiny\bfseries, text=red!70, fill=white, fill opacity=0.8, text opacity=1, inner sep=1pt, rounded corners=1pt] 
+    at ($(z.center) + (1.0, 0.55)$) {$1\sigma$};
+\node[font=\tiny\bfseries, text=red!60, fill=white, fill opacity=0.8, text opacity=1, inner sep=1pt, rounded corners=1pt] 
+    at ($(z.center) + (1.4, 0.8)$) {$2\sigma$};
+\node[font=\tiny\bfseries, text=red!50, fill=white, fill opacity=0.8, text opacity=1, inner sep=1pt, rounded corners=1pt] 
+    at ($(z.center) + (1.85, 1.05)$) {$3\sigma$};
+
+% Small sample dots to show sampling from distribution
+\foreach \angle/\radius in {30/0.4, 75/0.5, 120/0.35, 160/0.55, 200/0.3, 250/0.45, 290/0.5, 340/0.38} {
+    \fill[red!80, opacity=0.6] ($(z.center) + (\angle:\radius)$) circle (1.5pt);
+}
+
+% Annotation for the distribution
+\node[
+    font=\small\itshape, 
+    text=red!70!black, 
+    align=center,
+    text opacity=1,
+    rounded corners=2pt,
+    inner sep=3pt
+] at ($(z.center) + (1.8, -2.2)$) {Learned posterior\\$q_\phi(\mathbf{z}|\mathbf{x})$};
+
+% Noise Node (Below Z, adjusted position)
+\node[noisenode] (eps) at (9, -3.8) {$\boldsymbol{\epsilon}$};
+\node[below=2pt of eps, font=\tiny, text=noiseorange, align=center] {$\sim \mathcal{N}(0, \mathbf{I})$};
+
+% Equation Box (Above Z)
+\node[
+    draw=red!40, 
+    fill=white, 
+    rounded corners=4pt, 
+    font=\small\bfseries, 
+    text=red!80!black,
+    inner sep=6pt,
+    drop shadow={opacity=0.15}
+] (eqbox) at (9, 2.2) {$\mathbf{z} = \boldsymbol{\mu} + \boldsymbol{\sigma} \odot \boldsymbol{\epsilon}$};
+
+% Small label for the equation
+\node[font=\small, text=gray!60, above=1pt of eqbox] {Reparameterization};
+
+% Decoder Block
+\node[mainblock=decblue] (dec) at (13, 0) {Decoder\\[2pt]{\small\color{decblue}$p_\theta(\mathbf{x}|\mathbf{z})$}};
+
+% Output X_hat
+\node[imagenode, right=1.5cm of dec] (xhat) {$\hat{\mathbf{x}}$};
+\node[below=0.2cm of xhat, labeltext, align=center] {Recon-\\struction};
+
+
+% === 2. Connections (Smooth Curves) ===
+
+% Input -> Encoder
+\draw[link, encblue!60] (x) -- (enc);
+
+% Encoder -> Mu/Sigma (Smooth fork)
+\draw[link, encblue!60] (enc.east) to[out=0, in=180] (mu.west);
+\draw[link, encblue!60] (enc.east) to[out=0, in=180] (sigma.west);
+
+% Mu/Sigma -> Z (connecting to the distribution)
+\draw[link, red!60] (mu.east) to[out=0, in=135] (z.north west);
+\draw[link, red!60] (sigma.east) to[out=0, in=225] (z.south west);
+
+% Noise -> Z (Dashed, curved to avoid overlap)
+\draw[link, noiseorange, dashed, line width=1.5pt] (eps.north) -- (z.south);
+
+% Z -> Decoder
+\draw[link, decblue!60] (z.east) -- (dec.west);
+
+% Decoder -> Output
+\draw[link, decblue!60] (dec) -- (xhat);
+
+
     
-    % Mu and Sigma
-    \node[param] (mu) at (5, 0.8) {$\boldsymbol{\mu}$};
-    \node[param] (sigma) at (5, -0.8) {$\boldsymbol{\sigma}$};
-    
-    % Epsilon
-    \node[sample] (eps) at (7, -1.5) {$\boldsymbol{\epsilon}$};
-    \node[font=\scriptsize, below=0.1cm of eps] {$\sim \mathcal{N}(0, \mathbf{I})$};
-    
-    % Z
-    \node[sample] (z) at (8, 0) {$\mathbf{z}$};
-    
-    % Decoder
-    \node[block] (dec) at (11, 0) {Decoder $\theta$};
-    
-    % Output
-    \node (xhat) at (13.5, 0) {$\hat{\mathbf{x}}$};
-    
-    % Arrows
-    \draw[arrow] (x) -- (enc);
-    \draw[arrow] (enc) -- ++(1, 0) |- (mu);
-    \draw[arrow] (enc) -- ++(1, 0) |- (sigma);
-    \draw[arrow] (mu) -- ++(1.5, 0) |- (z);
-    \draw[arrow] (sigma) -- ++(1, 0) |- (z);
-    \draw[arrow, dashed] (eps) -- (z);
-    \draw[arrow] (z) -- (dec);
-    \draw[arrow] (dec) -- (xhat);
-    
-    % Reparameterization annotation
-    \node[font=\scriptsize, text=gray] at (7, 0.8) {$\mathbf{z} = \boldsymbol{\mu} + \boldsymbol{\sigma} \odot \boldsymbol{\epsilon}$};
 \end{tikzpicture}
-\caption{VAE architecture with the reparameterization trick. The encoder outputs $\boldsymbol{\mu}$ and $\boldsymbol{\sigma}$. Sampling is done by $\mathbf{z} = \boldsymbol{\mu} + \boldsymbol{\sigma} \odot \boldsymbol{\epsilon}$, where $\boldsymbol{\epsilon}$ is external noise. This allows gradients to flow through $\boldsymbol{\mu}$ and $\boldsymbol{\sigma}$.}
+
+\caption{Variational Autoencoder architecture with the reparameterization trick. The encoder maps input $\mathbf{x}$ to distribution parameters $\boldsymbol{\mu}$ and $\boldsymbol{\sigma}$, defining a Gaussian posterior in latent space (visualized with probability contours at $1\sigma$, $2\sigma$, $3\sigma$). The latent code $\mathbf{z}$ is sampled via $\mathbf{z} = \boldsymbol{\mu} + \boldsymbol{\sigma} \odot \boldsymbol{\epsilon}$, where $\boldsymbol{\epsilon} \sim \mathcal{N}(0, \mathbf{I})$ is external noise. This separates stochasticity from the computational graph, enabling gradient-based optimization.}
 \label{fig:vae}
 \end{figure}
 
