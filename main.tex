@@ -3864,7 +3864,7 @@ VAEs maximize the \textbf{Evidence Lower Bound} (ELBO):
 
 % Noise Node (Below Z, adjusted position)
 \node[noisenode] (eps) at (9, -3.8) {$\boldsymbol{\epsilon}$};
-\node[below=2pt of eps, font=\tiny, text=noiseorange, align=center] {$\sim \mathcal{N}(0, \mathbf{I})$};
+\node[below=2pt of eps, font=\small, text=noiseorange, align=center] {$\sim \mathcal{N}(0, \mathbf{I})$};
 
 % Equation Box (Above Z)
 \node[
@@ -3933,43 +3933,202 @@ GANs take a completely different approach: a \textbf{game} between two networks.
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[
-    scale=0.7,
-    block/.style={rectangle, draw=tudelftblue, fill=tudelftblue!10, thick, minimum width=2cm, minimum height=0.8cm, font=\small},
-    arrow/.style={->, thick}
+    scale=0.9,
+    node distance=1.8cm,
+    font=\sffamily,
+    % --- Styles ---
+    mainblock/.style={
+        rectangle, 
+        rounded corners=8pt,
+        draw=#1!80!black, 
+        top color=#1!10,
+        bottom color=#1!30,
+        thick,
+        minimum width=2.8cm, 
+        minimum height=1.6cm,
+        font=\bfseries\large,
+        align=center,
+        drop shadow={opacity=0.3, shadow xshift=1mm, shadow yshift=-1mm}
+    },
+    noisenode/.style={
+        circle,
+        draw=violet!70!black,
+        line width=1.5pt,
+        top color=violet!10,
+        bottom color=violet!30,
+        minimum size=1.4cm,
+        font=\large\bfseries,
+        drop shadow={opacity=0.2}
+    },
+    imagenode/.style={
+        rectangle,
+        rounded corners=6pt,
+        draw=#1!60!black,
+        line width=1.2pt,
+        minimum width=2.0cm,
+        minimum height=2.0cm,
+        top color=#1!5,
+        bottom color=#1!20,
+        font=\bfseries,
+        align=center,
+        drop shadow={opacity=0.2}
+    },
+    outputnode/.style={
+        rectangle,
+        rounded corners=6pt,
+        draw=gray!60,
+        line width=1.5pt,
+        minimum width=1.8cm,
+        minimum height=1.4cm,
+        fill=white,
+        font=\bfseries,
+        align=center,
+        drop shadow={opacity=0.2}
+    },
+    link/.style={
+        -{Stealth[length=4mm, width=3mm]},
+        line width=1.8pt,
+        draw=#1,
+        rounded corners=8pt
+    },
+    rulebox/.style={
+        rectangle,
+        rounded corners=4pt,
+        draw=#1!60,
+        fill=white,
+        dashed,
+        line width=1pt,
+        minimum width=3.5cm,
+        minimum height=1.2cm,
+        align=left,
+        font=\small,
+        drop shadow={opacity=0.1}
+    },
+    vsnode/.style={
+        circle,
+        draw=gray!50,
+        fill=white,
+        line width=1pt,
+        minimum size=1.0cm,
+        font=\bfseries,
+        text=gray!70,
+        drop shadow={opacity=0.1}
+    }
 ]
-    % Noise
-    \node (z) at (0, 0) {$\mathbf{z} \sim \mathcal{N}(0, \mathbf{I})$};
+
+% =========================================================
+% ROW 1: GENERATOR (Top)
+% =========================================================
+
+\node[mainblock=violet] (G) at (0, 4) {Generator\\[3pt]{\small\color{violet!70}$G_\theta$}};
+
+\node[noisenode, left=1.5cm of G] (z) {$\mathbf{z}$};
+\node[below=0.2cm of z, font=\scriptsize, text=violet!70!black] {$\sim \mathcal{N}(0, \mathbf{I})$};
+\node[above=0.2cm of z, font=\bfseries\scriptsize, text=gray!60] {Latent Noise};
+
+\node[imagenode=red, right=1.5cm of G] (fake) {Fake\\$G(\mathbf{z})$};
+\node[below=0.1cm of fake, font=\tiny\bfseries, text=white, fill=red!70, rounded corners=2pt, inner sep=3pt] {GENERATED};
+
+\draw[link=violet!60] (z) -- (G);
+\draw[link=violet!60] (G) -- (fake);
+
+
+% =========================================================
+% ROW 2: DISCRIMINATOR (Bottom)
+% =========================================================
+
+\node[vsnode, below=2.5cm of G] (vs) {VS};
+
+\node[imagenode=green!70!black, left=1.5cm of vs] (real) {Real\\$\mathbf{x}$};
+\node[below=0.1cm of real, font=\tiny\bfseries, text=white, fill=green!60!black, rounded corners=2pt, inner sep=3pt] {DATA};
+
+\node[mainblock=orange, right=1.5cm of vs] (D) {Discriminator\\[3pt]{\color{orange!70}$D_\phi$}};
+
+\node[outputnode, right=1.2cm of D] (out) {$D(\cdot)$\\[2pt]{\scriptsize Real?}};
+
+% Probability Bar
+\begin{scope}[shift={($(out.south)+(0, -0.6)$)}]
+    \draw[gray!30, line width=5pt, line cap=round] (-0.8, 0) -- (0.8, 0);
+    \draw[green!60!black, line width=5pt, line cap=round] (0, 0) -- (0.8, 0);
+    \draw[red!60, line width=5pt, line cap=round] (-0.8, 0) -- (0, 0);
+    \node[font=\tiny\bfseries, text=red!70] at (-0.8, -0.35) {0};
+    \node[font=\tiny\bfseries, text=green!60!black] at (0.8, -0.35) {1};
+\end{scope}
+
+\draw[link=green!50!black] (real) -- (vs);
+\draw[link=orange!60] (vs) -- (D);
+\draw[link=orange!60] (D) -- (out);
+\draw[link=red!50] (fake) -- (vs);
+
+
+% =========================================================
+% UPDATE RULES (New placement)
+% =========================================================
+
+% Rule G (Top of Output)
+\node[rulebox=red, above=1.5cm of out] (ruleG) {
+    \textbf{Update $G$:}\\
+    Maximize $D(G(\mathbf{z})) \to 1$\\
+    \textit{\scriptsize(Fool the discriminator)}
+};
+
+% Rule D (Bottom of Output)
+\node[rulebox=green!50!black, below=1.5cm of out] (ruleD) {
+    \textbf{Update $D$:}\\
+    Maximize $D(\mathbf{x}) \to 1$\\
+    Minimize $D(G(\mathbf{z})) \to 0$
+};
+
+% Arrows from Output to Rules (CURVED)
+% out=0   : Leaves the Output node going Right
+% in=270  : Enters the Top node coming from the Bottom
+% in=90   : Enters the Bottom node coming from the Top
+
+\draw[link=gray!40, dashed] (out.east) to[out=0, in=270] (ruleG.south);
+\draw[link=gray!40, dashed] (out.east) to[out=0, in=90] (ruleD.north);
+
+
+% =========================================================
+% BACKGROUNDS
+% =========================================================
+\begin{scope}[on background layer]
+    % Generator Region
+    \node[
+        fit=(z) (G) (fake),
+        inner sep=0.8cm,
+        fill=violet!5, 
+        draw=violet!20, 
+        line width=1.5pt, 
+        rounded corners=20pt
+    ] (gen_bg) {};
     
-    % Generator
-    \node[block] (G) at (3.5, 0) {Generator $G$};
-    
-    % Fake image
-    \node (fake) at (7, 0) {Fake $G(\mathbf{z})$};
-    
-    % Real image
-    \node (real) at (7, 2) {Real $\mathbf{x}$};
-    
-    % Discriminator
-    \node[block] (D) at (10.5, 1) {Discriminator $D$};
-    
-    % Output
-    \node (out) at (14, 1) {Real/Fake?};
-    
-    % Arrows
-    \draw[arrow] (z) -- (G);
-    \draw[arrow] (G) -- (fake);
-    \draw[arrow] (fake) -- (D);
-    \draw[arrow] (real) -- (D);
-    \draw[arrow] (D) -- (out);
-    
-    % Feedback arrows
-    \draw[arrow, red!70!black, dashed] (out.south) -- ++(0, -1.5) -| node[pos=0.25, below, font=\scriptsize] {Update $G$ to fool $D$} (G.south);
-    \draw[arrow, tudelftcyan, dashed] (out.north) -- ++(0, 0.8) -| node[pos=0.25, above, font=\scriptsize] {Update $D$ to catch fakes} (D.north);
+    % Discriminator Region
+    \node[
+        fit=(real) (vs) (D) (out),
+        inner sep=0.8cm,
+        yshift=-0.2cm,
+        fill=orange!5, 
+        draw=orange!20, 
+        line width=1.5pt, 
+        rounded corners=20pt
+    ] (disc_bg) {};
+\end{scope}
+
+
+
+% =========================================================
+% NOISE DOTS
+% =========================================================
+\begin{scope}
+    \foreach \x/\y in {-0.3/0.2, 0.3/-0.2, -0.2/-0.3, 0.2/0.3, 0/0} {
+        \fill[violet!70, opacity=0.8] ($(z)+(\x,\y)$) circle (2pt);
+    }
+\end{scope}
+
 \end{tikzpicture}
-\caption{GAN architecture. The generator transforms noise into fake data. The discriminator tries to distinguish real from fake. Training alternates between updating $D$ (to improve detection) and updating $G$ (to better fool $D$).}
+\caption{Generative Adversarial Network architecture. The generator $G$ transforms random noise $\mathbf{z}$ into fake samples, while the discriminator $D$ learns to distinguish real data from generated fakes. Training alternates: $D$ is updated to better detect fakes (pushing $D(\mathbf{x}) \to 1$ and $D(G(\mathbf{z})) \to 0$), then $G$ is updated to better fool $D$ (pushing $D(G(\mathbf{z})) \to 1$). At equilibrium, $G$ produces samples indistinguishable from real data.}
 \label{fig:gan}
 \end{figure}
-
 \paragraph{Training Challenges:}
 \begin{itemize}
 	\item \textbf{Mode collapse:} $G$ learns to produce only a few modes of the data distribution.
