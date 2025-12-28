@@ -2856,65 +2856,163 @@ The \textbf{LSTM} is an older but still widely-used architecture. It introduces 
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[
-    scale=1.0,
-    gate/.style={rectangle, draw=tudelftblue, fill=tudelftblue!20, thick, minimum width=1cm, minimum height=0.7cm, font=\footnotesize},
-    op/.style={circle, draw=gray, fill=gray!10, thick, minimum size=0.6cm, font=\small},
-    cell/.style={rectangle, draw=tudelftcyan, fill=tudelftcyan!20, thick, rounded corners, minimum width=2cm, minimum height=0.6cm, font=\small},
-    arrow/.style={->, thick},
-    label/.style={font=\footnotesize}
+    >=stealth,
+    % Increased node distances slightly for general breathing room
+    node distance=1.2cm and 1.3cm,
+    % Gate style - INCREASED MINIMUM HEIGHT to fit text inside
+    gate/.style={
+        rectangle, draw=tudelftblue, fill=tudelftblue!15, thick,
+        minimum width=1.3cm, minimum height=1.2cm, 
+        font=\small, rounded corners=3pt, align=center
+    },
+    % Operation circles
+    op/.style={
+        circle, draw=gray!70, fill=white, thick,
+        minimum size=0.7cm, font=\small, inner sep=0pt
+    },
+    % Activation function boxes
+    activ/.style={
+        rectangle, draw=tudelftcyan!70, fill=tudelftcyan!10,
+        minimum width=0.8cm, minimum height=0.5cm,
+        font=\scriptsize, rounded corners=2pt
+    },
+    % Arrow styles
+    arr/.style={->, thick, gray!80, rounded corners=2pt},
+    cellarr/.style={->, line width=2.5pt, tudelftcyan},
+    hiddenarr/.style={->, line width=1.5pt, tudelftblue, rounded corners=2pt},
+    % Label style
+    lbl/.style={font=\footnotesize, text=gray!70},
 ]
-% Cell state conveyor belt
-\draw[arrow, tudelftcyan, very thick] (-4, 4) -- node[above, label] {$\mathbf{c}_{t-1}$} (0, 4);
-\node[op] (forget_mult) at (2, 4) {$\times$};
-\node[op] (add) at (5.5, 4) {$+$};
-\draw[arrow, tudelftcyan, very thick] (0, 4) -- (forget_mult);
-\draw[arrow, tudelftcyan, very thick] (forget_mult) -- (add);
-\draw[arrow, tudelftcyan, very thick] (add) -- (9, 4) node[right, label] {$\mathbf{c}_t$};
 
-% Forget gate
-\node[gate] (f) at (2, 1) {$\mathbf{f}_t$};
-\node[label, below=0.2cm of f] {Forget};
-\draw[arrow] (f) -- (forget_mult);
+% ============================================
+% CELL STATE CONVEYOR BELT (top)
+% ============================================
+\node[font=\small\bfseries, tudelftcyan] (c_prev) {$\mathbf{c}_{t-1}$};
 
-% Input gate and candidate
-\node[gate] (i) at (4, 1) {$\mathbf{i}_t$};
-\node[label, below=0.2cm of i] {Input};
-\node[gate] (c_tilde) at (6.5, 1) {$\tilde{\mathbf{c}}_t$};
-\node[label, below=0.2cm of c_tilde] {Candidate};
-\node[op] (input_mult) at (5.25, 2.5) {$\times$};
-\draw[arrow] (i.north) -- ++(0, 0.5) -| (input_mult);
-\draw[arrow] (c_tilde.north) -- ++(0, 0.5) -| (input_mult);
-\draw[arrow] (input_mult) -- (add);
+\node[op, right=1.8cm of c_prev] (mult_f) {$\odot$};
+\node[op, right=2.2cm of mult_f] (add_c) {$+$};
+\node[font=\small\bfseries, tudelftcyan, right=2.5cm of add_c] (c_next) {$\mathbf{c}_{t}$};
 
-% Output gate
-\node[gate] (o) at (8, 1) {$\mathbf{o}_t$};
-\node[label, below=0.2cm of o] {Output};
-\node[op] (tanh_out) at (7, 4) {\small$\tanh$};
-\node[op] (out_mult) at (8, 2.5) {$\times$};
-\draw[arrow] (6.5, 4) -- (tanh_out);
-\draw[arrow] (tanh_out.south) -- ++(0, -0.5) -| (out_mult.north);
-\draw[arrow] (o) -- (out_mult);
+% Cell state flow
+\draw[cellarr] (c_prev) -- (mult_f);
+\draw[cellarr] (mult_f) -- (add_c);
+\draw[cellarr] (add_c) -- (c_next);
 
-% Hidden state
-\draw[arrow] (out_mult.east) -- ++(0.5, 0) |- (9, 0) node[right, label] {$\mathbf{h}_t$};
+% ============================================
+% GATES (middle layer) - LABELS MOVED INSIDE
+% ============================================
+% INCREASED VERTICAL SPACE HERE (was 2cm)
+\node[gate, below=3.5cm of mult_f] (f_gate) {$\sigma$ \\ \footnotesize Forget};
+% External label removed here
 
-% Inputs
-\draw[arrow] (-4, 0) node[left, label] {$\mathbf{h}_{t-1}$} -- (0, 0);
-\draw[arrow] (-1.5, -1.5) node[below, label] {$\mathbf{x}_t$} -- (-1.5, 0);
+\node[gate, right=1cm of f_gate] (i_gate) {$\sigma$ \\ \footnotesize Input};
+% External label removed here
 
-% Connections to gates (conceptual)
-\draw[dashed, gray] (0, 0) -- (f.west);
-\draw[dashed, gray] (0, 0) -- (i.west);
-\draw[dashed, gray] (0, 0) -- (c_tilde.west);
-\draw[dashed, gray] (0, 0) -- (o.west);
+\node[gate, right=1cm of i_gate] (c_tilde) {$\tanh$ \\ \footnotesize Candidate};
+% External label removed here
 
-% Title
-\node[font=\bfseries, text=tudelftdarkblue] at (2.5, 5.5) {LSTM Cell};
+\node[gate, right=1cm of c_tilde] (o_gate) {$\sigma$ \\ \footnotesize Output};
+% External label removed here
+
+% ============================================
+% GATE OUTPUTS
+% ============================================
+% Gate output labels
+\node[lbl, right=3pt of f_gate.east, yshift=8pt] {$\mathbf{f}_t$};
+\node[lbl, right=3pt of i_gate.east, yshift=8pt] {$\mathbf{i}_t$};
+\node[lbl, right=3pt of c_tilde.east, yshift=8pt] {$\tilde{\mathbf{c}}_t$};
+\node[lbl, right=3pt of o_gate.east, yshift=8pt] {$\mathbf{o}_t$};
+
+% Forget gate to cell state
+\draw[arr] (f_gate) -- (mult_f);
+
+% Input gate × Candidate
+% Position relative to the center of the two gates below it
+\node[op, above=1.2cm of $(i_gate)!0.5!(c_tilde)$] (mult_ic) {$\odot$};
+\draw[arr] (i_gate.north) |- (mult_ic);
+\draw[arr] (c_tilde.north) |- (mult_ic);
+\draw[arr] (mult_ic) -- (add_c);
+
+% ============================================
+% OUTPUT PATH (Right side - significantly spread out)
+% ============================================
+% Branch from cell state for output
+% INCREASED VERTICAL SPACE HERE (was 1.2cm)
+\node[activ, below=2.8cm of c_next, xshift=-0.3cm] (tanh_out) {$\tanh$};
+% INCREASED VERTICAL SPACE HERE (was 0.7cm)
+\node[op, below=1.7cm of tanh_out] (mult_o) {$\odot$};
+
+% Connect cell state to tanh (with branch)
+\coordinate (branch_pt) at ($(add_c)!0.6!(c_next)$);
+\draw[arr, tudelftcyan] (branch_pt) -\ (tanh_out.north);
+\draw[arr] (tanh_out) -- (mult_o);
+
+% Output gate connection - REROUTED from east side instead of north
+\draw[arr] (o_gate.east) -- ++(0.5,0) |- (mult_o);
+
+\node[font=\small\bfseries, tudelftblue, below right=0.7cm and 1.5cm of mult_o] (h_next) {$\mathbf{h}_{t}$};
+\draw[hiddenarr] (mult_o.south) |- (h_next.west);
+
+% ============================================
+% INPUTS (bottom)
+% ============================================
+% Concatenation point - Positioned relative to the gates above
+% INCREASED VERTICAL SPACE HERE
+\node[op, fill=tudelftblue!10, below=3cm of $(i_gate)!0.5!(c_tilde)$] (concat) {$[$,$]$};
+
+% Previous hidden state
+\node[font=\small\bfseries, tudelftblue, left=1.5cm of concat] (h_prev) {$\mathbf{h}_{t-1}$};
+
+% Current input
+\node[font=\small\bfseries, below=1cm of concat] (x_t) {$\mathbf{x}_{t}$};
+
+% Connect inputs to concat
+\draw[hiddenarr] (h_prev) -- (concat);
+\draw[arr] (x_t) -- (concat);
+
+% Connect concat to all gates
+% Increased the riser height (0.4 -> 1.0) to clear labels due to increased spacing
+\draw[arr] (concat.north) -- ++(0, 1.0) -| (f_gate.south);
+\draw[arr] (concat.north) -- ++(0, 1.0) -| (i_gate.south);
+\draw[arr] (concat.north) -- ++(0, 1.0) -| (c_tilde.south);
+\draw[arr] (concat.north) -- ++(0, 1.0) -| (o_gate.south);
+
+% ============================================
+% FEEDBACK LOOP (Dynamic positioning)
+% ============================================
+% Find the lowest point occupied by inputs and the rightmost output
+\coordinate (lowest_point) at ($(x_t.south) + (0, -0.8cm)$);
+% Find x-coordinates for turning points
+\coordinate (turn_right) at (h_next |- lowest_point);
+\coordinate (turn_left) at (h_prev |- lowest_point);
+
+% Updated to use -- and yshift for cleaner endpoint near text
+\draw[hiddenarr, dashed, rounded corners=10pt] 
+    (h_next.south) |- (turn_right) -- (turn_left) -- ([yshift=-0.3cm]h_prev.south);
+
+% ============================================
+% ANNOTATIONS
+% ============================================
+% Cell state label
+\node[above=0.3cm of add_c, font=\footnotesize\itshape, text=tudelftcyan!80] 
+    {Cell State (memory)};
+
+% Background box for gates
+\begin{scope}[on background layer]
+    \node[
+        fit=(f_gate)(o_gate)(i_gate)(c_tilde),
+        draw=gray!30, fill=gray!5, rounded corners=5pt,
+        inner sep=10pt,
+        % yshift removed as it's no longer needed to cover external labels
+    ] (gate_box) {};
+\end{scope}
+\node[below=2pt of gate_box.south, font=\scriptsize\itshape, text=gray] 
+    {Gating Mechanisms};
+
 \end{tikzpicture}
-\caption{The LSTM architecture. The horizontal line at the top is the \textbf{Cell State} $\mathbf{c}_t$, a ``conveyor belt'' that can carry information unchanged across many time steps. Gates (forget, input, output) control what information is removed, added, or output at each step.}
-\label{fig:lstm_cell}
+\caption{The LSTM cell architecture. The \textcolor{tudelftcyan}{\textbf{cell state}} $\mathbf{c}_t$ flows horizontally as a ``conveyor belt,'' allowing gradients to flow unchanged over long sequences. The \textbf{forget gate} controls what to erase, the \textbf{input gate} and \textbf{candidate} control what new information to add, and the \textbf{output gate} controls what to expose as the hidden state $\mathbf{h}_t$.}
+\label{fig:lstm_cell_final}
 \end{figure}
-
 \paragraph{Why LSTMs Solve Vanishing Gradients:}
 The cell state $\mathbf{c}_t$ is updated via \textbf{addition} (not multiplication):
 \begin{equation}
