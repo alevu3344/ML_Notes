@@ -4246,45 +4246,161 @@ where $\boldsymbol{\epsilon}_\theta$ is the learned noise predictor (often a U-N
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[
-    scale=0.6,
-    img/.style={rectangle, draw=gray, thick, minimum width=1.2cm, minimum height=1.2cm, font=\footnotesize},
-    arrow/.style={->, thick}
+    img/.style={
+        rectangle, 
+        draw=gray!70, 
+        thick, 
+        minimum width=1.5cm, 
+        minimum height=1.5cm, 
+        rounded corners=2pt
+    },
+    neuralnet/.style={
+        rectangle,
+        draw=tudelftcyan,
+        fill=tudelftcyan!15,
+        thick,
+        rounded corners=3pt,
+        minimum width=1.2cm,
+        minimum height=0.8cm,
+        font=\scriptsize\bfseries
+    },
+    arrow/.style={->, thick, >=stealth},
+    reversearrow/.style={->, thick, >=stealth, tudelftcyan},
+    noise label/.style={font=\scriptsize, text=gray},
+    time label/.style={font=\scriptsize\bfseries, text=tudelftblue}
 ]
-    % Forward process
-    \node[font=\bfseries] at (6, 2) {Forward Process (add noise)};
+
+    % ============ FORWARD PROCESS (TOP) ============
+    \node[font=\bfseries\small, tudelftblue] at (0, 2.8) {Forward Process $q(\mathbf{x}_t | \mathbf{x}_{t-1})$};
     
-    \node[img, fill=tudelftblue!30] (x0) at (0, 0) {$\mathbf{x}_0$};
-    \node[img, fill=tudelftblue!20] (x1) at (3, 0) {$\mathbf{x}_1$};
-    \node[img, fill=gray!20] (x2) at (6, 0) {$\mathbf{x}_2$};
-    \node[font=\footnotesize] at (8.5, 0) {$\cdots$};
-    \node[img, fill=gray!50] (xT) at (11, 0) {$\mathbf{x}_T$};
+    % Images with progressive noise (using pattern fills)
+    \node[img, fill=tudelftblue!40] (x0f) at (0, 1) {};
+    \node[img, fill=tudelftblue!30, postaction={fill=gray!20, path fading=north}] (x1f) at (3, 1) {};
+    \node[img, fill=tudelftblue!15, postaction={fill=gray!40, path fading=north}] (x2f) at (6, 1) {};
+    \node[img, fill=gray!30, postaction={fill=gray!50, path fading=south}] (x3f) at (9, 1) {};
+    \node[img, fill=gray!60] (xTf) at (12, 1) {};
     
-    \draw[arrow] (x0) -- node[above, font=\scriptsize] {$+\epsilon$} (x1);
-    \draw[arrow] (x1) -- node[above, font=\scriptsize] {$+\epsilon$} (x2);
-    \draw[arrow] (x2) -- (8, 0);
-    \draw[arrow] (9, 0) -- (xT);
+    % Noise patterns (dots to represent noise)
+    \foreach \x in {-0.4,-0.2,0,0.2,0.4} {
+        \foreach \y in {-0.4,-0.2,0,0.2,0.4} {
+            \pgfmathsetmacro{\opacity}{rnd*0.3}
+        }
+    }
     
-    \node[font=\scriptsize, below=0.2cm of x0] {Data};
-    \node[font=\scriptsize, below=0.2cm of xT] {Noise};
+    % Add noise dots to later images
+    \foreach \i in {1,...,8} {
+        \pgfmathsetmacro{\rx}{rnd*0.5-0.25}
+        \pgfmathsetmacro{\ry}{rnd*0.5-0.25}
+        \fill[gray!70] ($(x2f)+(\rx,\ry)$) circle (0.04);
+    }
+    \foreach \i in {1,...,20} {
+        \pgfmathsetmacro{\rx}{rnd*0.5-0.25}
+        \pgfmathsetmacro{\ry}{rnd*0.5-0.25}
+        \fill[gray!80] ($(x3f)+(\rx,\ry)$) circle (0.04);
+    }
+    \foreach \i in {1,...,40} {
+        \pgfmathsetmacro{\rx}{rnd*0.55-0.275}
+        \pgfmathsetmacro{\ry}{rnd*0.55-0.275}
+        \fill[gray!90] ($(xTf)+(\rx,\ry)$) circle (0.04);
+    }
     
-    % Reverse process
-    \node[font=\bfseries] at (6, -3) {Reverse Process (denoise)};
+    % Time labels
+    \node[time label, below=0.3cm of x0f] {$t=0$};
+    \node[time label, below=0.3cm of x1f] {$t=1$};
+    \node[time label, below=0.3cm of x2f] {$t=2$};
+    \node[time label, below=0.3cm of x3f] {$t=T{-}1$};
+    \node[time label, below=0.3cm of xTf] {$t=T$};
     
-    \node[img, fill=gray!50] (xT2) at (11, -5) {$\mathbf{x}_T$};
-    \node[font=\footnotesize] at (8.5, -5) {$\cdots$};
-    \node[img, fill=gray!20] (x22) at (6, -5) {$\mathbf{x}_2$};
-    \node[img, fill=tudelftblue!20] (x12) at (3, -5) {$\mathbf{x}_1$};
-    \node[img, fill=tudelftblue!30] (x02) at (0, -5) {$\mathbf{x}_0$};
+    % Variable labels
+    \node[above=0.2cm of x0f, font=\footnotesize\bfseries] {$\mathbf{x}_0$};
+    \node[above=0.2cm of xTf, font=\footnotesize\bfseries] {$\mathbf{x}_T$};
     
-    \draw[arrow, red!70!black] (xT2) -- (9, -5);
-    \draw[arrow, red!70!black] (8, -5) -- node[above, font=\scriptsize] {$-\epsilon_\theta$} (x22);
-    \draw[arrow, red!70!black] (x22) -- node[above, font=\scriptsize] {$-\epsilon_\theta$} (x12);
-    \draw[arrow, red!70!black] (x12) -- node[above, font=\scriptsize] {$-\epsilon_\theta$} (x02);
+    % Forward arrows with noise labels
+    \draw[arrow, gray!70] (x0f) -- (x1f) node[midway, above, noise label] {$+\sqrt{\beta_1}\boldsymbol{\epsilon}$};
+    \draw[arrow, gray!70] (x1f) -- (x2f) node[midway, above, noise label] {$+\sqrt{\beta_2}\boldsymbol{\epsilon}$};
+    \draw[arrow, gray!70] (x2f) -- (7.3, 1);
+    \node[font=\large, gray] at (7.8, 1) {$\cdots$};
+    \draw[arrow, gray!70] (8.3, 1) -- (x3f);
+    \draw[arrow, gray!70] (x3f) -- (xTf) node[midway, above, noise label] {$+\sqrt{\beta_T}\boldsymbol{\epsilon}$};
     
-    \node[font=\scriptsize, below=0.2cm of xT2] {Sample noise};
-    \node[font=\scriptsize, below=0.2cm of x02] {Generated!};
+    % Description labels
+    \node[below=0.8cm of x0f, font=\scriptsize, align=center, text=tudelftblue] {Clean\\Data};
+    \node[below=0.8cm of xTf, font=\scriptsize, align=center, text=gray] {Pure\\Noise $\sim\mathcal{N}(0,\mathbf{I})$};
+    
+    % ============ REVERSE PROCESS (BOTTOM) ============
+    \node[font=\bfseries\small, tudelftcyan] at (0, -1.5) {Reverse Process $p_\theta(\mathbf{x}_{t-1} | \mathbf{x}_t)$};
+    
+    % Images (reverse order, same noise pattern logic)
+    \node[img, fill=gray!60] (xTr) at (0, -3.2) {};
+    \node[img, fill=gray!30, postaction={fill=gray!50, path fading=south}] (x3r) at (3, -3.2) {};
+    \node[img, fill=tudelftblue!15, postaction={fill=gray!40, path fading=north}] (x2r) at (6, -3.2) {};
+    \node[img, fill=tudelftblue!30, postaction={fill=gray!20, path fading=north}] (x1r) at (9, -3.2) {};
+    \node[img, fill=tudelftblue!40] (x0r) at (12, -3.2) {};
+    
+    % Add noise dots (decreasing)
+    \foreach \i in {1,...,40} {
+        \pgfmathsetmacro{\rx}{rnd*0.55-0.275}
+        \pgfmathsetmacro{\ry}{rnd*0.55-0.275}
+        \fill[gray!90] ($(xTr)+(\rx,\ry)$) circle (0.04);
+    }
+    \foreach \i in {1,...,20} {
+        \pgfmathsetmacro{\rx}{rnd*0.5-0.25}
+        \pgfmathsetmacro{\ry}{rnd*0.5-0.25}
+        \fill[gray!80] ($(x3r)+(\rx,\ry)$) circle (0.04);
+    }
+    \foreach \i in {1,...,8} {
+        \pgfmathsetmacro{\rx}{rnd*0.5-0.25}
+        \pgfmathsetmacro{\ry}{rnd*0.5-0.25}
+        \fill[gray!70] ($(x2r)+(\rx,\ry)$) circle (0.04);
+    }
+    
+    % Time labels
+    \node[time label, below=0.3cm of xTr, text=tudelftcyan] {$t=T$};
+    \node[time label, below=0.3cm of x3r, text=tudelftcyan] {$t=T{-}1$};
+    \node[time label, below=0.3cm of x2r, text=tudelftcyan] {$t=2$};
+    \node[time label, below=0.3cm of x1r, text=tudelftcyan] {$t=1$};
+    \node[time label, below=0.3cm of x0r, text=tudelftcyan] {$t=0$};
+    
+    % Variable labels
+    \node[above=0.2cm of xTr, font=\footnotesize\bfseries] {$\mathbf{x}_T$};
+    \node[above=0.2cm of x0r, font=\footnotesize\bfseries] {$\hat{\mathbf{x}}_0$};
+    
+    % Reverse arrows with neural network
+    \draw[reversearrow] (xTr) -- (x3r);
+    \draw[reversearrow] (x3r) -- (4.3, -3.2);
+    \node[font=\large, tudelftcyan] at (4.8, -3.2) {$\cdots$};
+    \draw[reversearrow] (5.3, -3.2) -- (x2r);
+    \draw[reversearrow] (x2r) -- (x1r);
+    \draw[reversearrow] (x1r) -- (x0r);
+    
+    % Neural network blocks (denoisers)
+    \node[neuralnet] (nn1) at (1.5, -2.3) {$\boldsymbol{\epsilon}_\theta$};
+    \node[neuralnet] (nn2) at (7.5, -2.3) {$\boldsymbol{\epsilon}_\theta$};
+    \node[neuralnet] (nn3) at (10.5, -2.3) {$\boldsymbol{\epsilon}_\theta$};
+    
+    % Connections from images to neural nets
+    \draw[->, thick, gray!50, dashed] (xTr.north) to[bend left=20] (nn1.west);
+    \draw[->, thick, tudelftcyan!70] (nn1.east) to[bend left=20] (x3r.north);
+    
+    \draw[->, thick, gray!50, dashed] (x2r.north) to[bend left=20] (nn2.west);
+    \draw[->, thick, tudelftcyan!70] (nn2.east) to[bend left=20] (x1r.north);
+    
+    \draw[->, thick, gray!50, dashed] (x1r.north) to[bend left=20] (nn3.west);
+    \draw[->, thick, tudelftcyan!70] (nn3.east) to[bend left=20] (x0r.north);
+    
+    % Description labels
+    \node[below=0.8cm of xTr, font=\scriptsize, align=center, text=gray] {Sample\\Noise};
+    \node[below=0.8cm of x0r, font=\scriptsize, align=center, text=tudelftcyan] {Generated\\Image};
+
+    
+    % Training objective box
+    \node[draw=gray, fill=gray!5, rounded corners=3pt, font=\scriptsize, align=center, thick] 
+        at (6, -5.5) {
+            \textbf{Training:} $\mathcal{L} = \mathbb{E}_{t,\mathbf{x}_0,\boldsymbol{\epsilon}}\left[\|\boldsymbol{\epsilon} - \boldsymbol{\epsilon}_\theta(\mathbf{x}_t, t)\|^2\right]$
+        };
+
 \end{tikzpicture}
-\caption{Diffusion models. \textbf{Forward:} Gradually add noise until data becomes pure Gaussian noise. \textbf{Reverse:} A neural network learns to predict and remove noise at each step, transforming noise back into data.}
+\caption{Diffusion model architecture. \textbf{Forward process} (top): Clean data $\mathbf{x}_0$ is progressively corrupted by adding Gaussian noise over $T$ timesteps until it becomes pure noise $\mathbf{x}_T \sim \mathcal{N}(0, \mathbf{I})$. \textbf{Reverse process} (bottom): A neural network $\boldsymbol{\epsilon}_\theta$ (typically a U-Net) learns to predict and remove the noise at each step, iteratively denoising random samples to generate new data.}
 \label{fig:diffusion}
 \end{figure}
 
@@ -4353,55 +4469,176 @@ CNNs encode the inductive bias that nearby pixels are related (locality). Transf
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[
-    scale=0.6,
-    patch/.style={rectangle, draw=gray, thick, minimum size=0.5cm},
-    embed/.style={rectangle, draw=tudelftblue, fill=tudelftblue!20, thick, minimum width=0.4cm, minimum height=1cm, font=\scriptsize},
-    block/.style={rectangle, draw=tudelftcyan, fill=tudelftcyan!10, thick, minimum width=6cm, minimum height=0.8cm, font=\small},
-    arrow/.style={->, thick}
+    scale=0.85,
+    embed/.style={rectangle, draw=tudelftblue, fill=tudelftblue!25, thick, minimum width=0.5cm, minimum height=1.6cm, rounded corners=1pt},
+    cls/.style={rectangle, draw=red!70!black, fill=red!25, thick, minimum width=0.5cm, minimum height=1.6cm, rounded corners=1pt},
+    posembed/.style={rectangle, draw=tudelftcyan, fill=tudelftcyan!20, thick, minimum width=0.5cm, minimum height=0.5cm, rounded corners=1pt, font=\tiny},
+    transformer/.style={rectangle, draw=tudelftblue, thick, rounded corners=4pt},
+    attention/.style={rectangle, draw=orange!70!black, fill=orange!15, thick, rounded corners=3pt, font=\scriptsize},
+    mlpblock/.style={rectangle, draw=green!50!black, fill=green!10, thick, rounded corners=3pt, font=\scriptsize},
+    layernorm/.style={draw=gray, fill=gray!10, rounded corners=2pt, font=\tiny},
+    arrow/.style={->, thick, >=stealth},
+    plus/.style={circle, draw=gray, fill=white, thick, inner sep=1pt, font=\scriptsize\bfseries},
+    annot/.style={draw=gray, fill=gray!5, rounded corners=2pt, font=\tiny, align=center},
+    skipconn/.style={thick, gray!60, rounded corners=3pt}
 ]
-    % Image
-    \node[font=\bfseries] at (2, 2) {Image};
+
+    % ============ INPUT IMAGE ============
+    \coordinate (imgorigin) at (0, 0);
+    
+    % Draw image as grid of patches
     \foreach \i in {0,...,3} {
         \foreach \j in {0,...,3} {
-            \fill[tudelftblue!\the\numexpr20+10*\i+5*\j\relax] (\i*0.8, -\j*0.8) rectangle (\i*0.8+0.7, -\j*0.8-0.7);
-            \draw[gray] (\i*0.8, -\j*0.8) rectangle (\i*0.8+0.7, -\j*0.8-0.7);
+            \pgfmathsetmacro{\colorval}{25 + 12*\i + 8*\j}
+            \fill[tudelftblue!\colorval] ($(imgorigin)+(\i*0.65, -\j*0.65)$) rectangle ++(0.6, -0.6);
+            \draw[white, thick] ($(imgorigin)+(\i*0.65, -\j*0.65)$) rectangle ++(0.6, -0.6);
         }
     }
+    \draw[gray!80, very thick] (imgorigin) rectangle ++(2.55, -2.55);
     
-    % Arrow
-    \draw[arrow] (4, -1.2) -- (5.5, -1.2) node[midway, above, font=\scriptsize] {Patchify};
+    % Image center for reference
+    \coordinate (imgcenter) at ($(imgorigin)+(1.3, -1.3)$);
     
-    % Patches as sequence
-    \node[font=\bfseries] at (9, 2) {Patch Embeddings};
-    \node[embed, fill=red!30] (cls) at (6, 0) {\rotatebox{90}{[CLS]}};
-    \node[embed] (p1) at (7, 0) {};
-    \node[embed] (p2) at (8, 0) {};
-    \node[embed] (p3) at (9, 0) {};
-    \node[font=\scriptsize] at (10, 0) {$\cdots$};
-    \node[embed] (pn) at (11, 0) {};
+    % Image label
+    \node[font=\bfseries\small, above=0.3cm of imgorigin, anchor=south west] (imglabel) {Input Image};
     
-    % Position embeddings
-    \node[font=\scriptsize, text=tudelftcyan] at (6, -1.5) {$+\mathbf{p}_0$};
-    \node[font=\scriptsize, text=tudelftcyan] at (7, -1.5) {$+\mathbf{p}_1$};
-    \node[font=\scriptsize, text=tudelftcyan] at (8, -1.5) {$+\mathbf{p}_2$};
+    % Patch annotation
+    \node[annot, below=0.4cm of imgcenter, anchor=north, yshift=-1cm] (patchnote) {$N = \frac{H \times W}{P^2}$ patches};
     
-    % Arrow down
-    \draw[arrow] (8.5, -2.2) -- (8.5, -3.2);
+    % ============ PATCHIFY ARROW ============
+    \coordinate (imgright) at ($(imgorigin)+(2.9, -1.3)$);
+    \draw[arrow, tudelftblue] (imgright) -- ++(1.3, 0) 
+        node[midway, above, font=\scriptsize, align=center] {Flatten \&\\Project};
     
-    % Transformer
-    \node[block] (trans) at (8.5, -4) {Transformer Encoder ($L$ layers)};
+    % ============ PATCH EMBEDDINGS ============
+    % CLS token - positioned relative to image
+    \node[cls, right=4.5cm of imgorigin, anchor=north west, yshift=-0.5cm] (cls) {};
+    \node[font=\tiny, rotate=90] at (cls) {\textbf{[CLS]}};
     
-    % Arrow down
-    \draw[arrow] (8.5, -4.8) -- (8.5, -5.8);
+    % Patch embeddings - positioned relative to CLS
+    \node[embed, right=0.3cm of cls] (p1) {};
+    \node[embed, right=0.3cm of p1] (p2) {};
+    \node[embed, right=0.3cm of p2] (p3) {};
+    \node[font=\large, gray, right=0.25cm of p3] (dots1) {$\cdots$};
+    \node[embed, right=0.25cm of dots1] (pN) {};
     
-    % Output
-    \node[embed, fill=red!30] (out) at (6, -6.5) {\rotatebox{90}{[CLS]}};
-    \node[font=\scriptsize] at (9, -6.5) {$\cdots$};
+    % Embedding labels
+    \node[font=\tiny, rotate=90] at (p1) {$\mathbf{E}_{p_1}$};
+    \node[font=\tiny, rotate=90] at (p2) {$\mathbf{E}_{p_2}$};
+    \node[font=\tiny, rotate=90] at (p3) {$\mathbf{E}_{p_3}$};
+    \node[font=\tiny, rotate=90] at (pN) {$\mathbf{E}_{p_N}$};
     
-    % Classification
-    \draw[arrow] (out.south) -- (6, -7.5) node[below, font=\scriptsize] {MLP Head $\to$ Class};
+    % Embeddings label - centered above the embeddings
+    \path (cls) -- (pN) node[midway] (embcenter) {};
+    \node[font=\bfseries\small, above=0.7cm of embcenter] (emblabel) {Patch + Position Embeddings};
+    
+    % Plus signs - positioned relative to embeddings
+    \node[plus, below=0.35cm of cls] (plus0) {$+$};
+    \node[plus, below=0.35cm of p1] (plus1) {$+$};
+    \node[plus, below=0.35cm of p2] (plus2) {$+$};
+    \node[plus, below=0.35cm of p3] (plus3) {$+$};
+    \node[plus, below=0.35cm of pN] (plusN) {$+$};
+    
+    % Position embeddings - positioned relative to plus signs
+    \node[posembed, below=0.2cm of plus0] (pos0) {$\mathbf{p}_0$};
+    \node[posembed, below=0.2cm of plus1] (pos1) {$\mathbf{p}_1$};
+    \node[posembed, below=0.2cm of plus2] (pos2) {$\mathbf{p}_2$};
+    \node[posembed, below=0.2cm of plus3] (pos3) {$\mathbf{p}_3$};
+    \node[font=\large, gray, right=0.25cm of pos3] (dots2) {$\cdots$};
+    \node[posembed, below=0.2cm of plusN] (posN) {$\mathbf{p}_N$};
+    
+    % Dimension annotation - relative to cls
+    \draw[<->, gray] ([xshift=-0.5cm]cls.north) -- ([xshift=-0.5cm]cls.south) 
+        node[midway, left, font=\small] {$D$};
+    
+    % ============ TRANSFORMER ENCODER ============
+    % Center point for transformer box
+    \path (pos0) -- (posN) node[midway] (poscenter) {};
+    
+    % Internal nodes first - positioned relative to poscenter
+    \node[layernorm, minimum width=5.5cm, minimum height=0.4cm, below=1.5cm of poscenter] (ln1) {Layer Norm};
+    \node[attention, minimum width=5.5cm, minimum height=0.65cm, below=0.2cm of ln1] (mha) {Multi-Head Self-Attention};
+    \node[layernorm, minimum width=5.5cm, minimum height=0.4cm, below=0.2cm of mha] (ln2) {Layer Norm};
+    \node[mlpblock, minimum width=5.5cm, minimum height=0.65cm, below=0.2cm of ln2] (mlp) {Feed-Forward Network (MLP)};
+
+    % Transformer box using fit
+    \node[transformer, fit=(ln1)(mlp), inner xsep=0.6cm, inner ysep=0.4cm] (transbox) {};
+
+    % Transformer title - relative to transbox
+    \node[font=\bfseries\small, tudelftblue, above=0.1cm of transbox.north] (transtitle) {Transformer Encoder};
+
+    % ============ SKIP CONNECTIONS (RELATIVE POSITIONING) ============
+    % First skip connection: around ln1 -> mha
+    \coordinate (skip1start) at ($(ln1.south west)+(-0.15cm, 0)$);
+    \coordinate (skip1corner1) at ($(transbox.west)!0.5!(ln1.west)$);
+    \coordinate (skip1corner2) at (skip1corner1 |- mha.west);
+    \coordinate (skip1end) at ($(mha.south west)+(-0.15cm, 0)$);
+    
+    \draw[skipconn, ->] (skip1start) -| (skip1corner1) -- (skip1corner2) |- (skip1end);
+    \node[font=\tiny\bfseries, gray, fill=white, inner sep=1pt] at (skip1corner1 |- ln1.south) {$+$};
+    
+    % Second skip connection: around ln2 -> mlp  
+    \coordinate (skip2start) at ($(ln2.south west)+(-0.15cm, 0)$);
+    \coordinate (skip2corner1) at ($(transbox.west)!0.5!(ln2.west)$);
+    \coordinate (skip2corner2) at (skip2corner1 |- mlp.west);
+    \coordinate (skip2end) at ($(mlp.south west)+(-0.15cm, 0)$);
+    
+    \draw[skipconn, ->] (skip2start) -| (skip2corner1) -- (skip2corner2) |- (skip2end);
+    \node[font=\tiny\bfseries, gray, fill=white, inner sep=1pt] at (skip2corner1 |- ln2.south) {$+$};
+
+    % Layer multiplier - relative to transbox
+    \node[font=\scriptsize, gray, right=0.2cm of transbox.east] (layers) {$\times L$};
+    
+    % ============ ARROW TO TRANSFORMER ============
+    \draw[arrow, tudelftblue] (poscenter.south) -- (transtitle.north);
+    
+    % ============ ARROW FROM TRANSFORMER ============
+    \draw[arrow, tudelftblue] (transbox.south) -- ++(0, -0.5) coordinate (arrowend);
+    
+    % ============ OUTPUT EMBEDDINGS ============
+    % Output CLS - positioned relative to transbox
+    \node[cls, minimum height=1cm, below=0.8cm of transbox.south west, anchor=north, xshift=0.8cm] (clsout) {};
+    \node[font=\tiny, rotate=90] at (clsout) {\textbf{[CLS]}};
+    
+    % Output embeddings - relative to clsout
+    \node[embed, minimum height=1cm, fill=tudelftblue!15, right=0.3cm of clsout] (out1) {};
+    \node[embed, minimum height=1cm, fill=tudelftblue!15, right=0.3cm of out1] (out2) {};
+    \node[font=\large, gray, right=0.35cm of out2] (dots3) {$\cdots$};
+    \node[embed, minimum height=1cm, fill=tudelftblue!15, right=0.35cm of dots3] (outN) {};
+    
+    % Output label - centered below outputs
+    \path (clsout) -- (outN) node[midway] (outcenter) {};
+    \node[font=\small\bfseries, below=0.5cm of outcenter] (outlabel) {Output Embeddings};
+    
+    % ============ CLASSIFICATION HEAD ============
+    \node[draw=red!70!black, fill=red!10, rounded corners=3pt, 
+          minimum width=1.8cm, minimum height=0.55cm, font=\scriptsize\bfseries,
+          below=0.7cm of clsout] (head) {MLP Head};
+    
+    % Arrow from CLS to head
+    \draw[arrow, red!70!black, thick] (clsout.south) -- (head.north);
+    
+    % Classification output
+    \node[font=\scriptsize\bfseries, below=0.4cm of head] (classout) {Class: ``Cat''};
+    
+    % Arrow from head to class
+    \draw[arrow, red!70!black, thick] (head.south) -- (classout.north);
+    
+    % ============ ANNOTATIONS ============
+    % Global attention note - relative to layers
+    \node[draw=orange!50, fill=orange!5, rounded corners=3pt, font=\tiny, 
+          align=center, text width=2.3cm, right=0.4cm of layers] (attnote) 
+          {Every patch attends to every other patch\\(global receptive field)};
+    \draw[->, orange!50, thick] (attnote.west) -- (layers.east);
+    
+    % CLS token explanation - relative to head
+    \node[draw=red!30, fill=red!5, rounded corners=3pt, font=\tiny, 
+          align=center, text width=2.2cm, left=0.6cm of head] (clsnote) 
+          {[CLS] aggregates global information for classification};
+    \draw[->, red!30, thick] (clsnote.east) -- (head.west);
+
 \end{tikzpicture}
-\caption{Vision Transformer (ViT) architecture. The image is split into patches, each becomes a token. A [CLS] token aggregates global information through self-attention across all patches. Unlike CNNs, ViT has a global receptive field from layer 1.}
+\caption{Vision Transformer (ViT) architecture. An input image is divided into fixed-size patches (typically $16 \times 16$ pixels), which are flattened and linearly projected into $D$-dimensional patch embeddings. Learnable position embeddings $\mathbf{p}_i$ are added to retain spatial information. A special \textcolor{red!70!black}{\textbf{[CLS]}} token is prepended to the sequence. The combined embeddings pass through $L$ Transformer encoder layers, each containing multi-head self-attention and a feed-forward network with residual connections. The final [CLS] representation is fed to an MLP head for classification.}
 \label{fig:vit}
 \end{figure}
 
