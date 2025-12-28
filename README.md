@@ -29,7 +29,7 @@ Comprehensive lecture notes for the **Machine and Deep Learning** course (DSAIT4
 
 To build these notes, you need a LaTeX distribution and a Python environment.
 
-*   **LaTeX**: TeX Live (recommended) or MiKTeX. Must include `latexmk` and `pythontex`.
+*   **LaTeX**: TeX Live (recommended) or MiKTeX. Must include `latexmk`.
 *   **Python**: Python 3.10+.
 *   **uv**: An extremely fast Python package installer and resolver. [Install uv](https://github.com/astral-sh/uv).
 
@@ -50,7 +50,6 @@ To build these notes, you need a LaTeX distribution and a Python environment.
 
 ## Building the Notes
 
-The project includes a `.latexmkrc` file that configures the build chain (PDFLaTeX -> PythonTeX -> PDFLaTeX).
 
 Simply run:
 
