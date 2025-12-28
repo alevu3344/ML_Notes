@@ -3644,46 +3644,135 @@ The training objective is to minimize reconstruction error:
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[
-    scale=0.8,
-    layer/.style={rectangle, draw=tudelftblue, fill=tudelftblue!10, thick, minimum width=0.8cm, font=\footnotesize},
-    latent/.style={rectangle, draw=tudelftcyan, fill=tudelftcyan!20, thick, minimum width=0.6cm, font=\footnotesize},
-    arrow/.style={->, thick}
+    neuron/.style={circle, draw=#1, fill=#1!20, thick, minimum size=10mm, inner sep=0pt},
+    neuron/.default=tudelftblue,
+    latent neuron/.style={circle, draw=tudelftcyan, fill=tudelftcyan!30, thick, minimum size=10mm, inner sep=0pt},
+    connection/.style={-, thick, opacity=0.4},
+    arrow/.style={->, thick, tudelftblue},
+    brace/.style={decorate, decoration={brace, amplitude=6pt, raise=8pt}, thick}
 ]
-    % Input
-    \node[layer, minimum height=3cm] (input) at (0, 0) {};
-    \node[below=0.1cm of input, font=\footnotesize] {$\mathbf{x}$};
-    \node[above=0.1cm of input, font=\footnotesize] {Input};
+
+    % Layer x-positions
+    \def\inputX{0}
+    \def\encOneX{2}
+    \def\encTwoX{4}
+    \def\latentX{6}
+    \def\decOneX{8}
+    \def\decTwoX{10}
+    \def\outputX{12}
     
-    % Encoder hidden
-    \node[layer, minimum height=2cm] (enc1) at (2, 0) {};
+    % Input layer (6 neurons)
+    \foreach \i in {1,...,6} {
+        \node[neuron] (in\i) at (\inputX, 2.5-\i*1.1) {};
+    }
     
-    % Latent (bottleneck)
-    \node[latent, minimum height=1cm] (latent) at (4, 0) {};
-    \node[below=0.1cm of latent, font=\footnotesize] {$\mathbf{h}$};
-    \node[above=0.1cm of latent, font=\footnotesize, text=tudelftcyan] {Bottleneck};
+    % Encoder layer 1 (4 neurons)
+    \foreach \i in {1,...,4} {
+        \node[neuron] (e1\i) at (\encOneX, 1.6-\i*1.1) {};
+    }
     
-    % Decoder hidden
-    \node[layer, minimum height=2cm] (dec1) at (6, 0) {};
+    % Encoder layer 2 (3 neurons)
+    \foreach \i in {1,...,3} {
+        \node[neuron] (e2\i) at (\encTwoX, 1.15-\i*1.1) {};
+    }
     
-    % Output
-    \node[layer, minimum height=3cm] (output) at (8, 0) {};
-    \node[below=0.1cm of output, font=\footnotesize] {$\hat{\mathbf{x}}$};
-    \node[above=0.1cm of output, font=\footnotesize] {Output};
+    % Latent layer (2 neurons) - bottleneck
+    \foreach \i in {1,...,2} {
+        \node[latent neuron] (z\i) at (\latentX, 0.7-\i*1.1) {};
+    }
     
-    % Arrows
-    \draw[arrow] (input) -- (enc1);
-    \draw[arrow] (enc1) -- (latent);
-    \draw[arrow] (latent) -- (dec1);
-    \draw[arrow] (dec1) -- (output);
+    % Decoder layer 1 (3 neurons)
+    \foreach \i in {1,...,3} {
+        \node[neuron] (d1\i) at (\decOneX, 1.15-\i*1.1) {};
+    }
     
-    % Labels
-    \draw[decorate, decoration={brace, amplitude=5pt, raise=5pt}] (0, 1.7) -- (4, 1.7) node[midway, above=8pt, font=\footnotesize] {Encoder $f$};
-    \draw[decorate, decoration={brace, amplitude=5pt, raise=5pt}] (4, 1.7) -- (8, 1.7) node[midway, above=8pt, font=\footnotesize] {Decoder $g$};
+    % Decoder layer 2 (4 neurons)
+    \foreach \i in {1,...,4} {
+        \node[neuron] (d2\i) at (\decTwoX, 1.6-\i*1.1) {};
+    }
+    
+    % Output layer (6 neurons)
+    \foreach \i in {1,...,6} {
+        \node[neuron] (out\i) at (\outputX, 2.5-\i*1.1) {};
+    }
+    
+    % Connections: Input -> Encoder 1
+    \foreach \i in {1,...,6} {
+        \foreach \j in {1,...,4} {
+            \draw[connection] (in\i) -- (e1\j);
+        }
+    }
+    
+    % Connections: Encoder 1 -> Encoder 2
+    \foreach \i in {1,...,4} {
+        \foreach \j in {1,...,3} {
+            \draw[connection] (e1\i) -- (e2\j);
+        }
+    }
+    
+    % Connections: Encoder 2 -> Latent
+    \foreach \i in {1,...,3} {
+        \foreach \j in {1,...,2} {
+            \draw[connection] (e2\i) -- (z\j);
+        }
+    }
+    
+    % Connections: Latent -> Decoder 1
+    \foreach \i in {1,...,2} {
+        \foreach \j in {1,...,3} {
+            \draw[connection] (z\i) -- (d1\j);
+        }
+    }
+    
+    % Connections: Decoder 1 -> Decoder 2
+    \foreach \i in {1,...,3} {
+        \foreach \j in {1,...,4} {
+            \draw[connection] (d1\i) -- (d2\j);
+        }
+    }
+    
+    % Connections: Decoder 2 -> Output
+    \foreach \i in {1,...,4} {
+        \foreach \j in {1,...,6} {
+            \draw[connection] (d2\i) -- (out\j);
+        }
+    }
+    
+    % Layer labels
+    \node[below=0.8cm of in6, font=\footnotesize\bfseries] {$\mathbf{x}$};
+    \node[below=0.8cm of z2, font=\footnotesize\bfseries, text=tudelftcyan] {$\mathbf{h}$};
+    \node[below=0.8cm of out6, font=\footnotesize\bfseries] {$\hat{\mathbf{x}}$};
+    
+    % Top labels
+    \node[above=0.3cm of in1, font=\footnotesize] {Input};
+    \node[above=0.3cm of z1, font=\footnotesize, text=tudelftcyan] {Bottleneck};
+    \node[above=0.3cm of out1, font=\footnotesize] {Output};
+    
+    % Braces for encoder/decoder
+    \draw[brace] (\inputX-0.5, 2.4) -- (\latentX-0.8, 2.4) 
+        node[midway, above=12pt, font=\footnotesize\bfseries] {Encoder $f$};
+    \draw[brace] (\latentX+0.8, 2.4) -- (\outputX+0.5, 2.4) 
+        node[midway, above=12pt, font=\footnotesize\bfseries] {Decoder $g$};
+    
+    % Dimension annotations
+    \node[left=0.3cm of in3, font=\small, text=gray] {$n$};
+    \node[below=0.1cm of z2, font=\small, text=tudelftcyan] {$d < n$};
+    \node[right=0.3cm of out3, font=\small, text=gray] {$n$};
+    
+    % Curved arrows showing compression/expansion
+    \draw[->, thick, tudelftblue!60, dashed] 
+        ([yshift=-1.2cm]in6.south) to[bend right=20] 
+        node[midway, below, font=\small, text=gray] {compress} 
+        ([yshift=-1.2cm]z2.south);
+    \draw[->, thick, tudelftblue!60, dashed] 
+        ([yshift=-1.2cm]z2.south) to[bend right=20] 
+        node[midway, below, font=\small, text=gray] {reconstruct} 
+        ([yshift=-1.2cm]out6.south);
+
 \end{tikzpicture}
-\caption{Autoencoder architecture. The encoder compresses the input through progressively smaller layers until reaching the \textbf{bottleneck} (latent code $\mathbf{h}$). The decoder then expands it back to reconstruct the input.}
+\caption{Autoencoder architecture with a symmetric hourglass structure. The \textbf{encoder} $f$ progressively compresses the input $\mathbf{x}$ into a low-dimensional latent code $\mathbf{h}$ at the \textcolor{tudelftcyan}{\textbf{bottleneck}}. The \textbf{decoder} $g$ then reconstructs the input as $\hat{\mathbf{x}} = g(f(\mathbf{x}))$.}
 \label{fig:autoencoder}
 \end{figure}
-
 \paragraph{Undercomplete vs. Overcomplete:}
 \begin{itemize}
 	\item \textbf{Undercomplete} ($\dim(\mathbf{h}) < \dim(\mathbf{x})$): The bottleneck forces compression. The network must learn the most important features to reconstruct $\mathbf{x}$ from $\mathbf{h}$. Similar to PCA but with non-linear mappings.
