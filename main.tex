@@ -247,6 +247,118 @@ The minimum risk rule is to choose $y_1$ if $l^1(\mathbf{x}) \le l^2(\mathbf{x})
 This decision rule directly incorporates the asymmetric costs, effectively "pushing" the decision boundary away from the class with the higher misclassification cost.
 
 
+\subsection{Bayes Error}
+\label{sec:bayes_error}
+
+The \textbf{Bayes error} (or Bayes error rate) represents the theoretical minimum error rate achievable by any classifier for a given classification problem. It is the error rate of the \textbf{optimal Bayes classifier}, which always selects the class with the highest posterior probability.
+
+The Bayes error arises because, in most real-world problems, the class-conditional distributions overlap. In the region of overlap, even the optimal classifier will inevitably make some mistakes. This error is sometimes called the \textbf{irreducible error} because no classifier, regardless of its complexity, can achieve a lower error rate.
+
+\subsubsection{Mathematical Definition}
+For a two-class problem, the Bayes error rate $\epsilon^*$ is defined as:
+\begin{equation}
+\epsilon^* = \int \min\{p(y_1|\mathbf{x}), p(y_2|\mathbf{x})\} \, p(\mathbf{x}) \, d\mathbf{x}
+\label{eq:bayes_error}
+\end{equation}
+
+Equivalently, using the joint probabilities:
+\begin{equation}
+\epsilon^* = \int \min\{p(\mathbf{x}|y_1)p(y_1), p(\mathbf{x}|y_2)p(y_2)\} \, d\mathbf{x}
+\end{equation}
+
+For $C$ classes, this generalizes to:
+\begin{equation}
+\epsilon^* = 1 - \int \max_{i \in \{1,\ldots,C\}} p(y_i|\mathbf{x}) \, p(\mathbf{x}) \, d\mathbf{x}
+\end{equation}
+
+\subsubsection{Connection to Conditional Risk}
+The Bayes error can be elegantly expressed using the conditional risk framework with the 0-1 loss function:
+\begin{equation}
+\epsilon^* = \mathbb{E}_{\mathbf{x}}\left[\min_i l^i(\mathbf{x})\right] = \mathbb{E}_{\mathbf{x}}\left[1 - \max_i p(y_i|\mathbf{x})\right]
+\end{equation}
+
+\subsubsection{Geometric Interpretation}
+Figure \ref{fig:bayes_error} illustrates the Bayes error for a one-dimensional two-class problem. The shaded region represents the probability of misclassification---the irreducible error.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[scale=1.0]
+    % Define the two Gaussian curves
+    \def\muOne{2}
+    \def\sigmaOne{1}
+    \def\muTwo{5}
+    \def\sigmaTwo{1.2}
+    \def\priorOne{0.5}
+    \def\priorTwo{0.5}
+    
+    % Calculate intersection point (approximate for visualization)
+    \def\intersect{3.4}
+    
+    % Draw axes
+    \draw[->, thick] (-0.5,0) -- (8,0) node[right] {$x$};
+    \draw[->, thick] (0,-0.2) -- (0,3) node[above] {$p(x|y)p(y)$};
+    
+    % Fill Bayes error region for class 1 (right of intersection)
+    \fill[blue!20, opacity=0.7, domain=\intersect:7, samples=100] 
+        plot (\x, {2.5*\priorOne*exp(-0.5*((\x-\muOne)/\sigmaOne)^2)}) -- (7,0) -- (\intersect,0) -- cycle;
+    
+    % Fill Bayes error region for class 2 (left of intersection)
+    \fill[red!20, opacity=0.7, domain=0:\intersect, samples=100] 
+        plot (\x, {2.5*\priorTwo*exp(-0.5*((\x-\muTwo)/\sigmaTwo)^2)}) -- (\intersect,0) -- (0,0) -- cycle;
+    
+    % Draw class 1 distribution (blue)
+    \draw[blue, very thick, domain=0:7, samples=100] 
+        plot (\x, {2.5*\priorOne*exp(-0.5*((\x-\muOne)/\sigmaOne)^2)});
+    
+    % Draw class 2 distribution (red)
+    \draw[red, very thick, domain=0:7.5, samples=100] 
+        plot (\x, {2.5*\priorTwo*exp(-0.5*((\x-\muTwo)/\sigmaTwo)^2)});
+    
+    % Decision boundary
+    \draw[dashed, thick, gray] (\intersect,-0.1) -- (\intersect,2.5);
+    \node[below] at (\intersect,-0.1) {$x^*$};
+    
+    % Labels
+    \node[blue] at (\muOne,2.2) {$p(\mathbf{x}|y_1)p(y_1)$};
+    \node[red] at (\muTwo,1.9) {$p(\mathbf{x}|y_2)p(y_2)$};
+    
+    % Bayes error annotation
+    \draw[<-, thick, align=center] (1.2,0.3) -- (0.5,1.5) node[above, align=center] {Bayes error\\(class 2 errors)};
+    \draw[<-, thick, align=center] (5.5,0.4) -- (6.5,1.5) node[above, align=center] {Bayes error\\(class 1 errors)};
+    
+    % Region labels
+    \node at (1.5,-0.5) {Decide $y_1$};
+    \node at (5.5,-0.5) {Decide $y_2$};
+\end{tikzpicture}
+\caption{Visualization of Bayes error for a two-class problem. The decision boundary $x^*$ is placed where $p(\mathbf{x}|y_1)p(y_1) = p(\mathbf{x}|y_2)p(y_2)$. The shaded regions represent the unavoidable misclassification probability (Bayes error): blue shading shows class 1 samples misclassified as class 2, and red shading shows class 2 samples misclassified as class 1.}
+\label{fig:bayes_error}
+\end{figure}
+
+%==============================================================================
+\subsection{Decision Boundary Derivation}
+\label{sec:decision_boundary}
+
+The \textbf{decision boundary} is the surface in feature space where the classifier is indifferent between two or more classes. For the Bayes classifier with 0-1 loss, this occurs where the posterior probabilities are equal.
+
+\subsubsection{General Derivation}
+For a two-class problem, the decision boundary is defined by:
+\begin{equation}
+p(y_1|\mathbf{x}) = p(y_2|\mathbf{x})
+\label{eq:decision_boundary_def}
+\end{equation}
+
+Using Bayes' theorem and noting that $p(\mathbf{x})$ cancels:
+\begin{equation}
+p(\mathbf{x}|y_1)p(y_1) = p(\mathbf{x}|y_2)p(y_2)
+\end{equation}
+
+Taking the logarithm (which preserves the equality):
+\begin{equation}
+\log p(\mathbf{x}|y_1) + \log p(y_1) = \log p(\mathbf{x}|y_2) + \log p(y_2)
+\label{eq:log_decision_boundary}
+\end{equation}
+
+
 \subsection{The Gaussian Plug-in Approach}
 The "plug-in" approach involves estimating the components of Bayes' theorem (Equation \ref{eq:bayes_theorem}) from the training data. For a given class $y_i$, we need to estimate:
 \begin{enumerate}
@@ -276,6 +388,7 @@ To use this model, we must estimate a separate mean $\boldsymbol{\hat{\mu}}_i$ a
 \end{align}
 
 By plugging these estimated Gaussian distributions into Bayes' theorem, we create a powerful classification model.
+
 
 
 \subsection{Quadratic Discriminant Classifier (QDA)}
@@ -3923,6 +4036,39 @@ VAEs maximize the \textbf{Evidence Lower Bound} (ELBO):
 	\item \textbf{KL term:} The encoder distribution $q_\phi(\mathbf{z}|\mathbf{x})$ should be close to a standard Normal $p(\mathbf{z}) = \mathcal{N}(0, \mathbf{I})$. This regularizes the latent space to be smooth and continuous.
 \end{itemize}
 
+\paragraph{Why KL Divergence Appears (Approximate Inference):}
+A VAE is a \textbf{latent-variable} generative model:
+\begin{equation}
+	p_\theta(\mathbf{x},\mathbf{z}) = p(\mathbf{z})\,p_\theta(\mathbf{x}\mid \mathbf{z})
+\end{equation}
+Training by MLE would maximize the marginal likelihood
+\begin{equation}
+	\log p_\theta(\mathbf{x}) = \log \int p(\mathbf{z})\,p_\theta(\mathbf{x}\mid \mathbf{z})\,d\mathbf{z},
+\end{equation}
+but the integral (and the true posterior $p_\theta(\mathbf{z}\mid \mathbf{x})$) is typically intractable. VAEs introduce an encoder distribution $q_\phi(\mathbf{z}\mid \mathbf{x})$ to approximate the posterior. This yields the decomposition
+\begin{equation}
+	\log p_\theta(\mathbf{x})
+	=
+	\underbrace{\mathcal{L}_{\text{ELBO}}(\mathbf{x})}_{\text{tractable}}
+	+
+	\underbrace{D_{\text{KL}}\!\left(q_\phi(\mathbf{z}\mid \mathbf{x}) \,\|\, p_\theta(\mathbf{z}\mid \mathbf{x})\right)}_{\ge 0},
+\end{equation}
+so $\mathcal{L}_{\text{ELBO}}(\mathbf{x})$ is a \textbf{lower bound} on the log-likelihood. Maximizing the ELBO therefore (i) increases data likelihood and (ii) implicitly pushes $q_\phi(\mathbf{z}\mid \mathbf{x})$ toward the true posterior via the KL term above.
+
+\paragraph{The ELBO Loss:}
+Expanding the ELBO using $p_\theta(\mathbf{x},\mathbf{z}) = p(\mathbf{z})p_\theta(\mathbf{x}\mid \mathbf{z})$ gives the standard VAE objective:
+\begin{equation}
+	\mathcal{L}_{\text{ELBO}}
+	=
+	\underbrace{\mathbb{E}_{q_\phi(\mathbf{z}\mid\mathbf{x})}[\log p_\theta(\mathbf{x}\mid\mathbf{z})]}_{\text{Reconstruction}}
+	-
+	\underbrace{D_{\text{KL}}\!\left(q_\phi(\mathbf{z}\mid\mathbf{x}) \,\|\, p(\mathbf{z})\right)}_{\text{Regularization / prior matching}}
+\end{equation}
+\begin{itemize}
+	\item \textbf{Reconstruction term:} encourages the decoder to assign high likelihood to $\mathbf{x}$ given samples $\mathbf{z}\sim q_\phi(\mathbf{z}\mid\mathbf{x})$.
+	\item \textbf{KL term:} matches the encoder distribution to the prior $p(\mathbf{z})=\mathcal{N}(\mathbf{0},\mathbf{I})$, preventing pathological latent codes and ensuring that sampling $\mathbf{z}\sim p(\mathbf{z})$ produces valid outputs. At the same time, maximizing the ELBO minimizes $D_{\text{KL}}(q_\phi(\mathbf{z}\mid \mathbf{x}) \,\|\, p_\theta(\mathbf{z}\mid \mathbf{x}))$, making the encoder an approximate Bayesian inference network.
+\end{itemize}
+
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[
@@ -4749,7 +4895,7 @@ CNNs encode the inductive bias that nearby pixels are related (locality). Transf
 \end{itemize}
 
 \subsection{Self-Supervised Pre-Training}
-The key to foundation models is \textbf{self-supervised learning}, which means defining training objectives that don't require human labels. The data provides its own supervision.
+The key to foundation models is \textbf{self-supervised learning}, which means defining training objectives that don't require human labels. The data provides its own supervision. This paradigm shift has enabled training on virtually unlimited data from the internet, leading to unprecedented model capabilities.
 
 \begin{table}[H]
 \centering
@@ -4762,34 +4908,322 @@ Modality & Method & Pretext Task \\
 Text & GPT (Autoregressive) & Predict the next token: ``The cat sat on the [?]'' \\
 Text & BERT (Masked LM) & Fill in masked tokens: ``The [MASK] sat on the mat.'' \\
 Images & MAE & Reconstruct 75\% masked image patches \\
+Images & SimCLR & Maximize agreement between augmented views \\
 Multimodal & CLIP & Match images and captions via contrastive loss \\
+Audio & Wav2Vec 2.0 & Contrastive prediction of masked speech segments \\
+Video & VideoMAE & Reconstruct 90\% masked spatiotemporal tubes \\
 \end{tblr}
 \caption{Self-supervised pre-training paradigms. Each defines a task where labels come from the data itself.}
 \label{tab:ssl}
 \end{table}
 
+\subsubsection{Language Model Pre-Training}
+
+\paragraph{Autoregressive Language Modeling (GPT-style):}
+The model learns to predict the next token given all previous tokens. For a sequence $\mathbf{x} = (x_1, x_2, \ldots, x_T)$:
+\begin{equation}
+    \mathcal{L}_{\text{AR}} = -\sum_{t=1}^{T} \log P(x_t \mid x_1, \ldots, x_{t-1}; \theta)
+\end{equation}
+
+This causal (left-to-right) objective naturally suits \textbf{generative tasks} like text completion, dialogue, and code generation.
+
+\paragraph{Masked Language Modeling (BERT-style):}
+Randomly mask 15\% of tokens and predict the originals from bidirectional context:
+\begin{equation}
+    \mathcal{L}_{\text{MLM}} = -\mathbb{E}\left[\sum_{i \in \mathcal{M}} \log P(x_i \mid \mathbf{x}_{\backslash\mathcal{M}}; \theta)\right]
+\end{equation}
+where $\mathcal{M}$ is the set of masked positions. Bidirectional context makes BERT excel at \textbf{understanding tasks} like classification and question answering.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    token/.style={rectangle, rounded corners=3pt, draw=tudelftblue, fill=tudelftblue!10, minimum width=1.2cm, minimum height=0.8cm, font=\small},
+    mask/.style={rectangle, rounded corners=3pt, draw=red!70, fill=red!10, minimum width=1.2cm, minimum height=0.8cm, font=\small\bfseries},
+    pred/.style={rectangle, rounded corners=3pt, draw=green!60!black, fill=green!10, minimum width=1.2cm, minimum height=0.8cm, font=\small},
+    arrow/.style={->, >=Stealth, thick, tudelftblue!70},
+    label/.style={font=\footnotesize\bfseries}
+]
+
+% GPT-style (left side)
+\node[label] at (-4.5, 2.5) {Autoregressive (GPT)};
+\node[token] (g1) at (-6, 1.5) {The};
+\node[token] (g2) at (-4.5, 1.5) {cat};
+\node[token] (g3) at (-3, 1.5) {sat};
+\node[pred] (g4) at (-1.5, 1.5) {on};
+
+\draw[arrow] (g1.east) -- (g2.west);
+\draw[arrow] (g2.east) -- (g3.west);
+\draw[arrow] (g3.east) -- (g4.west);
+
+\draw[arrow, dashed, gray] (g1.south) -- ++(0, -0.5) -| (g4.south);
+\draw[arrow, dashed, gray] (g2.south) -- ++(0, -0.7) -| (g4.south);
+\draw[arrow, dashed, gray] (g3.south) -- ++(0, -0.3) -- (g4.south);
+
+\node[font=\scriptsize, text=gray] at (-3.75, 0.5) {Left context only};
+
+% BERT-style (right side)
+\node[label] at (4, 2.5) {Masked LM (BERT)};
+\node[token] (b1) at (1.5, 1.5) {The};
+\node[mask] (b2) at (3, 1.5) {[M]};
+\node[token] (b3) at (4.5, 1.5) {sat};
+\node[token] (b4) at (6, 1.5) {on};
+
+\node[pred] (bout) at (3, 0) {cat};
+
+\draw[arrow] (b1.south) -- ++(0, -0.3) -| (bout.west);
+\draw[arrow] (b2.south) -- (bout.north);
+\draw[arrow] (b3.south) -- ++(0, -0.3) -| (bout.east);
+\draw[arrow] (b4.south) -- ++(0, -0.5) -| ([xshift=3pt]bout.east);
+
+\node[font=\scriptsize, text=gray] at (3.75, -0.7) {Bidirectional context};
+
+\end{tikzpicture}
+\caption{Comparison of autoregressive (causal) and masked language modeling objectives.}
+\label{fig:lm-objectives}
+\end{figure}
+
+\subsubsection{Vision Pre-Training}
+
+\paragraph{Masked Autoencoders (MAE):}
+MAE randomly masks a large portion (75\%) of image patches and trains an encoder-decoder to reconstruct the original pixels:
+
+\begin{equation}
+    \mathcal{L}_{\text{MAE}} = \frac{1}{|\mathcal{M}|} \sum_{p \in \mathcal{M}} \|\hat{\mathbf{x}}_p - \mathbf{x}_p\|_2^2
+\end{equation}
+
+where $\mathcal{M}$ denotes masked patches. The high masking ratio forces the model to learn meaningful visual representations rather than relying on local pixel statistics.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    >=Stealth,
+    patch/.style={rectangle, minimum size=0.6cm, draw=gray!50, line width=0.5pt},
+    masked/.style={patch, fill=gray!40},
+    visible/.style={patch, fill=tudelftblue!30},
+    block/.style={rectangle, rounded corners=6pt, draw=tudelftblue, fill=tudelftblue!10, minimum width=2cm, minimum height=1.2cm, font=\small\bfseries},
+    arrow/.style={->, line width=1.5pt, tudelftblue!70}
+]
+
+% Original image grid
+\node[font=\small\bfseries] at (0, 2) {Original Image};
+\foreach \i in {0,1,2,3,4} {
+    \foreach \j in {0,1,2,3,4} {
+        \node[patch, fill=orange!\the\numexpr20+\i*10+\j*5\relax!yellow!50] at (\i*0.65-1.3, -\j*0.65+1) {};
+    }
+}
+
+% Masked image
+\node[font=\small\bfseries] at (4.5, 2) {75\% Masked};
+\foreach \i in {0,1,2,3,4} {
+    \foreach \j in {0,1,2,3,4} {
+        \pgfmathparse{random(0,3)}
+        \ifnum\pgfmathresult>0
+            \node[masked] at (\i*0.65+3.2, -\j*0.65+1) {};
+        \else
+            \node[visible] at (\i*0.65+3.2, -\j*0.65+1) {};
+        \fi
+    }
+}
+
+% Encoder
+\node[block, align=center] (enc) at (8, 0.35) {Encoder\\(ViT)};
+
+% Decoder
+\node[block, align=center] (dec) at (11, 0.35) {Decoder\\(Light)};
+
+% Reconstructed
+\node[font=\small\bfseries] at (14.5, 2) {Reconstructed};
+\foreach \i in {0,1,2,3,4} {
+    \foreach \j in {0,1,2,3,4} {
+        \node[patch, fill=orange!\the\numexpr20+\i*10+\j*5\relax!yellow!50, opacity=0.8] at (\i*0.65+13.2, -\j*0.65+1) {};
+    }
+}
+
+% Arrows
+\draw[arrow] (1.7, 0.35) -- (3, 0.35);
+\draw[arrow] (5.8, 0.35) -- (enc.west);
+\draw[arrow] (enc.east) -- (dec.west);
+\draw[arrow] (dec.east) -- (13, 0.35);
+
+% Loss annotation
+\draw[<->, red!70, thick, dashed] (0, -1.5) -- (14.5, -1.5) 
+    node[midway, below, font=\small] {$\mathcal{L}_{\text{MSE}}$ on masked patches only};
+
+\end{tikzpicture}
+\caption{\textbf{Masked Autoencoder (MAE)} pipeline. Only visible patches (25\%) are processed by the encoder, making pre-training highly efficient. The decoder reconstructs all patches.}
+\label{fig:mae}
+\end{figure}
+
+\paragraph{Contrastive Learning (SimCLR):}
+Create two augmented views of each image and train embeddings to be similar for the same image and dissimilar for different images:
+
+\begin{equation}
+    \mathcal{L}_{\text{SimCLR}} = -\log \frac{\exp(\text{sim}(\mathbf{z}_i, \mathbf{z}_i') / \tau)}{\sum_{k \neq i} \exp(\text{sim}(\mathbf{z}_i, \mathbf{z}_k) / \tau) + \exp(\text{sim}(\mathbf{z}_i, \mathbf{z}_i') / \tau)}
+\end{equation}
+
+\subsubsection{Multimodal Pre-Training}
+
 \paragraph{CLIP (Contrastive Language-Image Pre-training):}
 Given $N$ (image, caption) pairs, CLIP learns to maximize the cosine similarity of matching pairs while minimizing it for the $N^2 - N$ non-matching pairs:
 \begin{equation}
-	\mathcal{L} = -\frac{1}{N} \sum_{i=1}^{N} \log \frac{\exp(\text{sim}(\mathbf{v}_i, \mathbf{t}_i) / \tau)}{\sum_{j=1}^{N} \exp(\text{sim}(\mathbf{v}_i, \mathbf{t}_j) / \tau)}
+	\mathcal{L}_{\text{CLIP}} = -\frac{1}{2N} \sum_{i=1}^{N} \left[ \log \frac{\exp(\text{sim}(\mathbf{v}_i, \mathbf{t}_i) / \tau)}{\sum_{j=1}^{N} \exp(\text{sim}(\mathbf{v}_i, \mathbf{t}_j) / \tau)} + \log \frac{\exp(\text{sim}(\mathbf{t}_i, \mathbf{v}_i) / \tau)}{\sum_{j=1}^{N} \exp(\text{sim}(\mathbf{t}_i, \mathbf{v}_j) / \tau)} \right]
 \end{equation}
-where $\mathbf{v}_i$ and $\mathbf{t}_i$ are the image and text embeddings. This enables zero-shot classification: to classify an image, compute similarity to text prompts like ``a photo of a dog'' and pick the highest.
+where $\mathbf{v}_i$ and $\mathbf{t}_i$ are the image and text embeddings, and the loss is symmetric (image-to-text and text-to-image).
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    >=Stealth,
+    node distance=0.8cm and 1.2cm, % Vertical and Horizontal spacing
+    encoder/.style={rectangle, rounded corners=8pt, draw=tudelftblue, fill=tudelftblue!10, line width=1.5pt, minimum width=2.5cm, minimum height=1.5cm, font=\small\bfseries, align=center},
+    embed/.style={circle, draw=tudelftblue, fill=white, line width=1.5pt, minimum size=0.9cm, font=\small\bfseries},
+    img/.style={rectangle, rounded corners=4pt, draw=gray, fill=orange!20, minimum width=1.2cm, minimum height=1.2cm},
+    txt/.style={rectangle, rounded corners=4pt, draw=gray, fill=green!20, minimum width=2cm, minimum height=0.6cm, font=\scriptsize, align=center},
+    arrow/.style={->, line width=1.5pt, tudelftblue!70},
+    % Matrix styles
+    sim_cell/.style={font=\scriptsize, inner sep=0pt, minimum size=0.6cm, anchor=center}
+]
+
+% --- 1. Encoders (The anchors) ---
+% We place the Image Encoder on the left and Text Encoder on the right
+\node[encoder] (imgenc) {Image\\Encoder};
+\node[encoder, right=4.5cm of imgenc] (txtenc) {Text\\Encoder};
+
+
+% --- 2. Image Inputs (Left of Image Encoder) ---
+\node[img, left=of imgenc] (img2) {}; % Middle image
+\node[img, above=0.3cm of img2] (img1) {};
+\node[img, below=0.3cm of img2] (img3) {};
+
+% Add Icons
+\node[font=\scriptsize] at (img1) {\faImage};
+\node[font=\scriptsize] at (img2) {\faImage};
+\node[font=\scriptsize] at (img3) {\faImage};
+
+
+% --- 3. Text Inputs (Right of Text Encoder) ---
+\node[txt, right=of txtenc] (txt2) {A cat}; % Middle text
+\node[txt, above=0.6cm of txt2] (txt1) {A dog};
+\node[txt, below=0.6cm of txt2] (txt3) {A bird};
+
+
+% --- 4. Embeddings (Between Encoders) ---
+% Image Embeddings (v)
+% Calculate position halfway between encoders, then offset left
+\node[embed, right=1.2cm of imgenc] (v2) {$\mathbf{v}_2$};
+\node[embed, above=0.3cm of v2] (v1) {$\mathbf{v}_1$};
+\node[embed, below=0.3cm of v2] (v3) {$\mathbf{v}_3$};
+
+% Text Embeddings (t)
+% Positioned relative to v vectors (creating the shared space visual)
+\node[embed, right=0.5cm of v2] (t2) {$\mathbf{t}_2$};
+\node[embed, above=0.3cm of t2] (t1) {$\mathbf{t}_1$};
+\node[embed, below=0.3cm of t2] (t3) {$\mathbf{t}_3$};
+
+
+% --- 5. Connections ---
+% Image Flow
+\draw[arrow] (img1.east) -- ++(0.3,0) |- (imgenc.west);
+\draw[arrow] (img2.east) -- (imgenc.west);
+\draw[arrow] (img3.east) -- ++(0.3,0) |- (imgenc.west);
+
+\draw[arrow] (imgenc.east) -- ++(0.3,0) |- (v1.west);
+\draw[arrow] (imgenc.east) -- (v2.west);
+\draw[arrow] (imgenc.east) -- ++(0.3,0) |- (v3.west);
+
+% Text Flow
+\draw[arrow] (txt1.west) -- ++(-0.3,0) |- (txtenc.east);
+\draw[arrow] (txt2.west) -- (txtenc.east);
+\draw[arrow] (txt3.west) -- ++(-0.3,0) |- (txtenc.east);
+
+\draw[arrow] (txtenc.west) -- ++(-0.3,0) |- (t1.east);
+\draw[arrow] (txtenc.west) -- (t2.east);
+\draw[arrow] (txtenc.west) -- ++(-0.3,0) |- (t3.east);
+
+
+% --- 6. Similarity Matrix ---
+% Position title relative to the bottom embeddings
+\node[font=\small\bfseries, below=1cm of v3, xshift=0.7cm] (mat_label) {Similarity Matrix};
+
+% Use a TikZ Matrix for the grid
+\matrix[
+    matrix of nodes,
+    below=0.1cm of mat_label,
+    draw=black, thick,
+    inner sep=2pt,
+    nodes in empty cells,
+    column sep=2pt, row sep=2pt
+] (sim_matrix) {
+    |[sim_cell, green!60!black]|\faCheck & |[sim_cell, red!60]|\faTimes & |[sim_cell, red!60]|\faTimes \\
+    |[sim_cell, red!60]|\faTimes & |[sim_cell, green!60!black]|\faCheck & |[sim_cell, red!60]|\faTimes \\
+    |[sim_cell, red!60]|\faTimes & |[sim_cell, red!60]|\faTimes & |[sim_cell, green!60!black]|\faCheck \\
+};
+
+% Axis Labels
+\node[font=\tiny, rotate=90, left=2pt of sim_matrix] {Images};
+\node[font=\tiny, below=2pt of sim_matrix] {Texts};
+
+\end{tikzpicture}
+\caption{\textbf{CLIP architecture.} Separate encoders project images and text into a shared embedding space. Contrastive learning maximizes similarity on the diagonal (matching pairs) and minimizes off-diagonal entries.}
+\label{fig:clip_relative}
+\end{figure}
+\begin{tcolorbox}[colback=green!5!white, colframe=green!60!black, title=Zero-Shot Classification with CLIP]
+CLIP enables classification without any task-specific training:
+
+\textbf{1. Create text prompts} for each class: ``a photo of a \{class\}''
+
+\textbf{2. Encode the image} and all prompts into the shared embedding space
+
+\textbf{3. Compute cosine similarities} between image and each text embedding
+
+\textbf{4. Predict the class} with highest similarity:
+\begin{equation}
+    \hat{y} = \arg\max_{c} \frac{\mathbf{v} \cdot \mathbf{t}_c}{\|\mathbf{v}\| \|\mathbf{t}_c\|}
+\end{equation}
+
+This achieves competitive accuracy on ImageNet \textbf{without seeing a single ImageNet training example}.
+\end{tcolorbox}
 
 \subsection{Parameter-Efficient Fine-Tuning (PEFT)}
 Fine-tuning a model with billions of parameters is computationally expensive and risks catastrophic forgetting. \textbf{PEFT} methods update only a tiny fraction of parameters while matching full fine-tuning performance.
 
+\begin{table}[H]
+\centering
+\begin{tblr}{
+  colspec = {l c c X[l]},
+  row{1} = {font=\bfseries},
+  hline{1,2,Z} = {solid},
+}
+Method & Trainable \% & Memory & Key Idea \\
+Full Fine-Tuning & 100\% & Very High & Update all parameters \\
+Selective & 5--20\% & High & Freeze early layers, train later ones \\
+Adapters & 1--5\% & Medium & Insert small bottleneck modules \\
+Prompt Tuning & $<$0.1\% & Low & Learn continuous prompt embeddings \\
+LoRA & 0.1--1\% & Low & Low-rank weight updates \\
+QLoRA & 0.1--1\% & Very Low & LoRA + 4-bit quantization \\
+\end{tblr}
+\caption{Comparison of fine-tuning strategies by parameter efficiency and memory requirements.}
+\label{tab:peft-comparison}
+\end{table}
+
 \begin{tcolorbox}[colback=tudelftblue!5!white, colframe=tudelftblue, title=PEFT Strategies]
-\textbf{1. Selective Fine-Tuning:} Freeze most layers, only train the last few layers or the classification head.
+\textbf{1. Selective Fine-Tuning:} Freeze most layers, only train the last few layers or the classification head. Simple but often suboptimal for complex tasks.
 
 \textbf{2. Adapters:} Inject small trainable modules (bottleneck MLPs) into each layer:
 \begin{equation}
 	\text{Adapter}(\mathbf{x}) = \mathbf{W}_{\text{up}} \cdot \sigma(\mathbf{W}_{\text{down}} \cdot \mathbf{x}) + \mathbf{x}
 \end{equation}
-Typically $< 5\%$ additional parameters.
+Typically $< 5\%$ additional parameters. The residual connection ensures the model can learn the identity if needed.
 
-\textbf{3. Prompt Tuning:} Prepend learnable ``soft prompts'' (continuous vectors) to the input. The model parameters are frozen; only the prompts are trained.
+\textbf{3. Prompt Tuning:} Prepend learnable ``soft prompts'' (continuous vectors) to the input. The model parameters are frozen; only the prompts are trained:
+\begin{equation}
+    \mathbf{H}_0 = [\mathbf{P}_1, \mathbf{P}_2, \ldots, \mathbf{P}_k; \mathbf{E}_{x_1}, \mathbf{E}_{x_2}, \ldots, \mathbf{E}_{x_n}]
+\end{equation}
+where $\mathbf{P}_i$ are learnable prompt tokens.
 
-\textbf{4. LoRA (Low-Rank Adaptation):} Add low-rank matrices that modify weight matrices without changing them:
+\textbf{4. Prefix Tuning:} Prepend learnable key-value pairs to each attention layer, providing layer-specific conditioning.
+
+\textbf{5. LoRA (Low-Rank Adaptation):} Add low-rank matrices that modify weight matrices without changing them:
 \begin{equation}
 	\mathbf{h} = \mathbf{W}_0 \mathbf{x} + \Delta\mathbf{W} \cdot \mathbf{x} = \mathbf{W}_0 \mathbf{x} + \mathbf{B}\mathbf{A}\mathbf{x}
 \end{equation}
@@ -4953,5 +5387,307 @@ where $\mathbf{W}_0$ is frozen, $\mathbf{B} \in \mathbb{R}^{d \times r}$, $\math
 \caption{\textbf{LoRA (Low-Rank Adaptation).} The pre-trained weights $\mathbf{W}_0$ remain frozen while a low-rank decomposition $\mathbf{BA}$ is trained in parallel. With rank $r \ll \min(d_{\text{in}}, d_{\text{out}})$, this reduces trainable parameters by up to $10{,}000\times$ while matching full fine-tuning performance.}
 \label{fig:lora}
 \end{figure}
+
+\subsubsection{LoRA: Mathematical Details}
+
+The key insight behind LoRA is that the weight updates during fine-tuning have \textbf{low intrinsic rank}. Instead of learning a full $\Delta\mathbf{W} \in \mathbb{R}^{d_{\text{out}} \times d_{\text{in}}}$, we constrain it to be low-rank:
+
+\begin{equation}
+    \Delta\mathbf{W} = \mathbf{B}\mathbf{A}, \quad \text{where } \mathbf{B} \in \mathbb{R}^{d_{\text{out}} \times r}, \mathbf{A} \in \mathbb{R}^{r \times d_{\text{in}}}
+\end{equation}
+
+\paragraph{Initialization:}
+\begin{itemize}
+    \item $\mathbf{A}$ is initialized with Gaussian noise
+    \item $\mathbf{B}$ is initialized to zero, so $\Delta\mathbf{W} = \mathbf{0}$ at the start
+    \item This ensures the model begins with its pre-trained behavior
+\end{itemize}
+
+\paragraph{Scaling Factor:}
+A scaling factor $\alpha/r$ is applied to balance the learning rate:
+\begin{equation}
+    \mathbf{h} = \mathbf{W}_0\mathbf{x} + \frac{\alpha}{r}\mathbf{B}\mathbf{A}\mathbf{x}
+\end{equation}
+
+\paragraph{Where to Apply LoRA:}
+In Transformers, LoRA is typically applied to the attention weight matrices:
+\begin{itemize}
+    \item $\mathbf{W}_Q$ and $\mathbf{W}_V$: Most impactful for downstream tasks
+    \item $\mathbf{W}_K$ and $\mathbf{W}_O$: Additional gains possible
+    \item MLP layers: Less commonly adapted but can help for some tasks
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    >=Stealth,
+    block/.style={rectangle, rounded corners=6pt, minimum width=2cm, minimum height=0.9cm, font=\small, draw, line width=1pt},
+    frozen/.style={block, draw=gray!50, fill=gray!10},
+    lora/.style={block, draw=red!70!black, fill=red!10},
+    arrow/.style={->, line width=1.2pt, gray!60}
+]
+
+% Transformer layer
+\node[font=\bfseries] at (0, 4) {Transformer Layer with LoRA};
+
+% Self-attention
+\node[frozen] (wq) at (-3, 2.5) {$\mathbf{W}_Q$};
+\node[frozen] (wk) at (-1, 2.5) {$\mathbf{W}_K$};
+\node[frozen] (wv) at (1, 2.5) {$\mathbf{W}_V$};
+\node[frozen] (wo) at (3, 2.5) {$\mathbf{W}_O$};
+
+% LoRA adapters
+\node[lora, minimum width=1.2cm, minimum height=0.6cm] at (-3, 1.6) {\tiny$\mathbf{B}_Q\mathbf{A}_Q$};
+\node[lora, minimum width=1.2cm, minimum height=0.6cm] at (1, 1.6) {\tiny$\mathbf{B}_V\mathbf{A}_V$};
+
+% MLP
+\node[frozen] (mlp1) at (-1, 0) {$\mathbf{W}_1$ (Up)};
+\node[frozen] (mlp2) at (2, 0) {$\mathbf{W}_2$ (Down)};
+
+% Labels
+\node[font=\scriptsize, gray] at (0, 3.3) {Multi-Head Attention};
+\node[font=\scriptsize, gray] at (0.5, -0.8) {Feed-Forward Network};
+
+% Highlight LoRA targets
+\draw[red!70!black, dashed, thick, rounded corners=4pt] (-4, 1.2) rectangle (-2, 3);
+\draw[red!70!black, dashed, thick, rounded corners=4pt] (0, 1.2) rectangle (2, 3);
+
+\node[font=\tiny, red!70!black] at (-3, 0.9) {LoRA};
+\node[font=\tiny, red!70!black] at (1, 0.9) {LoRA};
+
+\end{tikzpicture}
+\caption{Typical LoRA application in a Transformer layer. LoRA adapters (red) are added to query and value projections while all other weights remain frozen.}
+\label{fig:lora-placement}
+\end{figure}
+
+\subsubsection{QLoRA: Quantized LoRA}
+
+\textbf{QLoRA} combines LoRA with aggressive quantization to enable fine-tuning of very large models on consumer hardware:
+
+\begin{enumerate}
+    \item \textbf{4-bit NormalFloat (NF4):} Quantize base model weights to 4-bit using a quantization scheme optimized for normally-distributed weights
+    \item \textbf{Double Quantization:} Quantize the quantization constants themselves
+    \item \textbf{Paged Optimizers:} Use CPU memory for optimizer states when GPU memory is exhausted
+\end{enumerate}
+
+\begin{equation}
+    \mathbf{h} = \text{Dequant}(\mathbf{W}_0^{\text{NF4}})\mathbf{x} + \mathbf{B}\mathbf{A}\mathbf{x}
+\end{equation}
+
+This enables fine-tuning a 65B parameter model on a single 48GB GPU!
+
+\begin{tcolorbox}[colback=yellow!5!white, colframe=yellow!60!black, title=Practical Comparison: Full Fine-Tuning vs. LoRA]
+\textbf{Example: Fine-tuning LLaMA-7B}
+
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Metric} & \textbf{Full Fine-Tuning} & \textbf{LoRA ($r=8$)} \\
+\midrule
+Trainable Parameters & 7B (100\%) & 4.7M (0.07\%) \\
+GPU Memory (16-bit) & $\sim$120 GB & $\sim$18 GB \\
+Training Time & 1× (baseline) & $\sim$0.7× \\
+Storage per Task & 14 GB & 9 MB \\
+Performance & Baseline & $\sim$99\% of baseline \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Key Advantage:} You can store hundreds of LoRA adapters for different tasks while sharing the same base model!
+\end{tcolorbox}
+
+\subsubsection{Adapter Modules}
+
+Adapters insert small bottleneck networks \textit{within} each Transformer layer:
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    >=Stealth,
+    node distance=0.7cm, % Global default distance between nodes
+    block/.style={rectangle, rounded corners=5pt, draw=tudelftblue, fill=tudelftblue!10, minimum width=3cm, minimum height=0.8cm, font=\small, align=center},
+    adapter/.style={rectangle, rounded corners=5pt, draw=green!60!black, fill=green!10, minimum width=2.5cm, minimum height=0.8cm, font=\small, align=center},
+    arrow/.style={->, line width=1.2pt, tudelftblue!70}
+]
+
+% --- Column 1: Standard layer ---
+\node[font=\bfseries] (c1_label) {Standard};
+
+% Place blocks below each other
+\node[block, below=of c1_label] (attn1) {Self-Attention};
+\node[block, below=of attn1] (add1) {Add \& Norm};
+\node[block, below=of add1] (ffn1) {FFN};
+\node[block, below=of ffn1] (add2) {Add \& Norm};
+
+% Draw arrows
+% Create coordinate above the first block for input arrow
+\coordinate[above=0.5cm of attn1] (c1_start);
+\draw[arrow] (c1_start) -- (attn1);
+\draw[arrow] (attn1) -- (add1);
+\draw[arrow] (add1) -- (ffn1);
+\draw[arrow] (ffn1) -- (add2);
+% Create coordinate below last block for output arrow
+\coordinate[below=0.5cm of add2] (c1_end);
+\draw[arrow] (add2) -- (c1_end);
+
+
+% --- Column 2: With adapters ---
+% Place label relative to first column label
+\node[font=\bfseries, right=4cm of c1_label] (c2_label) {With Adapters};
+
+% Use a scope with smaller node distance for tighter packing
+\begin{scope}[node distance=0.4cm]
+    \node[block, below=of c2_label] (attn2) {Self-Attention};
+    \node[adapter, below=of attn2] (adp1) {Adapter};
+    \node[block, below=of adp1] (add3) {Add \& Norm};
+    \node[block, below=of add3] (ffn2) {FFN};
+    \node[adapter, below=of ffn2] (adp2) {Adapter};
+    \node[block, below=of adp2] (add4) {Add \& Norm};
+\end{scope}
+
+% Draw arrows
+\coordinate[above=0.5cm of attn2] (c2_start);
+\draw[arrow] (c2_start) -- (attn2);
+\draw[arrow] (attn2) -- (adp1);
+\draw[arrow] (adp1) -- (add3);
+\draw[arrow] (add3) -- (ffn2);
+\draw[arrow] (ffn2) -- (adp2);
+\draw[arrow] (adp2) -- (add4);
+\coordinate[below=0.5cm of add4] (c2_end);
+\draw[arrow] (add4) -- (c2_end);
+
+
+% --- Column 3: Adapter Detail ---
+\node[font=\bfseries, right=2.5cm of c2_label] (c3_label) {Adapter Detail};
+
+% Draw the container box first, relative to the label
+\node[rounded corners=8pt, thick, draw=green!60!black, fill=green!5, minimum width=4cm, minimum height=4.5cm, below=0.2cm of c3_label, anchor=north] (detail_box) {};
+
+% Place internal contents relative to the container box and each other
+\node[font=\small, below=0.3cm of detail_box.north] (det_input) {Input: $\mathbf{x} \in \mathbb{R}^d$};
+
+% Use tighter spacing scope for internals
+\begin{scope}[node distance=0.4cm]
+    \node[rectangle, draw=green!60!black, fill=white, minimum width=2cm, minimum height=0.6cm, font=\scriptsize, below=of det_input] (w_down) {$\mathbf{W}_{\text{down}}$: $d \to r$};
+    \node[rectangle, draw=orange, fill=orange!10, minimum width=1.5cm, minimum height=0.5cm, font=\scriptsize, below=of w_down] (relu) {ReLU};
+    \node[rectangle, draw=green!60!black, fill=white, minimum width=2cm, minimum height=0.6cm, font=\scriptsize, below=of relu] (w_up) {$\mathbf{W}_{\text{up}}$: $r \to d$};
+    
+    % Summation node for residual
+    \node[circle, draw=gray, fill=white, inner sep=1.5pt, font=\scriptsize, below=of w_up] (sum) {$+$};
+\end{scope}
+
+% Internal arrows
+\draw[arrow] (det_input) -- (w_down);
+\draw[arrow] (w_down) -- (relu);
+\draw[arrow] (relu) -- (w_up);
+\draw[arrow] (w_up) -- (sum);
+
+% Residual connection path using relative coordinates
+\coordinate (res_start) at ($(det_input.north) + (0, 0.2)$);
+% Calculate a point to the left relative to the input node
+\coordinate (res_side_top) at ($(det_input.west) + (-0.8, 0.3)$); 
+% Calculate point straight down from the top side point to the level of the sum node
+\coordinate (res_side_bottom) at (res_side_top |- sum);
+
+\draw[dashed, thick, gray, rounded corners] (res_start) -- (res_side_top) -- (res_side_bottom) -- (sum);
+
+\end{tikzpicture}
+\caption{Adapter modules: small bottleneck networks inserted after attention and FFN sub-layers. The bottleneck dimension $r \ll d$ keeps parameter count low.}
+\label{fig:adapters_relative}
+\end{figure}
+
+\subsubsection{Prompt Tuning and Prefix Tuning}
+
+These methods keep the entire model frozen and only train \textbf{input representations}:
+
+\paragraph{Prompt Tuning:} Learn $k$ continuous ``virtual tokens'' prepended to the input:
+\begin{equation}
+    \tilde{\mathbf{X}} = [\mathbf{P}_1, \ldots, \mathbf{P}_k, \mathbf{x}_1, \ldots, \mathbf{x}_n] \in \mathbb{R}^{(k+n) \times d}
+\end{equation}
+
+Only $k \times d$ parameters are trained (e.g., $k=20, d=4096 \Rightarrow$ 80K parameters).
+
+\paragraph{Prefix Tuning:} Learn task-specific key-value pairs for \textit{every attention layer}:
+\begin{equation}
+    \text{Attention}(\mathbf{Q}, [\mathbf{P}_K; \mathbf{K}], [\mathbf{P}_V; \mathbf{V}])
+\end{equation}
+
+This provides more expressive power than prompt tuning but requires more parameters.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    >=Stealth,
+    token/.style={rectangle, rounded corners=3pt, minimum width=0.8cm, minimum height=0.6cm, font=\scriptsize, draw, line width=1pt},
+    prompt/.style={token, draw=purple!70, fill=purple!15},
+    input/.style={token, draw=tudelftblue, fill=tudelftblue!15},
+    arrow/.style={->, line width=1.2pt, gray}
+]
+
+% Prompt tuning
+\node[font=\small\bfseries] at (0, 2) {Prompt Tuning};
+
+\node[prompt] (p1) at (-2, 1) {$\mathbf{P}_1$};
+\node[prompt] (p2) at (-1, 1) {$\mathbf{P}_2$};
+\node[prompt] (p3) at (0, 1) {$\mathbf{P}_3$};
+\node[input] (x1) at (1.2, 1) {The};
+\node[input] (x2) at (2.2, 1) {cat};
+\node[input] (x3) at (3.2, 1) {...};
+
+\draw[decorate, decoration={brace, amplitude=5pt, raise=3pt}, purple!70, thick] 
+    (p1.north west) -- (p3.north east) node[midway, above=8pt, font=\tiny, purple!70] {Trainable};
+
+\draw[decorate, decoration={brace, amplitude=5pt, raise=3pt}, tudelftblue, thick] 
+    (x1.north west) -- (x3.north east) node[midway, above=8pt, font=\tiny, tudelftblue] {Input};
+
+% Prefix tuning
+\node[font=\small\bfseries] at (8, 2) {Prefix Tuning};
+
+\node[prompt] (pk1) at (5.5, 1) {$\mathbf{P}_K^{(l)}$};
+\node[prompt] (pv1) at (6.5, 1) {$\mathbf{P}_V^{(l)}$};
+\node[input] (k1) at (7.7, 1) {$\mathbf{K}$};
+\node[input] (v1) at (8.7, 1) {$\mathbf{V}$};
+\node[input] (q1) at (9.9, 1) {$\mathbf{Q}$};
+
+\node[font=\tiny, purple!70] at (6, 0.3) {Learned per layer};
+\node[font=\tiny, tudelftblue] at (8.8, 0.3) {From input};
+
+\draw[arrow] (5.5, -0.2) -- (5.5, -0.6) -- (9.9, -0.6) -- (9.9, -0.2);
+\node[rectangle, draw=gray, fill=gray!10, rounded corners=3pt, minimum width=5cm, minimum height=0.6cm, font=\scriptsize] at (7.7, -1) {Attention with prefix keys/values};
+
+\end{tikzpicture}
+\caption{Comparison of prompt tuning (input-level) and prefix tuning (attention-level) approaches.}
+\label{fig:prompt-vs-prefix}
+\end{figure}
+
+\subsubsection{Choosing a PEFT Method}
+
+\begin{table}[H]
+\centering
+\begin{tblr}{
+  colspec = {l c c c c},
+  row{1} = {font=\bfseries},
+  hline{1,2,Z} = {solid},
+}
+Method & Inference Latency & Multi-Task & Composability & Best For \\
+LoRA & No overhead* & Excellent & High & General use \\
+Adapters & Small overhead & Good & Medium & Modular tasks \\
+Prompt Tuning & Small overhead & Excellent & High & Simple tasks \\
+Prefix Tuning & Medium overhead & Good & Medium & Generation \\
+Full Fine-Tune & No overhead & Poor & None & Max performance \\
+\end{tblr}
+\caption{Trade-offs between PEFT methods. *LoRA weights can be merged into base weights after training.}
+\label{tab:peft-tradeoffs}
+\end{table}
+
+\begin{tcolorbox}[colback=gray!5!white, colframe=gray!60!black, title=Key Takeaways: PEFT Methods]
+\begin{itemize}
+    \item \textbf{LoRA} is currently the most popular choice due to zero inference overhead (after merging) and strong performance
+    \item \textbf{QLoRA} enables fine-tuning of 30B+ models on consumer GPUs
+    \item \textbf{Prompt tuning} is extremely parameter-efficient but may underperform on complex tasks
+    \item \textbf{Adapters} provide good modularity but add inference latency
+    \item Multiple PEFT adapters can be \textbf{combined} (e.g., LoRA for different skills) and swapped at inference time
+\end{itemize}
+\end{tcolorbox}
 
 \end{document}
